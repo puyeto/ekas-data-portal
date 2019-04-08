@@ -45,7 +45,7 @@ func handleRequest(conn net.Conn) {
 	}
 
 	// Print to output
-	fmt.Println("\r\nRECVD: " + string(buf))
+	fmt.Println("\r\nRECVD: "+string(buf), reqLen)
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
 	// Close the connection when you're done with it.
