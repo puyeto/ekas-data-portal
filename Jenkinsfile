@@ -29,6 +29,16 @@ pipeline {
                     branch 'master'  //only run these steps on the master branch
                 }
                 steps {
+                    // sh 'docker tag ekas-portal-api-dev:latest omollo/ekas-portal-api-prod:latest'
+                    sh 'docker login -u "omollo" -p "safcom2012" docker.io'
+                    sh 'docker push omollo/ekas-data-portal-prod:latest'
+                }
+            }
+            stage('PUBLISH') {
+                when {
+                    branch 'master'  //only run these steps on the master branch
+                }
+                steps {
                     // sh 'docker swarm leave -f'
                     sh 'docker run -d -p 8082:8082 --rm --name ekas-data-portal ekas-data-portal-prod'
                     // sh 'docker swarm init --advertise-addr 159.89.134.228'
