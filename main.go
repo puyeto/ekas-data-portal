@@ -1,36 +1,53 @@
 package main
 
-import "bufio"
-import "fmt"
-import "log"
-import "net"
-import "strings" // only needed below for sample processing
+import (
+	"fmt"
+	"net"
+	"os"
+)
+
+const (
+	CONN_HOST = ""
+	CONN_PORT = "8082"
+	CONN_TYPE = "tcp"
+)
 
 func main() {
-	fmt.Println("Launching server...")
-	fmt.Println("Listen on port")
-	ln, err := net.Listen("tcp", "127.0.0.1:8082")
+	// Listen for incoming connections.
+	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error listening:", err.Error())
+		os.Exit(1)
 	}
-	defer ln.Close()
-
-	fmt.Println("Accept connection on port")
-	conn, err := ln.Accept()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Entering loop")
-	// run loop forever (or until ctrl-c)
+	// Close the listener when the application closes.
+	defer l.Close()
+	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
 	for {
-		// will listen for message to process ending in newline (\n)
-		message, _ := bufio.NewReader(conn).ReadString('\n')
-		// output message received
-		fmt.Print("Message Received:", string(message))
-		// sample process for string received
-		newmessage := strings.ToUpper(message)
-		// send new string back to client
-		conn.Write([]byte(newmessage + "\n"))
+		// Listen for an incoming connection.
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting: ", err.Error())
+			os.Exit(1)
+		}
+		// Handle connections in a new goroutine.
+		go handleRequest(conn)
 	}
+}
+
+// Handles incoming requests.
+func handleRequest(conn net.Conn) {
+	// Make a buffer to hold incoming data.
+	buf := make([]byte, 1024)
+	// Read the incoming connection into the buffer.
+	reqLen, err := conn.Read(buf)
+	if err != nil {
+		fmt.Println("Error reading:", err.Error(), reqLen)
+	}
+
+	// Print to output
+	fmt.Println("\r\nRECVD: " + string(buf))
+	// Send a response back to person contacting us.
+	conn.Write([]byte("Message received."))
+	// Close the connection when you're done with it.
+	conn.Close()
 }
