@@ -9,7 +9,7 @@ pipeline {
                     stage('Express Image') {
                         steps {
                             sh 'docker build -f Dockerfile \
-                            -t omollo/ekas-ntsa-data-prod:latest .'
+                            -t omollo/ekas-data-portal-prod:latest .'
                         }
                     }                    
                 }
@@ -30,9 +30,9 @@ pipeline {
                 }
                 steps {
                     // sh 'docker swarm leave -f'
-                    sh 'docker run -d -p 8082:8082 --rm --name ekas-data-portal ekas-ntsa-data-prod'
+                    sh 'docker run -d -p 8082:8082 --rm --name ekas-data-portal ekas-data-portal-prod'
                     // sh 'docker swarm init --advertise-addr 159.89.134.228'
-                    // sh 'docker stack deploy -c docker-compose.yml ekas-ntsa-data-prod'
+                    // sh 'docker stack deploy -c docker-compose.yml ekas-data-portal-prod'
                 }
 
             }
@@ -41,13 +41,13 @@ pipeline {
             //     steps {
             //         junit 'reports.xml'
             //         archiveArtifacts(artifacts: 'reports.xml', allowEmptyArchive: true)
-            //         // archiveArtifacts(artifacts: 'ekas-ntsa-data-prod-golden.tar.gz', allowEmptyArchive: true)
+            //         // archiveArtifacts(artifacts: 'ekas-data-portal-prod-golden.tar.gz', allowEmptyArchive: true)
             //     }
             // }
 
             stage('CLEAN-UP') {
                 steps {
-                    // sh 'docker stop ekas-ntsa-data-dev'
+                    // sh 'docker stop ekas-data-portal-dev'
                     sh 'docker system prune -f'
                     deleteDir()
                 }
