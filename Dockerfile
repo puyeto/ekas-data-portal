@@ -5,19 +5,19 @@ LABEL maintainer "ericotieno99@gmail.com"
 LABEL vendor="Ekas Technologies"
 
 # Copy the project in to the container
-ADD . /go/src/github.com/ekas-ntsa-data
+ADD . /go/src/github.com/ekas-data-portal
 
 # Go get the project deps
-RUN go get github.com/ekas-ntsa-data
+RUN go get github.com/ekas-data-portal
 
 # Go install the project
-RUN go install github.com/ekas-ntsa-data
+RUN go install github.com/ekas-data-portal
 
 # Set the working environment.
 ENV GO_ENV production
 
-# Run the ekas-ntsa-data command by default when the container starts.
-ENTRYPOINT /go/bin/ekas-ntsa-data
+# Run the ekas-data-portal command by default when the container starts.
+ENTRYPOINT /go/bin/ekas-data-portal
 
 #Expose the port specific to the ekas API Application.
 EXPOSE 8082
