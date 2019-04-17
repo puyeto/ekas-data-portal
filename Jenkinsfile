@@ -40,7 +40,7 @@ pipeline {
                 }
                 steps {
                     // sh 'docker swarm leave -f'
-                    sh 'docker rm ekas-data-portal'
+                    sh 'docker rm -f ekas-data-portal'
                     sh 'docker run -d -p 8082:8082 --rm --name ekas-data-portal omollo/ekas-data-portal-prod'
                     // sh 'docker swarm init --advertise-addr 159.89.134.228'
                     // sh 'docker stack deploy -c docker-compose.yml ekas-data-portal-prod'
