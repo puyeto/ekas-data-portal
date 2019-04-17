@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"reflect"
+	"unsafe"
 )
 
 const (
-	CONN_HOST = ""
+	CONN_HOST = "0.0.0.0"
 	CONN_PORT = "8082"
 	CONN_TYPE = "tcp"
 )
@@ -46,8 +48,16 @@ func handleRequest(conn net.Conn) {
 
 	// Print to output
 	fmt.Println("\r\nRECVD: "+string(buf), reqLen)
+	str1 := BytesToString(buf)
+	fmt.Println("String:", str1)
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
 	// Close the connection when you're done with it.
 	conn.Close()
+}
+
+func BytesToString(b []byte) string {
+	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	sh := reflect.StringHeader{bh.Data, bh.Len}
+	return *(*string)(unsafe.Pointer(&sh))
 }
