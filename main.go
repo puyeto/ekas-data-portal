@@ -54,8 +54,11 @@ func handleRequest(conn net.Conn) {
 	// Print to output
 	fmt.Println("\r\nRECVD: "+string(buf), reqLen)
 
-	str2 := string(buf[:])
-	fmt.Println("String:", str2)
+	str := string(buf[:reqLen])
+	fmt.Println("String:", str)
+
+	fmt.Println(conn.RemoteAddr().String())
+	fmt.Printf("Received command %d\t:%s\n", reqLen, str)
 
 	/****************************************/
 	str3 := bytes.NewBuffer(buf).String()
