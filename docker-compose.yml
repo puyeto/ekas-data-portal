@@ -1,6 +1,6 @@
 version: "3"
 services:
-  ekas-data-portal:
+  ekas-data:
     image: omollo/ekas-data-portal-prod
     deploy:
       replicas: 2
@@ -10,7 +10,7 @@ services:
           memory: 500M
     ports:
       - "8082:8082"
+    networks:
+      - host
 networks:
-  default:
-    external:
-      name: mynet
+  host:
