@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"io"
 	"net"
 	"os"
 )
@@ -42,40 +39,39 @@ func main() {
 // Handles incoming requests.
 func handleRequest(conn net.Conn) {
 
-	reader := bufio.NewReader(conn)
-	message, err := reader.ReadString('\n')
-	if err != nil {
-		return
-	}
-	fmt.Printf("Message incoming: %s", string(message))
-	conn.Write([]byte("Message received.\n"))
-
 	// Make a buffer to hold incoming data.
-	buf := make([]byte, 70)
-	// Read the incoming connection into the buffer.
-	reqLen, err := conn.Read(buf)
-	if err != nil {
-		if err != io.EOF {
-			fmt.Println("End of file error:", err)
-		}
-		fmt.Println("Error reading:", err.Error(), reqLen)
+	// buf := make([]byte, 70)
+	// // Read the incoming connection into the buffer.
+	// reqLen, err := conn.Read(buf)
+	// if err != nil {
+	// 	if err != io.EOF {
+	// 		fmt.Println("End of file error:", err)
+	// 	}
+	// 	fmt.Println("Error reading:", err.Error(), reqLen)
+	// }
+
+	// // Print to output
+	// fmt.Println("\r\nRECVD: "+string(buf), reqLen)
+
+	SystemCode := readNextBytes(conn, 4)
+	fmt.Printf("Parsed format: %s\n", SystemCode)
+	if string(SystemCode) != "MCPG" {
+		fmt.Println("Provided replay file is not in correct format. Are you sure this is a SC2 replay file?")
 	}
-
-	// Print to output
-	fmt.Println("\r\nRECVD: "+string(buf), reqLen)
-
-	str := string(buf[:reqLen])
-	fmt.Println("String:", str)
-
-	fmt.Println(conn.RemoteAddr().String())
-	fmt.Printf("Received command %d\t:%s\n", reqLen, str)
-
-	/****************************************/
-	str3 := bytes.NewBuffer(buf).String()
-	fmt.Println("String:", str3)
 
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
 	// Close the connection when you're done with it.
 	conn.Close()
+}
+
+func readNextBytes(conn net.Conn, number int) []byte {
+	bytes := make([]byte, number)
+
+	_, err := conn.Read(bytes)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return bytes
 }
