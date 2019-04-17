@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
+	"log"
 	"net"
 	"os"
 )
@@ -58,6 +61,20 @@ func handleRequest(conn net.Conn) {
 	if string(SystemCode) != "MCPG" {
 		fmt.Println("Provided replay file is not in correct format. Are you sure this is a SC2 replay file?")
 	}
+
+	mType := readNextBytes(conn, 1)
+	fmt.Printf("Message Type: %s\n", mType)
+
+	var header interface{}
+	data := readNextBytes(conn, 4) //  3 * uint32 (4) + 5 * byte (1) + 22 * byte (1) = 43
+
+	buffer := bytes.NewBuffer(data)
+	err := binary.Read(buffer, binary.LittleEndian, &header)
+	if err != nil {
+		log.Fatal("binary.Read failed", err)
+	}
+
+	fmt.Printf("Parsed data:\n%+v\n", header)
 
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
