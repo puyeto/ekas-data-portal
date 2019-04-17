@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"net"
 	"os"
@@ -50,6 +51,16 @@ func handleRequest(conn net.Conn) {
 	fmt.Println("\r\nRECVD: "+string(buf), reqLen)
 	str1 := BytesToString(buf)
 	fmt.Println("String:", str1)
+
+	/****************************************/
+
+	str2 := string(buf[:])
+	fmt.Println("String:", str2)
+
+	/****************************************/
+	str3 := bytes.NewBuffer(buf).String()
+	fmt.Println("String:", str3)
+
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
 	// Close the connection when you're done with it.
