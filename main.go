@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
@@ -40,6 +41,17 @@ func main() {
 
 // Handles incoming requests.
 func handleRequest(conn net.Conn) {
+
+	reader := bufio.NewReader(conn)
+	for {
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			return
+		}
+		fmt.Printf("Message incoming: %s", string(message))
+		conn.Write([]byte("Message received.\n"))
+	}
+
 	// Make a buffer to hold incoming data.
 	buf := make([]byte, 70)
 	// Read the incoming connection into the buffer.
