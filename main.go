@@ -43,14 +43,12 @@ func main() {
 func handleRequest(conn net.Conn) {
 
 	reader := bufio.NewReader(conn)
-	for {
-		message, err := reader.ReadString('\n')
-		if err != nil {
-			return
-		}
-		fmt.Printf("Message incoming: %s", string(message))
-		conn.Write([]byte("Message received.\n"))
+	message, err := reader.ReadString('\n')
+	if err != nil {
+		return
 	}
+	fmt.Printf("Message incoming: %s", string(message))
+	conn.Write([]byte("Message received.\n"))
 
 	// Make a buffer to hold incoming data.
 	buf := make([]byte, 70)
