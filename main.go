@@ -1,8 +1,9 @@
 package main
 
 import (
-	"encoding/binary"
+	"bytes"
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -29,7 +30,7 @@ func main() {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection: ", err.Error())
+			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
 		}
 		// Handle connections in a new goroutine.
@@ -40,18 +41,28 @@ func main() {
 // Handles incoming requests.
 func handleRequest(conn net.Conn) {
 	// Make a buffer to hold incoming data.
-	buf := make([]byte, 1024)
-	for {
-		len, err := conn.Read(buf)
-
-		if err != nil {
-			fmt.Println("Error reading:", err.Error())
-			break
+	buf := make([]byte, 70)
+	// Read the incoming connection into the buffer.
+	reqLen, err := conn.Read(buf)
+	if err != nil {
+		if err != io.EOF {
+			fmt.Println("End of file error:", err)
 		}
-
-		s := string(buf[:len])
-
-		fmt.Println("Stuff", s)
-		fmt.Println("len", binary.Size(buf))
+		fmt.Println("Error reading:", err.Error(), reqLen)
 	}
+
+	// Print to output
+	fmt.Println("\r\nRECVD: "+string(buf), reqLen)
+
+	str2 := string(buf[:])
+	fmt.Println("String:", str2)
+
+	/****************************************/
+	str3 := bytes.NewBuffer(buf).String()
+	fmt.Println("String:", str3)
+
+	// Send a response back to person contacting us.
+	conn.Write([]byte("Message received."))
+	// Close the connection when you're done with it.
+	conn.Close()
 }
