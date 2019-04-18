@@ -54,9 +54,8 @@ func handleRequest(conn net.Conn) {
 
 	SystemMessage := readNextBytes(conn, 1)
 	fmt.Printf("System Message: %s\n", SystemMessage)
-	fmt.Printf("System Message: %s\n", binary.LittleEndian.Uint16(SystemMessage))
 
-	deviceID := binary.BigEndian.Uint32(readNextBytes(conn, 4))
+	deviceID := binary.BigEndian.Uint32(readNextBytes(conn, 1))
 	fmt.Println("System Device ID")
 	fmt.Println(deviceID)
 
