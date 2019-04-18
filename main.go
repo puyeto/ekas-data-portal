@@ -43,11 +43,14 @@ func handleRequest(conn net.Conn) {
 	SystemCode := readNextBytes(conn, 4)
 	fmt.Printf("Parsed format: %s\n", SystemCode)
 	if string(SystemCode) != "MCPG" {
-		fmt.Println("Provided replay file is not in correct format. Are you sure this is a SC2 replay file?")
+		fmt.Println("data not valid")
 	}
 
 	SystemMessage := readNextBytes(conn, 1)
 	fmt.Printf("System Message: %s\n", SystemMessage)
+
+	deviceID := readNextBytes(conn, 4)
+	fmt.Printf("System Device ID: %s\n", deviceID)
 
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
