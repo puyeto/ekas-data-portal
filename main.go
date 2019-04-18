@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"net"
@@ -49,8 +50,9 @@ func handleRequest(conn net.Conn) {
 	SystemMessage := readNextBytes(conn, 1)
 	fmt.Printf("System Message: %s\n", SystemMessage)
 
-	deviceID := readNextBytes(conn, 4)
-	fmt.Printf("System Device ID: %s\n", deviceID)
+	deviceID := binary.BigEndian.Uint32(readNextBytes(conn, 4))
+	fmt.Println("System Device ID")
+	fmt.Println(deviceID)
 
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
