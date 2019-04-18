@@ -14,6 +14,11 @@ const (
 	CONN_TYPE = "tcp"
 )
 
+type DeviceData struct {
+	SystemCode    string
+	SystemMessage uint16
+}
+
 func main() {
 	// Listen for incoming connections.
 	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
@@ -49,6 +54,7 @@ func handleRequest(conn net.Conn) {
 
 	SystemMessage := readNextBytes(conn, 1)
 	fmt.Printf("System Message: %s\n", SystemMessage)
+	fmt.Printf("System Message: %s\n", binary.LittleEndian.Uint16(SystemMessage))
 
 	deviceID := binary.BigEndian.Uint32(readNextBytes(conn, 4))
 	fmt.Println("System Device ID")
