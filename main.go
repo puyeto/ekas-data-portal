@@ -46,6 +46,9 @@ func handleRequest(conn net.Conn) {
 		fmt.Println("Provided replay file is not in correct format. Are you sure this is a SC2 replay file?")
 	}
 
+	SystemMessage := readNextBytes(conn, 1)
+	fmt.Printf("System Message: %s\n", SystemMessage)
+
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
 	// Close the connection when you're done with it.
