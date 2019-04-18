@@ -54,13 +54,13 @@ func handleRequest(conn net.Conn) {
 	// fmt.Println("\r\nRECVD: "+string(buf), reqLen)
 
 	SystemCode := readNextBytes(conn, 4)
-	fmt.Printf("Parsed format: %s\n", SystemCode)
+	fmt.Println("Parsed format: ", SystemCode)
 	if string(SystemCode) != "MCPG" {
 		fmt.Println("Provided replay file is not in correct format. Are you sure this is a SC2 replay file?")
 	}
 
 	mType := readNextBytes(conn, 1)
-	fmt.Printf("Message Type: %s\n", mType)
+	fmt.Println("Message Type: ", mType)
 
 	// var header interface{}
 	// data := readNextBytes(conn, 4) //  3 * uint32 (4) + 5 * byte (1) + 22 * byte (1) = 43
