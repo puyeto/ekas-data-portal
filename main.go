@@ -24,13 +24,13 @@ type DeviceData struct {
 	MessageNumerator               int    `json:"message_numerator,omitempty"`           // 1 byte
 	HardwareVersion                int    `json:"hardware_version,omitempty"`            // 1 byte
 	SoftwareVersion                int    `json:"software_version,omitempty"`            // 1 byte
-	ProtocolVersionIdentifier      uint16 `json:"protocol_version_identifier,omitempty"`
-	Status                         uint16 `json:"status,omitempty"`
-	ConfigurationFlags             uint16 `json:"configuration_flags,omitempty"`
+	ProtocolVersionIdentifier      uint16 `json:"protocol_version_identifier,omitempty"` // 1 byte
+	Status                         uint16 `json:"status,omitempty"`                      // 1 byte
+	ConfigurationFlags             uint16 `json:"configuration_flags,omitempty"`         // 2 bytes
 	TransmissionReasonSpecificData uint16 `json:"transmission_reason_specificData,omitempty"`
-	TransmissionReason             uint16 `json:"transmission_reason,omitempty"`
-	ModeOfOperation                uint16 `json:"mode_of_operation,omitempty"`
-	IOStatus                       uint16 `json:"io_status,omitempty"`
+	TransmissionReason             uint16 `json:"transmission_reason,omitempty"` // 1 byte
+	ModeOfOperation                uint16 `json:"mode_of_operation,omitempty"`   // 1 byte
+	IOStatus                       uint16 `json:"io_status,omitempty"`           // 5 bytes
 	AnalogInput1Value              uint16 `json:"analog_Input_1_value,omitempty"`
 	AnalogInput1Value1             uint16 `json:"analog_Input_1_value_1,omitempty"`
 	AnalogInput2Value              uint16 `json:"analog_Input_2_value,omitempty"`
@@ -97,7 +97,7 @@ func handleRequest(conn net.Conn) {
 	}
 	deviceData.SystemMessage = int(sm)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.CommunicationControlField = binary.LittleEndian.Uint32(readNextBytes(conn, 2))
+	deviceData.CommunicationControlField = binary.BigEndian.Uint32(readNextBytes(conn, 2))
 	mn, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
 	if err != nil {
 		fmt.Println("Error reading MessageNumerator:", err.Error())
