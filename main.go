@@ -99,7 +99,7 @@ func handleRequest(conn net.Conn) {
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 
 	countries := readNextBytes(conn, 2)
-	space := []byte{' '}
+	space := []byte{'\'}
 	splitExample := bytes.Split(countries, space)
 	fmt.Printf("\nSplit split %q on a single space:", countries)
 	for index, element := range splitExample {
