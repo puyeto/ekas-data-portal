@@ -97,7 +97,11 @@ func handleRequest(conn net.Conn) {
 	}
 	deviceData.SystemMessage = int(sm)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.CommunicationControlField = binary.BigEndian.Uint32(readNextBytes(conn, 2))
+	x := binary.LittleEndian.Uint16(readNextBytes(conn, 1))
+	y := binary.LittleEndian.Uint16(readNextBytes(conn, 1))
+	fmt.Println("x and y =", x, y)
+	deviceData.CommunicationControlField = 1
+
 	mn, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
 	if err != nil {
 		fmt.Println("Error reading MessageNumerator:", err.Error())
