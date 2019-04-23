@@ -17,13 +17,13 @@ const (
 
 // DeviceData ...
 type DeviceData struct {
-	SystemCode                     string `json:"system_code,omitempty"`
-	SystemMessage                  int    `json:"system_message,omitempty"`
-	DeviceID                       uint32 `json:"device_id,omitempty"`
-	CommunicationControlField      uint32 `json:"communication_control_field,omitempty"`
-	MessageNumerator               uint16 `json:"message_numerator,omitempty"`
-	HardwareVersion                uint16 `json:"hardware_version,omitempty"`
-	SoftwareVersion                uint16 `json:"software_version,omitempty"`
+	SystemCode                     string `json:"system_code,omitempty"`                 // 4 bytes
+	SystemMessage                  int    `json:"system_message,omitempty"`              // 1 byte
+	DeviceID                       uint32 `json:"device_id,omitempty"`                   // 4 bytes
+	CommunicationControlField      uint32 `json:"communication_control_field,omitempty"` // 2 bytes
+	MessageNumerator               int    `json:"message_numerator,omitempty"`           // 1 byte
+	HardwareVersion                int    `json:"hardware_version,omitempty"`            // 1 byte
+	SoftwareVersion                int    `json:"software_version,omitempty"`            // 1 byte
 	ProtocolVersionIdentifier      uint16 `json:"protocol_version_identifier,omitempty"`
 	Status                         uint16 `json:"status,omitempty"`
 	ConfigurationFlags             uint16 `json:"configuration_flags,omitempty"`
@@ -41,19 +41,19 @@ type DeviceData struct {
 	LocationStatus                 uint16 `json:"location_status,omitempty"`
 	Mode1                          uint16 `json:"mode_1,omitempty"`
 	Mode2                          uint16 `json:"mode_2,omitempty"`
-	NoOfSatellitesUsed             uint16
-	Longitude                      uint16
-	Latitude                       uint16
-	Altitude                       uint16
-	GroundSpeed                    uint16
-	SpeedDirection                 uint16
-	UTCTimeSeconds                 uint16
-	UTCTimeMinutes                 uint16
-	UTCTimeHours                   uint16
-	UTCTimeDay                     uint16
-	UTCTimeMonth                   uint16
-	UTCTimeYear                    uint16
-	ErrorDetectionCode             uint16
+	NoOfSatellitesUsed             uint16 `json:"no_of_satellites_used,omitempty"`
+	Longitude                      uint16 `json:"longitude,omitempty"`
+	Latitude                       uint16 `json:"latitude,omitempty"`
+	Altitude                       uint16 `json:"altitude,omitempty"`
+	GroundSpeed                    uint16 `json:"ground_speed,omitempty"`
+	SpeedDirection                 uint16 `json:"speed_direction,omitempty"`
+	UTCTimeSeconds                 uint16 `json:"utc_time_seconds,omitempty"`
+	UTCTimeMinutes                 uint16 `json:"utc_time_minutes,omitempty"`
+	UTCTimeHours                   uint16 `json:"utc_time_hours,omitempty"`
+	UTCTimeDay                     uint16 `json:"utc_time_day,omitempty"`
+	UTCTimeMonth                   uint16 `json:"utc_time_month,omitempty"`
+	UTCTimeYear                    uint16 `json:"utc_time_year,omitempty"`
+	ErrorDetectionCode             uint16 `json:"error_detection_code,omitempty"`
 }
 
 func main() {
@@ -97,7 +97,27 @@ func handleRequest(conn net.Conn) {
 	}
 	deviceData.SystemMessage = int(sm)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	// deviceData.CommunicationControlField = binary.ByteOrder.Uint32(readNextBytes(conn, 2))
+	deviceData.CommunicationControlField = binary.LittleEndian.Uint32(readNextBytes(conn, 2))
+	mn, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	if err != nil {
+		fmt.Println("Error reading MessageNumerator:", err.Error())
+	}
+	deviceData.MessageNumerator = int(mn)
+
+	// HardwareVersion
+	hv, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	if err != nil {
+		fmt.Println("Error reading HardwareVersion:", err.Error())
+	}
+	deviceData.HardwareVersion = int(hv)
+
+	// SoftwareVersion
+	sv, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	if err != nil {
+		fmt.Println("Error reading SoftwareVersion:", err.Error())
+	}
+	deviceData.SoftwareVersion = int(sv)
+
 	fmt.Println(deviceData)
 
 	// Send a response back to person contacting us.
