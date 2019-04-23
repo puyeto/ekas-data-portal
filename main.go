@@ -88,11 +88,10 @@ func handleRequest(conn net.Conn) {
 		fmt.Println("data not valid")
 	}
 
-	deviceData.SystemMessage = binary.BigEndian.Uint16(readNextBytes(conn, 1))
+	deviceData.SystemMessage = binary.ByteOrder.Uint16(readNextBytes(conn, 1))
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.CommunicationControlField = binary.LittleEndian.Uint32(readNextBytes(conn, 2))
+	// deviceData.CommunicationControlField = binary.ByteOrder.Uint32(readNextBytes(conn, 2))
 	fmt.Println(deviceData)
-	
 
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
