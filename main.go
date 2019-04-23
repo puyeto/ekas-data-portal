@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -17,7 +18,7 @@ const (
 // DeviceData ...
 type DeviceData struct {
 	SystemCode                     string `json:"system_code,omitempty"`
-	SystemMessage                  uint16 `json:"system_message,omitempty"`
+	SystemMessage                  int    `json:"system_message,omitempty"`
 	DeviceID                       uint32 `json:"device_id,omitempty"`
 	CommunicationControlField      uint32 `json:"communication_control_field,omitempty"`
 	MessageNumerator               uint16 `json:"message_numerator,omitempty"`
@@ -88,7 +89,13 @@ func handleRequest(conn net.Conn) {
 		fmt.Println("data not valid")
 	}
 
-	deviceData.SystemMessage = binary.ByteOrder.Uint16(readNextBytes(conn, 1))
+	// deviceData.SystemMessage = int(readNextBytes(conn, 1))
+	buf := bytes.NewBuffer(readNextBytes(conn, 1)) // b is []byte
+	sm, err := binary.ReadVarint(buf)
+	if err != nil {
+		fmt.Println("Error reading SystemMessage:", err.Error())
+	}
+	deviceData.SystemMessage = int(sm)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 	// deviceData.CommunicationControlField = binary.ByteOrder.Uint32(readNextBytes(conn, 2))
 	fmt.Println(deviceData)
