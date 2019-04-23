@@ -97,9 +97,15 @@ func handleRequest(conn net.Conn) {
 	}
 	deviceData.SystemMessage = int(sm)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	x := binary.LittleEndian.Uint16(readNextBytes(conn, 1))
-	y := binary.LittleEndian.Uint16(readNextBytes(conn, 1))
-	fmt.Println("x and y =", x, y)
+
+	countries := readNextBytes(conn, 2)
+	space := []byte{' '}
+	splitExample := bytes.Split(countries, space)
+	fmt.Printf("\nSplit split %q on a single space:", countries)
+	for index, element := range splitExample {
+		fmt.Printf("\n%d => %q", index, element)
+	}
+
 	deviceData.CommunicationControlField = 1
 
 	mn, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
