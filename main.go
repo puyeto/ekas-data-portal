@@ -14,9 +14,45 @@ const (
 	CONN_TYPE = "tcp"
 )
 
+// DeviceData ...
 type DeviceData struct {
-	SystemCode    string
-	SystemMessage uint16
+	SystemCode                     string `json:"system_code,omitempty"`
+	SystemMessage                  uint16 `json:"system_message,omitempty"`
+	DeviceID                       uint32 `json:"device_id,omitempty"`
+	CommunicationControlField      uint32 `json:"communication_control_field,omitempty"`
+	MessageNumerator               uint16 `json:"message_numerator,omitempty"`
+	HardwareVersion                uint16 `json:"hardware_version,omitempty"`
+	SoftwareVersion                uint16 `json:"software_version,omitempty"`
+	ProtocolVersionIdentifier      uint16 `json:"protocol_version_identifier,omitempty"`
+	Status                         uint16 `json:"status,omitempty"`
+	ConfigurationFlags             uint16 `json:"configuration_flags,omitempty"`
+	TransmissionReasonSpecificData uint16 `json:"transmission_reason_specificData,omitempty"`
+	TransmissionReason             uint16 `json:"transmission_reason,omitempty"`
+	ModeOfOperation                uint16 `json:"mode_of_operation,omitempty"`
+	IOStatus                       uint16 `json:"io_status,omitempty"`
+	AnalogInput1Value              uint16 `json:"analog_Input_1_value,omitempty"`
+	AnalogInput1Value1             uint16 `json:"analog_Input_1_value_1,omitempty"`
+	AnalogInput2Value              uint16 `json:"analog_Input_2_value,omitempty"`
+	AnalogInput2Value2             uint16 `json:"analog_Input_2_value_2,omitempty"`
+	MileageCounter                 uint16 `json:"mileage_counter,omitempty"`
+	DriverID                       uint16 `json:"driver_id,omitempty"`
+	LastGPSFix                     uint16 `json:"last_gps_fix,omitempty"`
+	LocationStatus                 uint16 `json:"location_status,omitempty"`
+	Mode1                          uint16 `json:"mode_1,omitempty"`
+	Mode2                          uint16 `json:"mode_2,omitempty"`
+	NoOfSatellitesUsed             uint16
+	Longitude                      uint16
+	Latitude                       uint16
+	Altitude                       uint16
+	GroundSpeed                    uint16
+	SpeedDirection                 uint16
+	UTCTimeSeconds                 uint16
+	UTCTimeMinutes                 uint16
+	UTCTimeHours                   uint16
+	UTCTimeDay                     uint16
+	UTCTimeMonth                   uint16
+	UTCTimeYear                    uint16
+	ErrorDetectionCode             uint16
 }
 
 func main() {
@@ -45,25 +81,18 @@ func main() {
 
 // Handles incoming requests.
 func handleRequest(conn net.Conn) {
+	var deviceData DeviceData
 
-	SystemCode := readNextBytes(conn, 4)
-	fmt.Printf("Parsed format: %s\n", SystemCode)
-	if string(SystemCode) != "MCPG" {
+	deviceData.SystemCode = string(readNextBytes(conn, 4))
+	if deviceData.SystemCode != "MCPG" {
 		fmt.Println("data not valid")
 	}
 
-	SystemMessage := readNextBytes(conn, 1)
-	fmt.Printf("System Message: %s\n", SystemMessage)
-
-	// deviceIDShift24 := binary.BigEndian(readNextBytes(conn, 1)) << 24
-	// deviceIDShift24 += (readNextBytes(conn, 1)) << 16
-	// deviceIDShift24 += (readNextBytes(conn, 1)) << 8
-	// deviceIDShift24 += (readNextBytes(conn, 1))
-
-	// deviceID := binary.BigEndian.Uint32(deviceIDShift24)
-	deviceID := binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	fmt.Println("System Device ID")
-	fmt.Println(deviceID)
+	deviceData.SystemMessage = binary.BigEndian.Uint16(readNextBytes(conn, 1))
+	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
+	deviceData.CommunicationControlField = binary.LittleEndian.Uint32(readNextBytes(conn, 2))
+	fmt.Println(deviceData)
+	
 
 	// Send a response back to person contacting us.
 	conn.Write([]byte("Message received."))
