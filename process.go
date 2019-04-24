@@ -142,6 +142,21 @@ func handleRequest(conn net.Conn) {
 	// Speed direction – 2 bytes
 	readNextBytes(conn, 2)
 
+	// UTC time – 3 bytes (hours, minutes, seconds)
+	sec, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	deviceData.UTCTimeSeconds = int(sec)
+	min, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	deviceData.UTCTimeMinutes = int(min)
+	hrs, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	deviceData.UTCTimeHours = int(hrs)
+
+	// UTC date – 4 bytes (day, month, year)
+	day, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	deviceData.UTCTimeDay = int(day)
+	mon, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
+	deviceData.UTCTimeMonth = int(mon)
+	readNextBytes(conn, 2)
+
 	fmt.Println(deviceData)
 
 	// Send a response back to person contacting us.

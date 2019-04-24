@@ -32,11 +32,11 @@ type DeviceData struct {
 	Altitude                       uint32 `json:"altitude,omitempty"`
 	GroundSpeed                    uint32 `json:"ground_speed,omitempty"`
 	SpeedDirection                 uint16 `json:"speed_direction,omitempty"`
-	UTCTimeSeconds                 uint16 `json:"utc_time_seconds,omitempty"`
-	UTCTimeMinutes                 uint16 `json:"utc_time_minutes,omitempty"`
-	UTCTimeHours                   uint16 `json:"utc_time_hours,omitempty"`
-	UTCTimeDay                     uint16 `json:"utc_time_day,omitempty"`
-	UTCTimeMonth                   uint16 `json:"utc_time_month,omitempty"`
-	UTCTimeYear                    uint16 `json:"utc_time_year,omitempty"`
+	UTCTimeSeconds                 int    `json:"utc_time_seconds,omitempty"`
+	UTCTimeMinutes                 int    `json:"utc_time_minutes,omitempty"`
+	UTCTimeHours                   int    `json:"utc_time_hours,omitempty"`
+	UTCTimeDay                     int    `json:"utc_time_day,omitempty"`
+	UTCTimeMonth                   int    `json:"utc_time_month,omitempty"`
+	UTCTimeYear                    int    `json:"utc_time_year,omitempty"`
 	ErrorDetectionCode             uint16 `json:"error_detection_code,omitempty"`
 }
