@@ -26,17 +26,17 @@ type DeviceData struct {
 	LocationStatus                 uint16 `json:"location_status,omitempty"`
 	Mode1                          uint16 `json:"mode_1,omitempty"`
 	Mode2                          uint16 `json:"mode_2,omitempty"`
-	NoOfSatellitesUsed             int    `json:"no_of_satellites_used,omitempty"`
-	Longitude                      uint32 `json:"longitude,omitempty"`
-	Latitude                       uint32 `json:"latitude,omitempty"`
-	Altitude                       uint32 `json:"altitude,omitempty"`
-	GroundSpeed                    uint32 `json:"ground_speed,omitempty"`
-	SpeedDirection                 uint16 `json:"speed_direction,omitempty"`
-	UTCTimeSeconds                 int    `json:"utc_time_seconds,omitempty"`
-	UTCTimeMinutes                 int    `json:"utc_time_minutes,omitempty"`
-	UTCTimeHours                   int    `json:"utc_time_hours,omitempty"`
-	UTCTimeDay                     int    `json:"utc_time_day,omitempty"`
-	UTCTimeMonth                   int    `json:"utc_time_month,omitempty"`
-	UTCTimeYear                    int    `json:"utc_time_year,omitempty"`
+	NoOfSatellitesUsed             int    `json:"no_of_satellites_used,omitempty"` // 1 byte
+	Longitude                      uint32 `json:"longitude,omitempty"`             // 4 byte
+	Latitude                       uint32 `json:"latitude,omitempty"`              // 4 byte
+	Altitude                       uint32 `json:"altitude,omitempty"`              // 4 byte
+	GroundSpeed                    uint32 `json:"ground_speed,omitempty"`          // 4 byte
+	SpeedDirection                 uint16 `json:"speed_direction,omitempty"`       // 2 byte
+	UTCTimeSeconds                 int    `json:"utc_time_seconds,omitempty"`      // 1 byte
+	UTCTimeMinutes                 int    `json:"utc_time_minutes,omitempty"`      // 1 byte
+	UTCTimeHours                   int    `json:"utc_time_hours,omitempty"`        // 1 byte
+	UTCTimeDay                     int    `json:"utc_time_day,omitempty"`          // 1 byte
+	UTCTimeMonth                   int    `json:"utc_time_month,omitempty"`        // 1 byte
+	UTCTimeYear                    int    `json:"utc_time_year,omitempty"`         // 2 byte
 	ErrorDetectionCode             uint16 `json:"error_detection_code,omitempty"`
 }
