@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"log"
 	"net"
 
 	"github.com/ekas-data-portal/models"
@@ -154,18 +153,10 @@ func handleRequest(conn net.Conn) {
 	// UTC date – 4 bytes (day, month, year)
 	day, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
 	deviceData.UTCTimeDay = int(day)
-
-	buffer := bytes.NewBuffer(readNextBytes(conn, 1))
-	month, _ := binary.ReadVarint(buffer)
+	b := readNextBytes(conn, 1)
+	month, _ := binary.ReadVarint(bytes.NewBuffer(b))
 	deviceData.UTCTimeMonth = int(month)
-
-	var m uint32
-	err = binary.Read(buffer, binary.BigEndian, &m)
-	if err != nil {
-		log.Fatal("binary.Read failed", err)
-	}
-
-	fmt.Println(m)
+	fmt.Println(binary.BigEndian.Uint16(b))
 
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
 
