@@ -159,7 +159,7 @@ func handleRequest(conn net.Conn) {
 	month, _ := binary.ReadVarint(buffer)
 	deviceData.UTCTimeMonth = int(month)
 
-	var m int
+	var m uint32
 	err = binary.Read(buffer, binary.BigEndian, &m)
 	if err != nil {
 		log.Fatal("binary.Read failed", err)
