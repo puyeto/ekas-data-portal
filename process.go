@@ -155,7 +155,9 @@ func handleRequest(conn net.Conn) {
 	deviceData.UTCTimeDay = int(day)
 	mon, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
 	deviceData.UTCTimeMonth = int(mon)
-	yr, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 2)))
+	b := readNextBytes(conn, 2)
+	yr, _ := binary.ReadVarint(bytes.NewBuffer(b))
+	fmt.Println(binary.LittleEndian.Uint16(b))
 	deviceData.UTCTimeYear = int(yr)
 
 	fmt.Println(deviceData)
