@@ -140,7 +140,7 @@ func handleRequest(conn net.Conn) {
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 
 	// Speed direction – 2 bytes
-	readNextBytes(conn, 2)
+	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
 
 	// UTC time – 3 bytes (hours, minutes, seconds)
 	sec, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
@@ -156,7 +156,6 @@ func handleRequest(conn net.Conn) {
 	b := readNextBytes(conn, 1)
 	mon, _ := binary.ReadVarint(bytes.NewBuffer(b))
 	deviceData.UTCTimeMonth = int(mon)
-	fmt.Println(binary.LittleEndian.Uint16(b))
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
 
 	fmt.Println(deviceData)
