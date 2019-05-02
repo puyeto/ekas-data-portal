@@ -200,7 +200,7 @@ func handleRequest(conn net.Conn) {
 	conn.Write([]byte("Message received."))
 
 	// Close the connection when you're done with it.
-	conn.Close()
+	//conn.Close()
 }
 
 func readNextBytes(conn net.Conn, number int) []byte {
@@ -220,5 +220,5 @@ func readNextBytes(conn net.Conn, number int) []byte {
 func readInt32(data []byte) (ret int32) {
     buf := bytes.NewBuffer(data)
     binary.Read(buf, binary.LittleEndian, &ret)
-    return
+    return ret
 }
