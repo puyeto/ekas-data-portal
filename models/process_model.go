@@ -1,5 +1,14 @@
 package models
 
+import (
+	"net"
+)
+
+type ClientJob struct {
+	DeviceData DeviceData
+	Conn       net.Conn
+}
+
 // DeviceData ...
 type DeviceData struct {
 	SystemCode                     string `json:"system_code,omitempty"`                      // 4 bytes
@@ -27,9 +36,9 @@ type DeviceData struct {
 	Mode1                          uint16 `json:"mode_1,omitempty"`
 	Mode2                          uint16 `json:"mode_2,omitempty"`
 	NoOfSatellitesUsed             int    `json:"no_of_satellites_used,omitempty"` // 1 byte
-	Longitude                      int32 `json:"longitude,omitempty"`             // 4 byte
-	Latitude                       int32 `json:"latitude,omitempty"`              // 4 byte
-	Altitude                       int32 `json:"altitude,omitempty"`              // 4 byte
+	Longitude                      int32  `json:"longitude,omitempty"`             // 4 byte
+	Latitude                       int32  `json:"latitude,omitempty"`              // 4 byte
+	Altitude                       int32  `json:"altitude,omitempty"`              // 4 byte
 	GroundSpeed                    uint32 `json:"ground_speed,omitempty"`          // 4 byte
 	SpeedDirection                 int    `json:"speed_direction,omitempty"`       // 2 byte
 	UTCTimeSeconds                 int    `json:"utc_time_seconds,omitempty"`      // 1 byte

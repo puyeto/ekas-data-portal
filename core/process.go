@@ -11,7 +11,7 @@ import (
 )
 
 // Handles incoming requests.
-func HandleRequest(conn net.Conn) {
+func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
 
 	deviceData.SystemCode = string(readNextBytes(conn, 4))
@@ -120,10 +120,8 @@ func HandleRequest(conn net.Conn) {
 
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
 
-	fmt.Println(deviceData)
-
 	// Send a response back to person contacting us.
-	conn.Write([]byte("Message received."))
+	// conn.Write([]byte("Message received."))
 
 	// Close the connection when you're done with it.
 	conn.Close()
@@ -132,6 +130,8 @@ func HandleRequest(conn net.Conn) {
 	if deviceData.DeviceID > 0 || deviceData.SystemCode == "MCPG" {
 		saveData(deviceData)
 	}
+
+	clientJobs <- models.ClientJob{deviceData, conn}
 }
 
 func readNextBytes(conn net.Conn, number int) []byte {

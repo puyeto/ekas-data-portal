@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 
 	"github.com/ekas-data-portal/core"
+	"github.com/ekas-data-portal/models"
 )
 
 const (
@@ -15,7 +17,10 @@ const (
 )
 
 func main() {
-	
+
+	clientJobs := make(chan models.ClientJob)
+	go generateResponses(clientJobs)
+
 	// Listen for incoming connections.
 	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
 	if err != nil {
@@ -27,6 +32,7 @@ func main() {
 	defer l.Close()
 
 	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
+
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
@@ -35,6 +41,28 @@ func main() {
 			os.Exit(1)
 		}
 		// Handle connections in a new goroutine.
-		go core.HandleRequest(conn)
+		go core.HandleRequest(conn, clientJobs)
+	}
+}
+
+func check(err error, message string) {
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s\n", message)
+}
+
+func generateResponses(clientJobs chan models.ClientJob) {
+	for {
+		// Wait for the next job to come off the queue.
+		clientJob := <-clientJobs
+
+		// Do something thats keeps the CPU buys for a whole second.
+		for start := time.Now(); time.Now().Sub(start) < time.Second; {
+			fmt.Println(clientJob)
+		}
+
+		// Send back the response.
+		clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
 	}
 }
