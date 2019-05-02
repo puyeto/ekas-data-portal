@@ -127,9 +127,9 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	conn.Close()
 
 	// Save data
-	if deviceData.DeviceID > 0 || deviceData.SystemCode == "MCPG" {
-		saveData(deviceData)
-	}
+	// if deviceData.DeviceID > 0 || deviceData.SystemCode == "MCPG" {
+	//	saveData(deviceData)
+	// }
 
 	clientJobs <- models.ClientJob{deviceData, conn}
 }
