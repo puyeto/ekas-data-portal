@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"time"
 
 	"github.com/ekas-data-portal/models"
 )
@@ -163,7 +162,7 @@ func readInt32(data []byte) (ret int32) {
 func SaveData(m models.DeviceData) {
 	db := DBConnect()
 
-	dataDate := time.Date(m.UTCTimeYear, m.UTCTimeMonth, m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds)
+	// dataDate := time.Date(m.UTCTimeYear, m.UTCTimeMonth, m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds)
 
 	// perform a db.Query insert
 	insert, err := db.Query("INSERT INTO test VALUES ( 2, 'TEST' )")
