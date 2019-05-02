@@ -50,77 +50,46 @@ func handleRequest(conn net.Conn) {
 		fmt.Println("data not valid")
 	}
 
-	// deviceData.SystemMessage = int(readNextBytes(conn, 1))
-	sm, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading SystemMessage:", err.Error())
-	}
-	deviceData.SystemMessage = int(sm)
+	sm := readNextBytes(conn, 1)
+	deviceData.SystemMessage = int(sm[0])
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 
 	readNextBytes(conn, 2)	
 
-	mn, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading MessageNumerator:", err.Error())
-	}
-	deviceData.MessageNumerator = int(mn)
+	mn := readNextBytes(conn, 1)
+	deviceData.MessageNumerator = int(mn[0])
 
 	// HardwareVersion
-	hv, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading HardwareVersion:", err.Error())
-	}
-	deviceData.HardwareVersion = int(hv)
+	hv := readNextBytes(conn, 1)
+	deviceData.HardwareVersion = int(hv[0])
 
 	// SoftwareVersion
-	sv, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading SoftwareVersion:", err.Error())
-	}
-	deviceData.SoftwareVersion = int(sv)
+	sv := readNextBytes(conn, 1)
+	deviceData.SoftwareVersion = int(sv[0])
 
 	// ProtocolVersionIdentifier
-	pvi, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading ProtocolVersionIdentifier:", err.Error())
-	}
-	deviceData.ProtocolVersionIdentifier = int(pvi)
+	pvi := readNextBytes(conn, 1)
+	deviceData.ProtocolVersionIdentifier = int(pvi[0])
 
 	// Status
-	Status, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading Status:", err.Error())
-	}
-	deviceData.Status = int(Status)
+	Status := readNextBytes(conn, 1)
+	deviceData.Status = int(Status[0])
 
 	// ConfigurationFlags
-	cf, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading ConfigurationFlags:", err.Error())
-	}
-	deviceData.ConfigurationFlags = int(cf)
+	cf := readNextBytes(conn, 1)
+	deviceData.ConfigurationFlags = int(cf[0])
 
 	// TransmissionReasonSpecificData
-	trsd, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading TransmissionReasonSpecificData:", err.Error())
-	}
-	deviceData.TransmissionReasonSpecificData = int(trsd)
+	trsd := readNextBytes(conn, 1)
+	deviceData.TransmissionReasonSpecificData = int(trsd[0])
 
 	// TransmissionReason
-	tr, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading TransmissionReason:", err.Error())
-	}
-	deviceData.TransmissionReason = int(tr)
+	tr := readNextBytes(conn, 1)
+	deviceData.TransmissionReason = int(tr[0])
 
 	// ModeOfOperation
-	moo, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading ModeOfOperation:", err.Error())
-	}
-	deviceData.ModeOfOperation = int(moo)
+	moo := readNextBytes(conn, 1)
+	deviceData.ModeOfOperation = int(moo[0])
 
 	// IOStatus
 	readNextBytes(conn, 5)
@@ -147,11 +116,8 @@ func handleRequest(conn net.Conn) {
 	readNextBytes(conn, 1)
 
 	// Number of satellites used (from GPS) – 1 byte
-	satellites, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	if err != nil {
-		fmt.Println("Error reading Number of satellites :", err.Error())
-	}
-	deviceData.NoOfSatellitesUsed = int(satellites)
+	satellites := readNextBytes(conn, 1)
+	deviceData.NoOfSatellitesUsed = int(satellites[0])
 
 	// Longitude – 4 bytes
 	// deviceData.Longitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
@@ -169,21 +135,19 @@ func handleRequest(conn net.Conn) {
 	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
 
 	// UTC time – 3 bytes (hours, minutes, seconds)
-	sec, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	deviceData.UTCTimeSeconds = int(sec)
-	min, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	deviceData.UTCTimeMinutes = int(min)
-	hrs, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	deviceData.UTCTimeHours = int(hrs)
+	sec := readNextBytes(conn, 1)
+	deviceData.UTCTimeSeconds = int(sec[0])
+	min := readNextBytes(conn, 1)
+	deviceData.UTCTimeMinutes = int(min[0])
+	hrs := readNextBytes(conn, 1)
+	deviceData.UTCTimeHours = int(hrs[0])
 
 	// UTC date – 4 bytes (day, month, year)
-	day, _ := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
-	deviceData.UTCTimeDay = int(day)
-	b := readNextBytes(conn, 1)
-	month, size := binary.Varint(b)
-	fmt.Println(month, size)
-	fmt.Println(b[0])
-	deviceData.UTCTimeMonth = int(month)
+	day := readNextBytes(conn, 1)
+	deviceData.UTCTimeDay = int(day[0])
+
+	mon := readNextBytes(conn, 1)
+	deviceData.UTCTimeMonth = int(mon[0])
 
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
 
