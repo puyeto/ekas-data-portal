@@ -58,15 +58,7 @@ func handleRequest(conn net.Conn) {
 	deviceData.SystemMessage = int(sm)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 
-	countries := readNextBytes(conn, 2)
-	space := []byte{'\\'}
-	splitExample := bytes.Split(countries, space)
-	fmt.Printf("\nSplit split %q on a single space:", countries)
-	for index, element := range splitExample {
-		fmt.Printf("\n%d => %q", index, element)
-	}
-
-	deviceData.CommunicationControlField = 1
+	readNextBytes(conn, 2)	
 
 	mn, err := binary.ReadVarint(bytes.NewBuffer(readNextBytes(conn, 1)))
 	if err != nil {
@@ -223,6 +215,6 @@ func readInt32(data []byte) (ret int32) {
 	if err != nil {
 		fmt.Println("binary.Read failed:", err)
 	}
-	fmt.Print(ret)
+	fmt.Print("ret => ", ret)
     return ret
 }
