@@ -182,7 +182,7 @@ func handleRequest(conn net.Conn) {
 	b := readNextBytes(conn, 1)
 	month, size := binary.Varint(b)
 	fmt.Println(month, size)
-	fmt.Println(readInt32(b))
+	fmt.Println(b[0])
 	deviceData.UTCTimeMonth = int(month)
 
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
