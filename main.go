@@ -218,7 +218,11 @@ func readNextBytes(conn net.Conn, number int) []byte {
 }
 
 func readInt32(data []byte) (ret int32) {
-    buf := bytes.NewBuffer(data)
-    binary.Read(buf, binary.LittleEndian, &ret)
+	buf := bytes.NewReader(data)
+	err := binary.Read(buf, binary.LittleEndian, &ret)
+	if err != nil {
+		fmt.Println("binary.Read failed:", err)
+	}
+	fmt.Print(ret)
     return ret
 }
