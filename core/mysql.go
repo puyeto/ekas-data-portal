@@ -3,9 +3,11 @@ package core
 import (
 	"database/sql"
 
+	// ...
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// DBConnect ...
 func DBConnect() (db *sql.DB) {
 	// Open up our database connection.
 	// I've set up a database on my local machine using phpmyadmin.
@@ -18,8 +20,8 @@ func DBConnect() (db *sql.DB) {
 	}
 
 	// defer the close till after the main function has finished
-    // executing
-    defer db.Close()
+	// executing
+	defer db.Close()
 
 	return db
 }

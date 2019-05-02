@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"time"
 
 	"github.com/ekas-data-portal/models"
 )
 
-// Handles incoming requests.
+// HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
 
@@ -158,10 +159,11 @@ func readInt32(data []byte) (ret int32) {
 	return ret
 }
 
-// Save data to db
-func saveData(m models.DeviceData) {
-
+//SaveData Save data to db
+func SaveData(m models.DeviceData) {
 	db := DBConnect()
+
+	dataDate := time.Date(m.UTCTimeYear, m.UTCTimeMonth, m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds)
 
 	// perform a db.Query insert
 	insert, err := db.Query("INSERT INTO test VALUES ( 2, 'TEST' )")
