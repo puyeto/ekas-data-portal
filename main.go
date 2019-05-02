@@ -158,10 +158,10 @@ func handleRequest(conn net.Conn) {
 	deviceData.Longitude = readInt32(readNextBytes(conn, 4))
 	//  Latitude – 4 bytes
 	// deviceData.Latitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Longitude = readInt32(readNextBytes(conn, 4))
+	deviceData.Latitude = readInt32(readNextBytes(conn, 4))
 	// Altitude
 	// deviceData.Altitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Longitude = readInt32(readNextBytes(conn, 4))
+	deviceData.Altitude = readInt32(readNextBytes(conn, 4))
 	// Ground speed – 4 bytes
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 
