@@ -66,7 +66,6 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Do something thats keeps the CPU buys for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-			fmt.Println(clientJob.DeviceData)
 			core.SaveData(clientJob.DeviceData)
 		// }
 

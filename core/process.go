@@ -162,6 +162,8 @@ func readInt32(data []byte) (ret int32) {
 //SaveData Save data to db
 func SaveData(m models.DeviceData) {
 
+	fmt.Println(m)
+
 	tx, _ := DBCONN.Begin()
 	defer tx.Rollback()
 
