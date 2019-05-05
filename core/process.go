@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"time"
 
 	"github.com/ekas-data-portal/models"
 )
@@ -160,18 +161,21 @@ func readInt32(data []byte) (ret int32) {
 
 //SaveData Save data to db
 func SaveData(m models.DeviceData) {
-	db := DBConnect()
 
-	// dataDate := time.Date(m.UTCTimeYear, m.UTCTimeMonth, m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds)
+	tx, _ := DBCONN.Begin()
+	defer tx.Rollback()
 
+	strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
+	t, _ := time.Parse(time.RFC3339, strDate)
 	// perform a db.Query insert
-	insert, err := db.Query("INSERT INTO test VALUES ( 2, 'TEST' )")
+	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, longitude, latitude, altitude, satellites, hardware_version, software_version) "
+	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+	
+	stmt, _ := tx.Prepare(query)
 
-	// if there is an error inserting, handle it
-	if err != nil {
-		panic(err.Error())
-	}
-	// be careful deferring Queries if you are using transactions
-	defer insert.Close()
+	defer stmt.Close()
+	stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion, m.SoftwareVersion)
+	
 
+	tx.Commit()
 }

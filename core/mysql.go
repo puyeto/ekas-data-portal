@@ -2,26 +2,44 @@ package core
 
 import (
 	"database/sql"
+	"strconv"
+	"log"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// DBConnect ...
-func DBConnect() (db *sql.DB) {
-	// Open up our database connection.
-	// I've set up a database on my local machine using phpmyadmin.
-	// The database is called testDb
-	db, err := sql.Open("mysql", "username:password@tcp(127.0.0.1:3306)/test")
+var (
+	// DBCONN ...	
+	DBCONN *sql.DB
+	mysqlUsername = "root"
+	mysqlPassword = ""
+	mysqlIP = "" 
+	mysqlDB = "ekas_portal"
+	mysqlPort  = 3306
+)
 
-	// if there is an error opening the connection, handle it
+const (
+	//Keeping a connection idle for a long time can cause problems
+	//http://go-database-sql.org/connection-pool.html
+	maxIdleConns = 0
+
+	driverName = "mysql"
+)
+
+// DBconnect Initialise a database connection
+func DBconnect() *sql.DB {
+
+	//Construct the host
+	//Note: Values are set using a config file
+	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + mysqlDB + "?parseTime=true"
+
+	db, err := sql.Open(driverName, mysqlHost)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
 
-	// defer the close till after the main function has finished
-	// executing
-	defer db.Close()
+	db.SetMaxIdleConns(maxIdleConns)
 
 	return db
 }

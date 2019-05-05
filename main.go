@@ -16,6 +16,13 @@ const (
 	CONN_TYPE = "tcp"
 )
 
+func init() {
+	//Open the database once when the system loads
+	//Do not reopen unless required as Go manages this database from here on
+	//Do NOT CLOSE the db as it is ment to be long lasting
+	core.DBCONN = core.DBconnect()
+}
+
 func main() {
 
 	clientJobs := make(chan models.ClientJob)
