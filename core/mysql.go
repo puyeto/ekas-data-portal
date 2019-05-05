@@ -13,8 +13,8 @@ var (
 	// DBCONN ...	
 	DBCONN *sql.DB
 	mysqlUsername = "root"
-	mysqlPassword = ""
-	mysqlIP = "" 
+	mysqlPassword = "safcom2012"
+	mysqlIP = "35.184.65.222" 
 	mysqlDB = "ekas_portal"
 	mysqlPort  = 3306
 )
