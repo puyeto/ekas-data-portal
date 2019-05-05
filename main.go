@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"time"
+	// "time"
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
@@ -65,10 +65,10 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		clientJob := <-clientJobs
 
 		// Do something thats keeps the CPU buys for a whole second.
-		for start := time.Now(); time.Now().Sub(start) < time.Second; {
-			fmt.Println(clientJob)
+		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
+			fmt.Println(clientJob.DeviceData)
 			core.SaveData(clientJob.DeviceData)
-		}
+		// }
 
 		// Send back the response.
 		clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
