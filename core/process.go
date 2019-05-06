@@ -174,7 +174,7 @@ func SaveData(m models.DeviceData) {
 	}
 	defer tx.Rollback()
 
-	strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
+	strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) // + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
 	t, err:= time.Parse(time.RFC3339, strDate)
 	if err != nil {
 		fmt.Println(err)
