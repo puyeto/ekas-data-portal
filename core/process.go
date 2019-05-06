@@ -163,15 +163,25 @@ func readInt32(data []byte) (ret int32) {
 func SaveData(m models.DeviceData) {
 
 	fmt.Println(m)
+	err := DBCONN.Ping()
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	tx, _ := DBCONN.Begin()
+	tx, err := DBCONN.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer tx.Rollback()
 
 	strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
-	t, _ := time.Parse(time.RFC3339, strDate)
+	t, err:= time.Parse(time.RFC3339, strDate)
+	if err != nil {
+		fmt.Println(err)
+	}
 	// perform a db.Query insert
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, longitude, latitude, altitude, satellites, hardware_version, software_version) "
-	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?)" 
 	
 	stmt, err := tx.Prepare(query)
 	if err != nil {
@@ -182,7 +192,7 @@ func SaveData(m models.DeviceData) {
 	_, err = stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion, m.SoftwareVersion)
 	
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 	tx.Commit()
 }
