@@ -91,10 +91,10 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 
 	// Longitude – 4 bytes
 	// deviceData.Longitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Longitude = readInt32(readNextBytes(conn, 4)) / 10000000
+	deviceData.Longitude = float64((readInt32(readNextBytes(conn, 4))) / 10000000)
 	//  Latitude – 4 bytes
 	// deviceData.Latitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Latitude = readInt32(readNextBytes(conn, 4)) / 10000000
+	deviceData.Latitude = float64((readInt32(readNextBytes(conn, 4))) / 10000000)
 	// Altitude
 	// deviceData.Altitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 	deviceData.Altitude = readInt32(readNextBytes(conn, 4))
