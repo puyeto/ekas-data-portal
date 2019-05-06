@@ -173,11 +173,16 @@ func SaveData(m models.DeviceData) {
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, longitude, latitude, altitude, satellites, hardware_version, software_version) "
 	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?)"
 	
-	stmt, _ := tx.Prepare(query)
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	defer stmt.Close()
-	stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion, m.SoftwareVersion)
+	_, err = stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion, m.SoftwareVersion)
 	
-
+	if err != nil {
+		panic(err.Error())
+	}
 	tx.Commit()
 }
