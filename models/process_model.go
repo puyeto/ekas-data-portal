@@ -36,8 +36,8 @@ type DeviceData struct {
 	Mode1                          uint16 `json:"mode_1,omitempty"`
 	Mode2                          uint16 `json:"mode_2,omitempty"`
 	NoOfSatellitesUsed             int    `json:"no_of_satellites_used,omitempty"` // 1 byte
-	Longitude                      float64  `json:"longitude,omitempty"`             // 4 byte
-	Latitude                       float64  `json:"latitude,omitempty"`              // 4 byte
+	Longitude                      int32  `json:"longitude,omitempty"`             // 4 byte
+	Latitude                       int32  `json:"latitude,omitempty"`              // 4 byte
 	Altitude                       int32  `json:"altitude,omitempty"`              // 4 byte
 	GroundSpeed                    uint32 `json:"ground_speed,omitempty"`          // 4 byte
 	SpeedDirection                 int    `json:"speed_direction,omitempty"`       // 2 byte

@@ -91,10 +91,10 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 
 	// Longitude – 4 bytes
 	// deviceData.Longitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Longitude = float64((readInt32(readNextBytes(conn, 4))) / 10000000)
+	deviceData.Longitude = readInt32(readNextBytes(conn, 4))
 	//  Latitude – 4 bytes
 	// deviceData.Latitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Latitude = float64((readInt32(readNextBytes(conn, 4))) / 10000000)
+	deviceData.Latitude = readInt32(readNextBytes(conn, 4))
 	// Altitude
 	// deviceData.Altitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
 	deviceData.Altitude = readInt32(readNextBytes(conn, 4))
@@ -174,8 +174,9 @@ func SaveData(m models.DeviceData) {
 	}
 	defer tx.Rollback()
 
-	strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) // + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
-	t, err:= time.Parse(time.RFC3339, strDate)
+	// strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) // + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
+	t := time.Date(m.UTCTimeYear, time.Month(m.UTCTimeMonth), m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds, 0, time.UTC)
+	// t, err:= time.Parse(time.RFC3339, strDate)
 	if err != nil {
 		fmt.Println(err)
 	}
