@@ -34,7 +34,7 @@ func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
 		return
 	}
 
-	fmt.Println(time.Now(), " data ", string(b))
+	// fmt.Println(time.Now(), " data ", string(b))
 
 	byteReader := bytes.NewReader(b)
 
@@ -45,7 +45,7 @@ func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
 		fmt.Println("data not valid")
 	}
 
-	byteReader.Seek(6, 0)
+	byteReader.Seek(5, 0)
 	did := make([]byte, 4)
     byteReader.Read(did)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
