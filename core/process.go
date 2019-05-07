@@ -14,12 +14,18 @@ import (
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var byteSize = 70
-	totalBytes, _ := readNextBytes(conn, 1024)
+	totalBytes, res := readNextBytes(conn, 1024)
 	if totalBytes == 700 {
+		byteRead := bytes.NewReader(res)
 		for i := 0; i < (totalBytes / byteSize); i++ {
-			b1 := make([]byte, byteSize)
-			n1, _ := conn.Read(b1)
-			processRequest(conn, b1, n1, clientJobs, i)
+			if i > 0 {
+				byteRead.Seek(int64((byteSize * i) - 1), 0)
+			}
+
+			mb := make([]byte, byteSize)
+			n1, _ := byteRead.Read(mb)
+			
+			processRequest(conn, mb, n1, clientJobs, i)
 		}
 	}
 }
