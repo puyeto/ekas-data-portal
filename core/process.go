@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"time"
+	"bufio"
 
 	"github.com/ekas-data-portal/models"
 )
@@ -14,6 +15,11 @@ import (
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
+	var n int
+
+	bufConn := bufio.NewReader(conn)
+	n = bufConn.Buffered()
+    fmt.Println("Size of Buffered Data ", n)
 
 	deviceData.SystemCode = string(readNextBytes(conn, 4))
 	if deviceData.SystemCode != "MCPG" {
