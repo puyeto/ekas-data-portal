@@ -19,14 +19,28 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 		for i := 0; i < (totalBytes / byteSize); i++ {
 			b1 := make([]byte, byteSize)
 			n1, _ := conn.Read(b1)
-			fmt.Printf(time.Now().String(), "%d bytes: %s\n", n1, string(b1))
+			fmt.Println(time.Now().String(), " ", n1, string(b1))
+			processRequest(b1, clientJobs)
 		}
-		// processReques(conn, clientJobs)
 	}
 }
 
-func processReques(conn net.Conn, clientJobs chan models.ClientJob) {
+func processRequest(b []byte, clientJobs chan models.ClientJob) {
+	var deviceData models.DeviceData
 
+	scode := b[:4]
+	deviceData.SystemCode = string(scode)
+	if deviceData.SystemCode != "MCPG" {
+		fmt.Println("data not valid")
+	}
+
+	sm := b[5]
+	deviceData.SystemMessage = int(sm)
+
+	did := b[6:9]
+	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
+
+	fmt.Println(deviceData)
 }
 
 func handleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
@@ -219,4 +233,10 @@ func SaveData(m models.DeviceData) {
 		fmt.Println(err)
 	}
 	tx.Commit()
+}
+
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
 }
