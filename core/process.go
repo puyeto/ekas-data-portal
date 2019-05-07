@@ -19,7 +19,7 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 		byteRead := bytes.NewReader(res)
 		for i := 0; i < (totalBytes / byteSize); i++ {
 			if i > 0 {
-				byteRead.Seek(int64((byteSize * i) - 1), 0)
+				byteRead.Seek(int64((byteSize * i)), 0)
 			}
 
 			mb := make([]byte, byteSize)
