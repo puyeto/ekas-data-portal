@@ -19,14 +19,12 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 		for i := 0; i < (totalBytes / byteSize); i++ {
 			b1 := make([]byte, byteSize)
 			n1, _ := conn.Read(b1)
-			processRequest(b1, n1,  clientJobs)
+			processRequest(conn, b1, n1, clientJobs)
 		}
 	}
-
-	conn.Close()
 }
 
-func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
+func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
 
 	if byteLen != 70 {
@@ -119,6 +117,8 @@ func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
 	fmt.Println(deviceData)
+	clientJobs <- models.ClientJob{deviceData, conn}
+	conn.Close()
 	
 }
 
