@@ -20,7 +20,7 @@ ENV GO_ENV production
 ENTRYPOINT /go/bin/ekas-data-portal
 
 #Expose the port specific to the ekas API Application.
-EXPOSE 8082
+EXPOSE 8083
 
 
 # FROM golang as builder
