@@ -16,7 +16,7 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var byteSize = 70
 	totalBytes, _ := readNextBytes(conn, 1024)
 	if totalBytes == 700 {
-		for i := 0; i < (totalBytes / byteSize) - 1; i++ {
+		for i := 0; i < (totalBytes / byteSize); i++ {
 			b1 := make([]byte, byteSize)
 			n1, _ := conn.Read(b1)
 			processRequest(conn, b1, n1, clientJobs)
@@ -28,7 +28,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	var deviceData models.DeviceData
 
 	if byteLen != 70 {
-		fmt.Println("Invalid Byte Length")
+		fmt.Println("Invalid Byte Length = ", byteLen)
 		return
 	}
 
