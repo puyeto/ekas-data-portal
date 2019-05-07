@@ -7,64 +7,66 @@ import (
 	"io"
 	"net"
 	"time"
-	"bufio"
 
 	"github.com/ekas-data-portal/models"
 )
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
+	totalBytes, _ := readNextBytes(conn, 1024)
+	fmt.Println("total size ", totalBytes)
+}
+
+func HandleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
-	var n int
 
-	bufConn := bufio.NewReader(conn)
-	n = bufConn.Buffered()
-    fmt.Println("Size of Buffered Data ", n)
-
-	deviceData.SystemCode = string(readNextBytes(conn, 4))
+	_, scode := readNextBytes(conn, 4)
+	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
 		fmt.Println("data not valid")
 	}
 
-	sm := readNextBytes(conn, 1)
+	_, sm := readNextBytes(conn, 1)
 	deviceData.SystemMessage = int(sm[0])
-	deviceData.DeviceID = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
+
+	_, did := readNextBytes(conn, 4)
+	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
 
 	readNextBytes(conn, 2)
 
-	mn := readNextBytes(conn, 1)
+	_, mn := readNextBytes(conn, 1)
 	deviceData.MessageNumerator = int(mn[0])
 
 	// HardwareVersion
-	hv := readNextBytes(conn, 1)
+	_, hv := readNextBytes(conn, 1)
 	deviceData.HardwareVersion = int(hv[0])
 
 	// SoftwareVersion
-	sv := readNextBytes(conn, 1)
+	_, sv := readNextBytes(conn, 1)
 	deviceData.SoftwareVersion = int(sv[0])
 
 	// ProtocolVersionIdentifier
-	pvi := readNextBytes(conn, 1)
+	_, pvi := readNextBytes(conn, 1)
 	deviceData.ProtocolVersionIdentifier = int(pvi[0])
 
 	// Status
-	Status := readNextBytes(conn, 1)
+	_, Status := readNextBytes(conn, 1)
 	deviceData.Status = int(Status[0])
 
 	// ConfigurationFlags
-	cf := readNextBytes(conn, 1)
+	_, cf := readNextBytes(conn, 1)
 	deviceData.ConfigurationFlags = int(cf[0])
 
 	// TransmissionReasonSpecificData
-	trsd := readNextBytes(conn, 1)
+	_, trsd := readNextBytes(conn, 1)
 	deviceData.TransmissionReasonSpecificData = int(trsd[0])
 
 	// TransmissionReason
-	tr := readNextBytes(conn, 1)
+	_, tr := readNextBytes(conn, 1)
 	deviceData.TransmissionReason = int(tr[0])
 
 	// ModeOfOperation
-	moo := readNextBytes(conn, 1)
+	_, moo := readNextBytes(conn, 1)
 	deviceData.ModeOfOperation = int(moo[0])
 
 	// IOStatus
@@ -92,40 +94,43 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	readNextBytes(conn, 1)
 
 	// Number of satellites used (from GPS) – 1 byte
-	satellites := readNextBytes(conn, 1)
+	_, satellites := readNextBytes(conn, 1)
 	deviceData.NoOfSatellitesUsed = int(satellites[0])
 
 	// Longitude – 4 bytes
-	// deviceData.Longitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Longitude = readInt32(readNextBytes(conn, 4))
+	_, long := readNextBytes(conn, 4)
+	deviceData.Longitude = readInt32(long)
 	//  Latitude – 4 bytes
-	// deviceData.Latitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Latitude = readInt32(readNextBytes(conn, 4))
+	_, lat := readNextBytes(conn, 4)
+	deviceData.Latitude = readInt32(lat)
 	// Altitude
-	// deviceData.Altitude = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
-	deviceData.Altitude = readInt32(readNextBytes(conn, 4))
+	_, alt := readNextBytes(conn, 4)
+	deviceData.Altitude = readInt32(alt)
 	// Ground speed – 4 bytes
-	deviceData.GroundSpeed = binary.LittleEndian.Uint32(readNextBytes(conn, 4))
+	_, gspeed := readNextBytes(conn, 4)
+	deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
 
 	// Speed direction – 2 bytes
-	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
+	_, speedd := readNextBytes(conn, 2)
+	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(speedd))
 
 	// UTC time – 3 bytes (hours, minutes, seconds)
-	sec := readNextBytes(conn, 1)
+	_, sec := readNextBytes(conn, 1)
 	deviceData.UTCTimeSeconds = int(sec[0])
-	min := readNextBytes(conn, 1)
+	_, min := readNextBytes(conn, 1)
 	deviceData.UTCTimeMinutes = int(min[0])
-	hrs := readNextBytes(conn, 1)
+	_, hrs := readNextBytes(conn, 1)
 	deviceData.UTCTimeHours = int(hrs[0])
 
 	// UTC date – 4 bytes (day, month, year)
-	day := readNextBytes(conn, 1)
+	_, day := readNextBytes(conn, 1)
 	deviceData.UTCTimeDay = int(day[0])
 
-	mon := readNextBytes(conn, 1)
+	_, mon := readNextBytes(conn, 1)
 	deviceData.UTCTimeMonth = int(mon[0])
 
-	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(readNextBytes(conn, 2)))
+	_, yr := readNextBytes(conn, 2)
+	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
 	// Send a response back to person contacting us.
 	// conn.Write([]byte("Message received."))
@@ -141,7 +146,7 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 }
 
-func readNextBytes(conn net.Conn, number int) []byte {
+func readNextBytes(conn net.Conn, number int) (int, []byte) {
 	bytes := make([]byte, number)
 
 	reqLen, err := conn.Read(bytes)
@@ -152,7 +157,7 @@ func readNextBytes(conn net.Conn, number int) []byte {
 		fmt.Println("Error reading:", err.Error(), reqLen)
 	}
 
-	return bytes
+	return reqLen, bytes
 }
 
 func readInt32(data []byte) (ret int32) {
