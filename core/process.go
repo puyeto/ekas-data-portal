@@ -36,10 +36,10 @@ func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
 
 	byteReader := bytes.NewReader(b)
 
-	byteStorage := make([]byte, 70)
-	n, err := byteReader.ReadAt(byteStorage, 4)
-
-	fmt.Println("Storage:", string(byteStorage[:n]), err) // Storage: .} EOF
+	b1 := make([]byte, 5)
+    n1, err := byteReader.Read(b1)
+    check(err)
+    fmt.Printf("%d bytes: %s\n", n1, string(b1))
 
 	// _, scode := readNextBytes(b, 4)
 	// deviceData.SystemCode = string(scode)
