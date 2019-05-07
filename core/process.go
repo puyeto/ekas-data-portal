@@ -13,11 +13,23 @@ import (
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
+	var byteSize = 70
 	totalBytes, _ := readNextBytes(conn, 1024)
-	fmt.Println("total size ", totalBytes)
+	if totalBytes == 700 {
+		for i := 0; i < (totalBytes / byteSize); i++ {
+			b1 := make([]byte, byteSize)
+			n1, _ := conn.Read(b1)
+			fmt.Printf(time.Now().String(), "%d bytes: %s\n", n1, string(b1))
+		}
+		// processReques(conn, clientJobs)
+	}
 }
 
-func HandleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
+func processReques(conn net.Conn, clientJobs chan models.ClientJob) {
+
+}
+
+func handleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
 
 	_, scode := readNextBytes(conn, 4)
