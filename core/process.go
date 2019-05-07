@@ -28,15 +28,6 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 func processRequest(b []byte, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
 
-	scode := b[:4]
-	deviceData.SystemCode = string(scode)
-	if deviceData.SystemCode != "MCPG" {
-		fmt.Println("data not valid")
-	}
-
-	sm := b[5]
-	deviceData.SystemMessage = int(sm)
-
 	did := b[6:9]
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
 
