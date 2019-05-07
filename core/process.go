@@ -35,6 +35,8 @@ func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
 		return
 	}
 
+	fmt.Println(time.Now(), " data ", string(b))
+
 	scode := b[4]
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
