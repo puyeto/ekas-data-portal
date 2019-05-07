@@ -22,9 +22,6 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 			processRequest(b1, n1,  clientJobs)
 		}
 	}
-	
-	// Close connection.
-	conn.Close()
 }
 
 func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
@@ -37,16 +34,24 @@ func processRequest(b []byte, byteLen int, clientJobs chan models.ClientJob) {
 
 	fmt.Println(time.Now(), " data ", string(b[:]))
 
-	scode := b[4]
-	deviceData.SystemCode = string(scode)
-	if deviceData.SystemCode != "MCPG" {
-		fmt.Println("data not valid")
-	}
+	byteReader := bytes.NewReader(b)
+
+	byteStorage := make([]byte, 70)
+	n, err := byteReader.ReadAt(byteStorage, 4)
+
+	fmt.Println("Storage:", string(byteStorage[:n]), err) // Storage: .} EOF
+
+	// _, scode := readNextBytes(b, 4)
+	// deviceData.SystemCode = string(scode)
+	// if deviceData.SystemCode != "MCPG" {
+	// 	fmt.Println("data not valid")
+	// }
 
 	// did := b[6:9]
 	// deviceData.DeviceID = binary.LittleEndian.Uint32(did)
 
 	fmt.Println(deviceData)
+	
 }
 
 func handleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
