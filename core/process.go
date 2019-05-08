@@ -104,7 +104,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	byteReader.Seek(64, 0)
 	hrs := make([]byte, 1)
 	byteReader.Read(hrs)
-	fmt.Println(int(hrs[0]))
 	deviceData.UTCTimeHours = int(hrs[0])
 
 	// UTC date – 4 bytes (day, month, year)
@@ -303,6 +302,10 @@ func SaveData(m models.DeviceData) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	fmt.Println(m.UTCTimeHours, " ", t)
+
+
 	// perform a db.Query insert
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, longitude, latitude, altitude, satellites, hardware_version, software_version) "
 	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?)" 
