@@ -104,6 +104,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	byteReader.Seek(64, 0)
 	hrs := make([]byte, 1)
 	byteReader.Read(hrs)
+	fmt.Println(int(hrs[0]))
 	deviceData.UTCTimeHours = int(hrs[0])
 
 	// UTC date – 4 bytes (day, month, year)
