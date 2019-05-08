@@ -15,7 +15,7 @@ import (
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var byteSize = 70
 	totalBytes, res := readNextBytes(conn, 1024)
-	if totalBytes == 700 {
+	if totalBytes > 0 {
 		byteRead := bytes.NewReader(res)
 		for i := 0; i < (totalBytes / byteSize); i++ {
 			if i > 0 {
