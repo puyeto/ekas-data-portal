@@ -320,7 +320,7 @@ func SaveData(m models.DeviceData) {
 
 	// perform a db.Query insert
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
-	query += " longitude, latitude, altitude, satellites, hardware_version, software_version "
+	query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
 	query += " transmission_reason, transmission_reason_specific_data) "
 	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)" 
 	
