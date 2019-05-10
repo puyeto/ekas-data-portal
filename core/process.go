@@ -67,11 +67,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		specific := make([]byte, 1)
 		byteReader.Read(specific)
 
-		var a = int8(specific[0])
-		fmt.Printf("%08b\n", a)
-		fmt.Printf("%08b\n", a&1<<1)
-		fmt.Printf("%08b\n", a&1<<2)
-		fmt.Printf("%08b\n", a&1<<3)
+		var a = uint(specific[0])
+		failsafe := isKthBitSet(a, 1)
+		fmt.Println(failsafe)
 
 		trsd = int(a << 1)
 	}
@@ -149,6 +147,15 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	clientJobs <- models.ClientJob{deviceData, conn}
 	conn.Close()
 
+}
+
+func isKthBitSet(n uint, k uint) bool {
+	if n&(1<<(k-1)) == 1 {
+		fmt.Println("SET")
+		return true
+	}
+	fmt.Println("NOT SET")
+	return false
 }
 
 func handleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
