@@ -67,15 +67,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		specific := make([]byte, 1)
 		byteReader.Read(specific)
 
-		var a = uint(specific[0])
+		var a = int(specific[0])
 		fmt.Println(a)
-		failsafe2 := isKthBitSet(a, 2)
-		fmt.Println(failsafe2)
-		failsafe3 := isKthBitSet(a, 3)
-		fmt.Println(failsafe3)
-		failsafe4 := isKthBitSet(a, 4)
-		fmt.Println(failsafe4)
-
+		failsafe := hasBit(a, 2)
+		fmt.Println(failsafe)
 		trsd = int(a)
 	}
 	deviceData.TransmissionReasonSpecificData = trsd
@@ -161,6 +156,11 @@ func isKthBitSet(n uint, k uint) bool {
 	}
 	fmt.Println("NOT SET")
 	return false
+}
+
+func hasBit(n int, pos uint) bool {
+	val := n & (1 << pos)
+	return (val > 0)
 }
 
 func handleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
