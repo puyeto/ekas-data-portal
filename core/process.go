@@ -62,17 +62,16 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 	// Transmission Reason Specific data – 1 byte
 	trsd := 0
-	if deviceData.TransmissionReason == 255 {
-		byteReader.Seek(17, 0)
-		specific := make([]byte, 1)
-		byteReader.Read(specific)
+	// if deviceData.TransmissionReason == 255 {
+	byteReader.Seek(17, 0)
+	specific := make([]byte, 1)
+	byteReader.Read(specific)
 
-		var a = int(specific[0])
-		fmt.Println(a)
-		failsafe := hasBit(a, 1)
-		fmt.Println(failsafe)
-		trsd = int(a)
-	}
+	var a = int(specific[0])
+	failsafe := hasBit(a, 1)
+	fmt.Println(failsafe)
+	trsd = int(a)
+	//}
 	deviceData.TransmissionReasonSpecificData = trsd
 
 	// Number of satellites used (from GPS) – 1 byte
@@ -149,19 +148,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 }
 
-func isKthBitSet(n uint, k uint) bool {
-	if n&(1<<(k-1)) == 1 {
-		fmt.Println("SET")
-		return true
-	}
-	fmt.Println("NOT SET")
-	return false
-}
-
 func hasBit(n int, pos uint) bool {
 	val := n & (1 << pos)
-	val2 := 2 & (1 << 1)
-	fmt.Println(val2)
 	return (val > 0)
 }
 
