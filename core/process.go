@@ -24,7 +24,7 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 
 			mb := make([]byte, byteSize)
 			n1, _ := byteRead.Read(mb)
-			
+
 			processRequest(conn, mb, n1, clientJobs, i)
 		}
 	}
@@ -43,7 +43,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	byteReader := bytes.NewReader(b)
 
 	scode := make([]byte, 4)
-    byteReader.Read(scode)
+	byteReader.Read(scode)
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
 		fmt.Println("data not valid")
@@ -51,20 +51,31 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 	byteReader.Seek(5, 0)
 	did := make([]byte, 4)
-    byteReader.Read(did)
+	byteReader.Read(did)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
-
-	// Transmission Reason Specific data – 1 byte
-	byteReader.Seek(17, 0)
-	specific := make([]byte, 1)
-	byteReader.Read(specific)
-	deviceData.TransmissionReason = int(specific[0])
 
 	// Transmission Reason – 1 byte
 	byteReader.Seek(18, 0)
 	reason := make([]byte, 1)
 	byteReader.Read(reason)
 	deviceData.TransmissionReason = int(reason[0])
+
+	// Transmission Reason Specific data – 1 byte
+	trsd := 0
+	if deviceData.TransmissionReason == 255 {
+		byteReader.Seek(17, 0)
+		specific := make([]byte, 1)
+		byteReader.Read(specific)
+
+		var a = int8(specific[0])
+		fmt.Printf("%08b\n", a)
+		fmt.Printf("%08b\n", a<<1)
+		fmt.Printf("%08b\n", a<<2)
+		fmt.Printf("%08b\n", a<<3)
+
+		trsd = int(a << 1)
+	}
+	deviceData.TransmissionReasonSpecificData = trsd
 
 	// Number of satellites used (from GPS) – 1 byte
 	byteReader.Seek(43, 0)
@@ -137,7 +148,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	fmt.Println(deviceData)
 	clientJobs <- models.ClientJob{deviceData, conn}
 	conn.Close()
-	
+
 }
 
 func handleRequest2(conn net.Conn, clientJobs chan models.ClientJob) {
@@ -315,15 +326,12 @@ func SaveData(m models.DeviceData) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(m.UTCTimeHours, " ", t)
-
-
 	// perform a db.Query insert
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
 	query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
 	query += " transmission_reason, transmission_reason_specific_data) "
-	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)" 
-	
+	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
 	stmt, err := tx.Prepare(query)
 	if err != nil {
 		panic(err.Error())
@@ -331,7 +339,7 @@ func SaveData(m models.DeviceData) {
 
 	defer stmt.Close()
 	_, err = stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion, m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData)
-	
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -339,7 +347,7 @@ func SaveData(m models.DeviceData) {
 }
 
 func check(e error) {
-    if e != nil {
-        panic(e)
-    }
+	if e != nil {
+		panic(e)
+	}
 }
