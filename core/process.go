@@ -62,26 +62,22 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 	// Transmission Reason Specific data – 1 byte
 	trsd := 0
-	// if deviceData.TransmissionReason == 255 {
-	byteReader.Seek(17, 0)
-	specific := make([]byte, 1)
-	byteReader.Read(specific)
+	if deviceData.TransmissionReason == 255 {
+		byteReader.Seek(17, 0)
+		specific := make([]byte, 1)
+		byteReader.Read(specific)
 
-	var a = uint(specific[0])
-	var ba byte = specific[0]
-	fmt.Printf("%08b\n", ba)
+		var a = uint(specific[0])
+		fmt.Println(a)
+		failsafe2 := isKthBitSet(a, 2)
+		fmt.Println(failsafe2)
+		failsafe3 := isKthBitSet(a, 3)
+		fmt.Println(failsafe3)
+		failsafe4 := isKthBitSet(a, 4)
+		fmt.Println(failsafe4)
 
-	failsafe := isKthBitSet(a, 1)
-	fmt.Println(failsafe)
-	failsafe2 := isKthBitSet(a, 2)
-	fmt.Println(failsafe2)
-	failsafe3 := isKthBitSet(a, 3)
-	fmt.Println(failsafe3)
-	failsafe4 := isKthBitSet(a, 4)
-	fmt.Println(failsafe4)
-
-	trsd = int(a)
-	// }
+		trsd = int(a)
+	}
 	deviceData.TransmissionReasonSpecificData = trsd
 
 	// Number of satellites used (from GPS) – 1 byte
