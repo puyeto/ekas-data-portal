@@ -68,12 +68,17 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		byteReader.Read(specific)
 
 		var a = uint(specific[0])
+		fmt.Println(a)
 		failsafe := isKthBitSet(a, 1)
 		fmt.Println(failsafe)
 		failsafe2 := isKthBitSet(a, 2)
-		fmt.Println(failsafe, failsafe2)
+		fmt.Println(failsafe2)
+		failsafe3 := isKthBitSet(a, 3)
+		fmt.Println(failsafe3)
+		failsafe4 := isKthBitSet(a, 4)
+		fmt.Println(failsafe4)
 
-		trsd = int(a << 1)
+		trsd = int(a)
 	}
 	deviceData.TransmissionReasonSpecificData = trsd
 
