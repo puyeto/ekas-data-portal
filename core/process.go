@@ -68,7 +68,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	byteReader.Read(specific)
 
 	var a = uint(specific[0])
-	fmt.Printf("%08b\n", int8(specific[0]))
+	var ba byte = specific[0]
+	fmt.Printf("%08b\n", ba)
 
 	failsafe := isKthBitSet(a, 1)
 	fmt.Println(failsafe)
