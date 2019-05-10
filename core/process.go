@@ -68,8 +68,12 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	byteReader.Read(specific)
 
 	var a = int(specific[0])
+	// Failsafe
 	failsafe := hasBit(a, 1)
 	fmt.Println(failsafe)
+	// main power disconnected
+	disconnect := hasBit(a, 2)
+	fmt.Println(disconnect)
 	trsd = int(a)
 	//}
 	deviceData.TransmissionReasonSpecificData = trsd
