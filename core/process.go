@@ -69,9 +69,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 		var a = int8(specific[0])
 		fmt.Printf("%08b\n", a)
-		fmt.Printf("%08b\n", a<<1)
-		fmt.Printf("%08b\n", a<<2)
-		fmt.Printf("%08b\n", a<<3)
+		fmt.Printf("%08b\n", a&1<<1)
+		fmt.Printf("%08b\n", a&1<<2)
+		fmt.Printf("%08b\n", a&1<<3)
 
 		trsd = int(a << 1)
 	}
