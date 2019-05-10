@@ -70,6 +70,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		var a = uint(specific[0])
 		failsafe := isKthBitSet(a, 1)
 		fmt.Println(failsafe)
+		failsafe2 := isKthBitSet(a, 2)
+		fmt.Println(failsafe, failsafe2)
 
 		trsd = int(a << 1)
 	}
