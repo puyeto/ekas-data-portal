@@ -69,7 +69,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 		var a = int(specific[0])
 		fmt.Println(a)
-		failsafe := hasBit(a, 2)
+		failsafe := hasBit(a, 1)
 		fmt.Println(failsafe)
 		trsd = int(a)
 	}
@@ -160,6 +160,8 @@ func isKthBitSet(n uint, k uint) bool {
 
 func hasBit(n int, pos uint) bool {
 	val := n & (1 << pos)
+	val2 := 2 & (1 << 1)
+	fmt.Println(val2)
 	return (val > 0)
 }
 
