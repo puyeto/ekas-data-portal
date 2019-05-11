@@ -22,9 +22,11 @@ type DeviceData struct {
 	Status                         int    `json:"status,omitempty"`                           // 1 byte
 	ConfigurationFlags             int    `json:"configuration_flags,omitempty"`              // 2 bytes
 	TransmissionReasonSpecificData int    `json:"transmission_reason_specificData,omitempty"` // 1 byte
-	TransmissionReason             int    `json:"transmission_reason,omitempty"`              // 1 byte
-	ModeOfOperation                int    `json:"mode_of_operation,omitempty"`                // 1 byte
-	IOStatus                       uint16 `json:"io_status,omitempty"`                        // 5 bytes
+	Failsafe                       bool   `json:"failsafe"`
+	Disconnect                     bool   `json:"disconnect"`
+	TransmissionReason             int    `json:"transmission_reason,omitempty"` // 1 byte
+	ModeOfOperation                int    `json:"mode_of_operation,omitempty"`   // 1 byte
+	IOStatus                       uint16 `json:"io_status,omitempty"`           // 5 bytes
 	AnalogInput1Value              uint16 `json:"analog_Input_1_value,omitempty"`
 	AnalogInput1Value1             uint16 `json:"analog_Input_1_value_1,omitempty"`
 	AnalogInput2Value              uint16 `json:"analog_Input_2_value,omitempty"`
