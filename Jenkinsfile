@@ -58,7 +58,7 @@ pipeline {
 
             stage('CLEAN-UP') {
                 steps {
-                    // sh 'docker stop ekas-data-portal-dev'
+                    sh 'docker stop ekas-data-portal-prod'
                     sh 'docker system prune -f'
                     deleteDir()
                 }
