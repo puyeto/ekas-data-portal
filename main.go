@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+
 	// "time"
 
 	"github.com/ekas-data-portal/core"
@@ -21,6 +22,10 @@ func init() {
 	//Do not reopen unless required as Go manages this database from here on
 	//Do NOT CLOSE the db as it is ment to be long lasting
 	core.DBCONN = core.DBconnect()
+	err := core.InitializeRedis()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
@@ -66,7 +71,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Do something thats keeps the CPU buys for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-			core.SaveData(clientJob.DeviceData)
+		core.SaveData(clientJob.DeviceData)
 		// }
 
 		// Send back the response.
