@@ -10,17 +10,17 @@ import (
 
 var (
 	redisClient *redis.Client
-	dockerURL   = "localhost:6379"
+	dockerURL   = "172.17.0.3:6379"
 )
 
 // InitializeRedis ...
 func InitializeRedis() error {
-	if os.Getenv("GO_ENV") == "production" {
-		dockerURL = "172.17.0.3:6379"
+	if os.Getenv("GO_ENV") != "production" {
+		dockerURL = "localhost:6379"
 	}
 
 	redisClient = redis.NewClient(&redis.Options{
-		Addr:       "",
+		Addr:       dockerURL,
 		PoolSize:   100,
 		MaxRetries: 2,
 		Password:   "",
