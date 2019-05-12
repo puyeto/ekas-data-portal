@@ -2,17 +2,25 @@ package core
 
 import (
 	"encoding/json"
+	"os"
 	"time"
 
 	"github.com/go-redis/redis"
 )
 
-var redisClient *redis.Client
+var (
+	redisClient *redis.Client
+	dockerURL   = "localhost:6379"
+)
 
 // InitializeRedis ...
 func InitializeRedis() error {
+	if os.Getenv("GO_ENV") == "production" {
+		dockerURL = "172.17.0.3:6379"
+	}
+
 	redisClient = redis.NewClient(&redis.Options{
-		Addr:       "localhost:6379",
+		Addr:       "",
 		PoolSize:   100,
 		MaxRetries: 2,
 		Password:   "",
