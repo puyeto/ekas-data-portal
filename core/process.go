@@ -182,7 +182,7 @@ func readInt32(data []byte) (ret int32) {
 }
 
 //SaveData Save data to db
-func SaveData(m deviceData) {
+func SaveData(m models.DeviceData) {
 
 	fmt.Println(m)
 	err := DBCONN.Ping()
@@ -224,15 +224,11 @@ func SaveData(m deviceData) {
 	tx.Commit()
 	// log data to redis
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
-		m.setRedisLog(t)
+		setRedisLog(t, m)
 	}
 }
 
-type deviceData struct {
-	*models.DeviceData
-}
-
-func (m *deviceData) setRedisLog(t time.Time) {
+func setRedisLog(t time.Time, m models.DeviceData) {
 	const objectPrefix string = "alert:"
 
 	data := models.AlertsDeviceData{
