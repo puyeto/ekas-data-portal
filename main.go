@@ -24,7 +24,8 @@ func init() {
 	core.DBCONN = core.DBconnect()
 	err := core.InitializeRedis()
 	if err != nil {
-		panic(err)
+		// panic(err)
+		fmt.Println(err)
 	}
 }
 
