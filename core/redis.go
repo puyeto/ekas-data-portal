@@ -10,7 +10,7 @@ import (
 
 var (
 	redisClient *redis.Client
-	dockerURL   = "172.19.0.2:6379"
+	dockerURL   = "localhost:6379"
 )
 
 // InitializeRedis ...
