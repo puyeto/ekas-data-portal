@@ -2,6 +2,7 @@ package models
 
 import (
 	"net"
+	"time"
 )
 
 type ClientJob struct {
@@ -50,4 +51,14 @@ type DeviceData struct {
 	UTCTimeMonth                   int    `json:"utc_time_month,omitempty"`        // 1 byte
 	UTCTimeYear                    int    `json:"utc_time_year,omitempty"`         // 2 byte
 	ErrorDetectionCode             uint16 `json:"error_detection_code,omitempty"`
+}
+
+// AlertsDeviceData ...
+type AlertsDeviceData struct {
+	DeviceID           uint32    `json:"device_id"`
+	DateTime           time.Time `json:"date_time"`
+	Failsafe           bool      `json:"failsafe"`
+	Disconnect         bool      `json:"disconnect"`
+	TransmissionReason int       `json:"transmission_reason,omitempty"`
+	Speed              uint32    `json:"speed,omitempty"`
 }
