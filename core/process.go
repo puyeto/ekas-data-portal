@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strconv"
 	"time"
 
 	"github.com/ekas-data-portal/models"
@@ -233,8 +234,9 @@ func SaveData(m models.DeviceData) {
 
 func lastSeen(t time.Time, deviceID uint32) {
 	const lastSeenPrefix string = "lastseen:"
+	var device = strconv.FormatUint(uint64(deviceID), 10)
 	// SET object
-	_, err := SetValue(lastSeenPrefix+string(deviceID), t)
+	_, err := SetValue(lastSeenPrefix+device, t)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -242,8 +244,9 @@ func lastSeen(t time.Time, deviceID uint32) {
 
 func currentViolations(t time.Time, m models.DeviceData) {
 	const cvPrefix string = "currentviolations:"
+	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 	// SET object
-	_, err := SetValue(cvPrefix+string(m.DeviceID), t)
+	_, err := SetValue(cvPrefix+device, t)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -251,9 +254,10 @@ func currentViolations(t time.Time, m models.DeviceData) {
 
 func setRedisLog(t time.Time, m models.DeviceData) {
 	const dataPrefix string = "data:"
+	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 
 	// SET object
-	_, err := SAdd(dataPrefix+string(m.DeviceID), m)
+	_, err := SAdd(dataPrefix+device, m)
 	if err != nil {
 		fmt.Println(err)
 	}
