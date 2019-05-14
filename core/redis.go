@@ -58,6 +58,21 @@ func SetValueWithTTL(key string, value interface{}, ttl int) (bool, error) {
 	return true, err
 }
 
+// HSet ...
+func HSet(key string, value interface{}) (bool, error) {
+	serializedValue, _ := json.Marshal(value)
+	err := redisClient.HSet(key, string(serializedValue), 0).Err()
+	return true, err
+}
+
+// HGetAll ...
+func HGetAll(key string) (interface{}, error) {
+	// var deserializedValue interface{}
+	serializedValue, err := redisClient.HGetAll(key).Result()
+	// json.Unmarshal([]byte(serializedValue), &deserializedValue)
+	return serializedValue, err
+}
+
 // RPush ...
 func RPush(key string, valueList []string) (bool, error) {
 	err := redisClient.RPush(key, valueList).Err()

@@ -228,7 +228,7 @@ func SaveData(m models.DeviceData) {
 	lastSeen(t, m.DeviceID)
 	setRedisLog(t, m)
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
-		currentViolations(t, m)
+		currentViolations(m)
 	}
 }
 
@@ -244,9 +244,16 @@ func lastSeen(t time.Time, deviceID uint32) {
 
 func currentViolations(m models.DeviceData) {
 	const cvPrefix string = "currentviolations:"
+	const cv2Prefix string = "violations:"
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 	// SET object
 	_, err := SetValue(cvPrefix+device, m)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// HSET object
+	_, err = HSet(cv2Prefix+device, m)
 	if err != nil {
 		fmt.Println(err)
 	}
