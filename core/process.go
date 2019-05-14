@@ -202,6 +202,7 @@ func SaveData(m models.DeviceData) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	m.DateTime = t
 
 	// perform a db.Query insert
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
@@ -223,25 +224,36 @@ func SaveData(m models.DeviceData) {
 	}
 	tx.Commit()
 	// log data to redis
+	lastSeen(t, m.DeviceID)
+	setRedisLog(t, m)
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
-		setRedisLog(t, m)
+		currentViolations(t, m)
+	}
+}
+
+func lastSeen(t time.Time, deviceID uint32) {
+	const lastSeenPrefix string = "lastseen:"
+	// SET object
+	_, err := SetValue(lastSeenPrefix+string(deviceID), t)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func currentViolations(t time.Time, m models.DeviceData) {
+	const cvPrefix string = "currentviolations:"
+	// SET object
+	_, err := SetValue(cvPrefix+string(m.DeviceID), t)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
 func setRedisLog(t time.Time, m models.DeviceData) {
-	const objectPrefix string = "alert:"
-
-	data := models.AlertsDeviceData{
-		DeviceID:           m.DeviceID,
-		DateTime:           t,
-		TransmissionReason: m.TransmissionReason,
-		Failsafe:           m.Failsafe,
-		Disconnect:         m.Disconnect,
-		Speed:              m.GroundSpeed,
-	}
+	const dataPrefix string = "data:"
 
 	// SET object
-	_, err := SetValue(objectPrefix+string(m.DeviceID), data)
+	_, err := SAdd(dataPrefix+string(m.DeviceID), m)
 	if err != nil {
 		fmt.Println(err)
 	}

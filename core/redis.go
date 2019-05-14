@@ -100,3 +100,10 @@ func IncrementValue(key string) int64 {
 func DelKey(key string) error {
 	return redisClient.Del(key).Err()
 }
+
+// SAdd ...
+func SAdd(key string, members interface{}) (bool, error) {
+	serializedValue, _ := json.Marshal(members)
+	err := redisClient.SAdd(key, string(serializedValue), 0).Err()
+	return true, err
+}
