@@ -242,11 +242,11 @@ func lastSeen(t time.Time, deviceID uint32) {
 	}
 }
 
-func currentViolations(t time.Time, m models.DeviceData) {
+func currentViolations(m models.DeviceData) {
 	const cvPrefix string = "currentviolations:"
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 	// SET object
-	_, err := SetValue(cvPrefix+device, t)
+	_, err := SetValue(cvPrefix+device, m)
 	if err != nil {
 		fmt.Println(err)
 	}
