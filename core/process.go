@@ -197,6 +197,15 @@ func SaveData(m models.DeviceData) {
 	}
 	defer tx.Rollback()
 
+	squery := "SELECT vehicle_reg_no FROM vehicle_configuration "
+	squery += " INNER JOIN vehicle_details ON (vehicle_details.vehicle_id = vehicle_configuration.vehicle_id) "
+	squery += " where data->'$.governor_details.device_id'=? AND status=? LIMIT ?"
+	// Execute the query
+	err = tx.QueryRow(squery, m.DeviceID, 1, 1).Scan(&m.Name)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	// strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) // + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
 	t := time.Date(m.UTCTimeYear, time.Month(m.UTCTimeMonth), m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds, 0, time.UTC)
 	// t, err:= time.Parse(time.RFC3339, strDate)
@@ -213,7 +222,7 @@ func SaveData(m models.DeviceData) {
 
 	stmt, err := tx.Prepare(query)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 
 	defer stmt.Close()
@@ -244,16 +253,9 @@ func lastSeen(t time.Time, deviceID uint32) {
 
 func currentViolations(m models.DeviceData) {
 	const cvPrefix string = "currentviolations:"
-	const cv2Prefix string = "violations:"
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 	// SET object
 	_, err := SetValue(cvPrefix+device, m)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// HSET object
-	_, err = HSet(cv2Prefix+device, m)
 	if err != nil {
 		fmt.Println(err)
 	}
