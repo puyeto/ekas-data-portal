@@ -201,7 +201,7 @@ func SaveData(m models.DeviceData) {
 	squery += " INNER JOIN vehicle_details ON (vehicle_details.vehicle_id = vehicle_configuration.vehicle_id) "
 	squery += " where data->'$.governor_details.device_id'=? AND status=? LIMIT ?"
 	// Execute the query
-	err = tx.QueryRow(squery, m.DeviceID, 1, 1).Scan(&m.Name)
+	err = tx.QueryRow(squery, strconv.FormatUint(uint64(m.DeviceID), 10), 1, 1).Scan(&m.Name)
 	if err != nil {
 		fmt.Println(err)
 	}
