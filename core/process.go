@@ -236,18 +236,27 @@ func SaveData(m models.DeviceData) {
 	}
 	tx.Commit()
 	// log data to redis
-	lastSeen(t, m.DeviceID)
+	lastSeen(m)
 	setRedisLog(t, m)
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
 		currentViolations(m)
 	}
 }
 
-func lastSeen(t time.Time, deviceID uint32) {
+type lastSeenStruct struct {
+	DateTime   time.Time
+	DeviceData models.DeviceData
+}
+
+func lastSeen(m models.DeviceData) {
 	const lastSeenPrefix string = "lastseen:"
-	var device = strconv.FormatUint(uint64(deviceID), 10)
+	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
+	var data = lastSeenStruct{
+		DateTime:   m.DateTime,
+		DeviceData: m,
+	}
 	// SET object
-	_, err := SetValue(lastSeenPrefix+device, t)
+	_, err := SetValue(lastSeenPrefix+device, data)
 	if err != nil {
 		fmt.Println(err)
 	}
