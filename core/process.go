@@ -207,8 +207,6 @@ func SaveData(m models.DeviceData) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(m.Name)
-
 	// strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) // + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
 	t := time.Date(m.UTCTimeYear, time.Month(m.UTCTimeMonth), m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds, 0, time.UTC)
 	// t, err:= time.Parse(time.RFC3339, strDate)
@@ -216,6 +214,8 @@ func SaveData(m models.DeviceData) {
 		fmt.Println(err)
 	}
 	m.DateTime = t
+
+	fmt.Println(m)
 
 	// perform a db.Query insert
 	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
