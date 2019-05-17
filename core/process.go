@@ -48,6 +48,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
 		fmt.Println("data not valid")
+		return
 	}
 
 	byteReader.Seek(5, 0)
