@@ -48,13 +48,16 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
 		fmt.Println("data not valid")
-		// return
+		return
 	}
 
 	byteReader.Seek(5, 0)
 	did := make([]byte, 4)
 	byteReader.Read(did)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
+	if deviceData.DeviceID == 0 {
+		return
+	}
 
 	// Transmission Reason – 1 byte
 	byteReader.Seek(18, 0)
