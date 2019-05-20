@@ -247,7 +247,7 @@ func SaveData(m models.DeviceData) {
 
 	lastSeen(m)
 	if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-		setRedisLog(t, m, "data:")
+		setRedisLog(t, m, "datalist:")
 	}
 }
 
@@ -284,7 +284,7 @@ func setRedisLog(t time.Time, m models.DeviceData, dataPrefix string) {
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 
 	// SET object
-	_, err := SAdd(dataPrefix+device, m)
+	_, err := LPush(dataPrefix+device, m)
 	if err != nil {
 		fmt.Println(err)
 	}

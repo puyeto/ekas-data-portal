@@ -116,9 +116,16 @@ func DelKey(key string) error {
 	return redisClient.Del(key).Err()
 }
 
-// SAdd ...
+// SAdd Add values to a set...
 func SAdd(key string, members interface{}) (bool, error) {
 	serializedValue, _ := json.Marshal(members)
 	err := redisClient.SAdd(key, string(serializedValue), 0).Err()
+	return true, err
+}
+
+// LPush push values to the beggining of alist ...
+func LPush(key string, members interface{}) (bool, error) {
+	serializedValue, _ := json.Marshal(members)
+	err := redisClient.LPush(key, string(serializedValue), 0).Err()
 	return true, err
 }
