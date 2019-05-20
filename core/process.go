@@ -246,9 +246,9 @@ func SaveData(m models.DeviceData) {
 	tx.Commit()
 
 	lastSeen(m)
-	if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-		setRedisLog(t, m, "datalist:")
-	}
+	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
+	setRedisLog(t, m, "datalist:")
+	// }
 }
 
 type lastSeenStruct struct {
