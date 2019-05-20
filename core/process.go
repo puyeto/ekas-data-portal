@@ -188,8 +188,6 @@ func readInt32(data []byte) (ret int32) {
 
 //SaveData Save data to db
 func SaveData(m models.DeviceData) {
-
-	fmt.Println(m)
 	err := DBCONN.Ping()
 	if err != nil {
 		fmt.Println(err)
@@ -219,31 +217,37 @@ func SaveData(m models.DeviceData) {
 	m.DateTime = t
 
 	fmt.Println(m)
-
-	// perform a db.Query insert
-	query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
-	query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
-	query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect) "
-	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-
-	stmt, err := tx.Prepare(query)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer stmt.Close()
-	_, err = stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
-		m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	tx.Commit()
-	// log data to redis
-	lastSeen(m)
-	setRedisLog(t, m)
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
+
+		// perform a db.Query insert
+		query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
+		query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
+		query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect) "
+		query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
+		stmt, err := tx.Prepare(query)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		defer stmt.Close()
+		_, err = stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
+			m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// log data to redis
 		currentViolations(m)
+		setRedisLog(t, m, "violation:")
+	}
+
+	tx.Commit()
+
+	lastSeen(m)
+	if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
+		setRedisLog(t, m, "data:")
 	}
 }
 
@@ -276,8 +280,7 @@ func currentViolations(m models.DeviceData) {
 	}
 }
 
-func setRedisLog(t time.Time, m models.DeviceData) {
-	const dataPrefix string = "data:"
+func setRedisLog(t time.Time, m models.DeviceData, dataPrefix string) {
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 
 	// SET object
