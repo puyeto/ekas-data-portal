@@ -234,14 +234,14 @@ func SaveData(m models.DeviceData) {
 
 		// log data to redis
 		currentViolations(m)
-		setRedisLog(m, "violation:")
+		setRedisLog(m, "violations:")
 	}
 
 	tx.Commit()
 
 	lastSeen(m)
 	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-	setRedisLog(m, "datalist:")
+	setRedisLog(m, "data:")
 	// }
 }
 
