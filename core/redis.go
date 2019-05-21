@@ -126,6 +126,16 @@ func SAdd(key string, members interface{}) (bool, error) {
 // LPush push values to the beggining of alist ...
 func LPush(key string, members interface{}) (bool, error) {
 	serializedValue, _ := json.Marshal(members)
-	err := redisClient.LPush(key, string(serializedValue), 0).Err()
+	err := redisClient.LPush(key, string(serializedValue)).Err()
+	return true, err
+}
+
+// ZAdd ...
+func ZAdd(key string, score int64, members interface{}) (bool, error) {
+	serializedValue, _ := json.Marshal(members)
+	err := redisClient.ZAdd(key, redis.Z{
+		Score:  float64(score),
+		Member: string(serializedValue),
+	}).Err()
 	return true, err
 }

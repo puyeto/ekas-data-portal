@@ -54,6 +54,7 @@ type DeviceData struct {
 	ErrorDetectionCode             uint16    `json:"error_detection_code,omitempty"`
 	DateTime                       time.Time `json:"date_time,omitempty"`
 	Name                           string    `json:"name,omitempty"`
+	DateTimeStamp                  int64     `json:"date_time_stamp,omitempty"`
 }
 
 // AlertsDeviceData ...

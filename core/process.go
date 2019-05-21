@@ -151,6 +151,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	byteReader.Read(yr)
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
+	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
+	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	fmt.Println(deviceData)
 	clientJobs <- models.ClientJob{deviceData, conn}
 	conn.Close()
@@ -208,14 +210,6 @@ func SaveData(m models.DeviceData) {
 		fmt.Println(err)
 	}
 
-	// strDate := string(m.UTCTimeYear) + "-" + string(m.UTCTimeMonth) + "-" + string(m.UTCTimeDay) // + " " + string(m.UTCTimeHours) + ":" + string(m.UTCTimeMinutes) + ":" + string(m.UTCTimeSeconds)
-	t := time.Date(m.UTCTimeYear, time.Month(m.UTCTimeMonth), m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds, 0, time.UTC)
-	// t, err:= time.Parse(time.RFC3339, strDate)
-	if err != nil {
-		fmt.Println(err)
-	}
-	m.DateTime = t
-
 	fmt.Println(m)
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
 
@@ -231,7 +225,7 @@ func SaveData(m models.DeviceData) {
 		}
 
 		defer stmt.Close()
-		_, err = stmt.Exec(m.DeviceID, m.SystemCode, t, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
+		_, err = stmt.Exec(m.DeviceID, m.SystemCode, m.DateTime, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
 			m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect)
 
 		if err != nil {
@@ -240,14 +234,14 @@ func SaveData(m models.DeviceData) {
 
 		// log data to redis
 		currentViolations(m)
-		setRedisLog(t, m, "violation:")
+		setRedisLog(m, "violation:")
 	}
 
 	tx.Commit()
 
 	lastSeen(m)
 	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-	setRedisLog(t, m, "datalist:")
+	setRedisLog(m, "datalist:")
 	// }
 }
 
@@ -280,11 +274,17 @@ func currentViolations(m models.DeviceData) {
 	}
 }
 
-func setRedisLog(t time.Time, m models.DeviceData, dataPrefix string) {
+func setRedisLog(m models.DeviceData, dataPrefix string) {
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 
 	// SET object
 	_, err := LPush(dataPrefix+device, m)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// SET object
+	_, err = ZAdd(dataPrefix+device, m.DateTimeStamp, m)
 	if err != nil {
 		fmt.Println(err)
 	}
