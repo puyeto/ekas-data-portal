@@ -278,13 +278,7 @@ func setRedisLog(m models.DeviceData, dataPrefix string) {
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 
 	// SET object
-	_, err := LPush(dataPrefix+device, m)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// SET object
-	_, err = ZAdd(dataPrefix+device, m.DateTimeStamp, m)
+	_, err := ZAdd(dataPrefix+device, m.DateTimeStamp, m)
 	if err != nil {
 		fmt.Println(err)
 	}
