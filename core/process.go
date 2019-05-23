@@ -211,6 +211,7 @@ func SaveData(m models.DeviceData) {
 	}
 
 	fmt.Println(m)
+	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
 
 		// perform a db.Query insert
@@ -233,15 +234,18 @@ func SaveData(m models.DeviceData) {
 		}
 
 		// log data to redis
-		currentViolations(m)
-		setRedisLog(m, "violations:")
+		currentViolations(m, "currentviolations:"+device)
+		currentViolations(m, "currentviolations")
+		setRedisLog(m, "violations")
+		setRedisLog(m, "violations:"+device)
 	}
 
 	tx.Commit()
 
-	lastSeen(m)
+	lastSeen(m, "lastseen:"+device)
+	lastSeen(m, "lastseen")
 	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-	setRedisLog(m, "data:")
+	setRedisLog(m, "data:"+device)
 	// }
 }
 
@@ -250,35 +254,30 @@ type lastSeenStruct struct {
 	DeviceData models.DeviceData
 }
 
-func lastSeen(m models.DeviceData) {
-	const lastSeenPrefix string = "lastseen:"
-	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
+func lastSeen(m models.DeviceData, key string) {
 	var data = lastSeenStruct{
 		DateTime:   m.DateTime,
 		DeviceData: m,
 	}
 	// SET object
-	_, err := SetValue(lastSeenPrefix+device, data)
+	_, err := SetValue(key, data)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func currentViolations(m models.DeviceData) {
-	const cvPrefix string = "currentviolations:"
-	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
+func currentViolations(m models.DeviceData, key string) {
 	// SET object
-	_, err := SetValue(cvPrefix+device, m)
+	_, err := SetValue(key, m)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func setRedisLog(m models.DeviceData, dataPrefix string) {
-	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
+func setRedisLog(m models.DeviceData, key string) {
 
 	// SET object
-	_, err := ZAdd(dataPrefix+device, m.DateTimeStamp, m)
+	_, err := ZAdd(key, m.DateTimeStamp, m)
 	if err != nil {
 		fmt.Println(err)
 	}
