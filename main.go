@@ -106,6 +106,7 @@ func checkLastSeen() {
 				var device = strconv.FormatUint(uint64(value.DeviceID), 10)
 				core.SetRedisLog(value, "violations")
 				core.SetRedisLog(value, "violations:"+device)
+				core.SetRedisLog(value, "offline:"+device)
 			}
 		}
 	}
