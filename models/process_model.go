@@ -26,6 +26,7 @@ type DeviceData struct {
 	TransmissionReasonSpecificData int       `json:"transmission_reason_specificData,omitempty"` // 1 byte
 	Failsafe                       bool      `json:"failsafe"`
 	Disconnect                     bool      `json:"disconnect"`
+	Offline                        bool      `json:"offline"`
 	TransmissionReason             int       `json:"transmission_reason,omitempty"` // 1 byte
 	ModeOfOperation                int       `json:"mode_of_operation,omitempty"`   // 1 byte
 	IOStatus                       uint16    `json:"io_status,omitempty"`           // 5 bytes
@@ -55,6 +56,12 @@ type DeviceData struct {
 	DateTime                       time.Time `json:"date_time,omitempty"`
 	Name                           string    `json:"name,omitempty"`
 	DateTimeStamp                  int64     `json:"date_time_stamp,omitempty"`
+}
+
+// LastSeenStruct ...
+type LastSeenStruct struct {
+	DateTime   time.Time
+	DeviceData DeviceData
 }
 
 // AlertsDeviceData ...

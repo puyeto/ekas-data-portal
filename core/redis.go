@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/ekas-data-portal/models"
 	"github.com/go-redis/redis"
 )
 
@@ -49,6 +50,14 @@ func SetValue(key string, value interface{}) (bool, error) {
 	serializedValue, _ := json.Marshal(value)
 	err := redisClient.Set(key, string(serializedValue), 0).Err()
 	return true, err
+}
+
+// GetLastSeenValue ...
+func GetLastSeenValue(key string) (models.DeviceData, error) {
+	var deserializedValue models.LastSeenStruct
+	serializedValue, err := redisClient.Get(key).Result()
+	json.Unmarshal([]byte(serializedValue), &deserializedValue)
+	return deserializedValue.DeviceData, err
 }
 
 // SetValueWithTTL ...
@@ -114,6 +123,11 @@ func IncrementValue(key string) int64 {
 // DelKey ...
 func DelKey(key string) error {
 	return redisClient.Del(key).Err()
+}
+
+// ListKeys ...
+func ListKeys(key string) ([]string, error) {
+	return redisClient.Keys(key).Result()
 }
 
 // SAdd Add values to a set...

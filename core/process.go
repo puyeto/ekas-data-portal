@@ -236,8 +236,8 @@ func SaveData(m models.DeviceData) {
 		// log data to redis
 		currentViolations(m, "currentviolations:"+device)
 		currentViolations(m, "currentviolations")
-		setRedisLog(m, "violations")
-		setRedisLog(m, "violations:"+device)
+		SetRedisLog(m, "violations")
+		SetRedisLog(m, "violations:"+device)
 	}
 
 	tx.Commit()
@@ -245,7 +245,7 @@ func SaveData(m models.DeviceData) {
 	lastSeen(m, "lastseen:"+device)
 	lastSeen(m, "lastseen")
 	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-	setRedisLog(m, "data:"+device)
+	SetRedisLog(m, "data:"+device)
 	// }
 }
 
@@ -274,7 +274,8 @@ func currentViolations(m models.DeviceData, key string) {
 	}
 }
 
-func setRedisLog(m models.DeviceData, key string) {
+// SetRedisLog log to redis
+func SetRedisLog(m models.DeviceData, key string) {
 
 	// SET object
 	_, err := ZAdd(key, m.DateTimeStamp, m)
