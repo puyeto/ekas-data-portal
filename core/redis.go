@@ -147,7 +147,7 @@ func LPush(key string, members interface{}) (bool, error) {
 // ZAdd ...
 func ZAdd(key string, score int64, members interface{}) (bool, error) {
 	serializedValue, _ := json.Marshal(members)
-	err := redisClient.ZAdd(key, redis.Z{
+	err := redisClient.ZAdd(key, &redis.Z{
 		Score:  float64(score),
 		Member: string(serializedValue),
 	}).Err()

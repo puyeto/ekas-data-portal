@@ -77,7 +77,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
 
-		// Do something thats keeps the CPU buys for a whole second.
+		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		core.SaveData(clientJob.DeviceData)
 		// }

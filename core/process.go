@@ -226,11 +226,46 @@ func SaveData(m models.DeviceData) {
 		}
 
 		defer stmt.Close()
-		_, err = stmt.Exec(m.DeviceID, m.SystemCode, m.DateTime, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
+		res, err := stmt.Exec(m.DeviceID, m.SystemCode, m.DateTime, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
 			m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect)
 
 		if err != nil {
 			fmt.Println(err)
+		}
+
+		// update / save current violations
+		//
+		lid, err := res.LastInsertId()
+		// check if a a vehicle id exists in the Current violation table
+		var boo int8
+		query = "SELECT EXISTS(SELECT 1 FROM current_violations WHERE device_id=? LIMIT 1)"
+		tx.QueryRow(query, m.DeviceID).Scan(&boo)
+		if boo == 1 {
+			var q string
+			if m.GroundSpeed > 80 {
+				q = "UPDATE current_violations SET overspeed_trip_data=? WHERE device_id=?"
+			} else if m.Disconnect {
+				q = "UPDATE current_violations SET disconnect_trip_data=? WHERE device_id=?"
+			} else if m.Failsafe {
+				q = "UPDATE current_violations SET failsafe_trip_data=? WHERE device_id=?"
+			} else if m.Offline {
+				q = "UPDATE current_violations SET offline_trip_data=? WHERE device_id=?"
+			}
+			stmt, _ := tx.Prepare(q)
+			stmt.Exec(lid, m.DeviceID)
+		} else {
+			var q string
+			if m.GroundSpeed > 80 {
+				q = "INSERT INTO current_violations (device_id, overspeed_trip_data) VALUES (?,?)"
+			} else if m.Disconnect {
+				q = "INSERT INTO current_violations (device_id, disconnect_trip_data) VALUES (?,?)"
+			} else if m.Failsafe {
+				q = "INSERT INTO current_violations (device_id, failsafe_trip_data) VALUES (?,?)"
+			} else if m.Offline {
+				q = "INSERT INTO current_violations (device_id, offline_trip_data) VALUES (?,?)"
+			}
+			stmt, _ := tx.Prepare(q)
+			stmt.Exec(m.DeviceID, lid)
 		}
 
 		// log data to redis
