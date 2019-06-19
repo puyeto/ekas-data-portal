@@ -265,6 +265,9 @@ func SaveData(m models.DeviceData) {
 				q = "INSERT INTO current_violations (device_id, name, offline_trip_data, offline_trip_speed, offline_trip_date) VALUES (?,?,?,?)"
 			}
 			stmt, _ := tx.Prepare(q)
+			if !m.DateTime {
+				m.DateTime = time.Now()
+			}
 			stmt.Exec(m.DeviceID, m.Name, lid, m.GroundSpeed, m.DateTime)
 		}
 
