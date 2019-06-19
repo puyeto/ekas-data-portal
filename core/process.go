@@ -243,29 +243,29 @@ func SaveData(m models.DeviceData) {
 		if boo == 1 {
 			var q string
 			if m.GroundSpeed > 80 {
-				q = "UPDATE current_violations SET overspeed_trip_data=? WHERE device_id=?"
+				q = "UPDATE current_violations SET overspeed_trip_data=?, overspeed_speed=?, overspeed_date=? WHERE device_id=?"
 			} else if m.Disconnect {
-				q = "UPDATE current_violations SET disconnect_trip_data=? WHERE device_id=?"
+				q = "UPDATE current_violations SET disconnect_trip_data=?, disconnect_trip_speed=?, disconnect_trip_date=? WHERE device_id=?"
 			} else if m.Failsafe {
-				q = "UPDATE current_violations SET failsafe_trip_data=? WHERE device_id=?"
+				q = "UPDATE current_violations SET failsafe_trip_data=?, failsafe_trip_speed=?, failsafe_trip_date=? WHERE device_id=?"
 			} else if m.Offline {
-				q = "UPDATE current_violations SET offline_trip_data=? WHERE device_id=?"
+				q = "UPDATE current_violations SET offline_trip_data=?, offline_trip_speed=?, offline_trip_date=? WHERE device_id=?"
 			}
 			stmt, _ := tx.Prepare(q)
-			stmt.Exec(lid, m.DeviceID)
+			stmt.Exec(lid, m.GroundSpeed, m.DateTime, m.DeviceID)
 		} else {
 			var q string
 			if m.GroundSpeed > 80 {
-				q = "INSERT INTO current_violations (device_id, overspeed_trip_data) VALUES (?,?)"
+				q = "INSERT INTO current_violations (device_id, name, overspeed_trip_data, overspeed_speed, overspeed_date) VALUES (?,?,?,?)"
 			} else if m.Disconnect {
-				q = "INSERT INTO current_violations (device_id, disconnect_trip_data) VALUES (?,?)"
+				q = "INSERT INTO current_violations (device_id, name, disconnect_trip_data, disconnect_trip_speed, disconnect_trip_date) VALUES (?,?,?,?)"
 			} else if m.Failsafe {
-				q = "INSERT INTO current_violations (device_id, failsafe_trip_data) VALUES (?,?)"
+				q = "INSERT INTO current_violations (device_id, name, failsafe_trip_data, failsafe_trip_speed, failsafe_trip_date) VALUES (?,?,?,?)"
 			} else if m.Offline {
-				q = "INSERT INTO current_violations (device_id, offline_trip_data) VALUES (?,?)"
+				q = "INSERT INTO current_violations (device_id, name, offline_trip_data, offline_trip_speed, offline_trip_date) VALUES (?,?,?,?)"
 			}
 			stmt, _ := tx.Prepare(q)
-			stmt.Exec(m.DeviceID, lid)
+			stmt.Exec(m.DeviceID, m.Name, lid, m.GroundSpeed, m.DateTime)
 		}
 
 		// log data to redis
