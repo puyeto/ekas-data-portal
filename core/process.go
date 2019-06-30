@@ -188,7 +188,7 @@ func readInt32(data []byte) (ret int32) {
 	return ret
 }
 
-//SaveData Save data to db
+// SaveData Save data to db
 func SaveData(m models.DeviceData) {
 	err := DBCONN.Ping()
 	if err != nil {
