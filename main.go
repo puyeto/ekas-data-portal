@@ -103,6 +103,7 @@ func checkLastSeen() {
 			if callTime(value) >= 5 {
 				fmt.Println("device_id", value.DeviceID)
 				value.Offline = true
+				core.SaveData(value)
 				var device = strconv.FormatUint(uint64(value.DeviceID), 10)
 				core.SetRedisLog(value, "violations")
 				core.SetRedisLog(value, "violations:"+device)
