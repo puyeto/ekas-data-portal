@@ -33,7 +33,7 @@ func main() {
 	clientJobs := make(chan models.ClientJob)
 	go generateResponses(clientJobs)
 
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(5 * time.Minute)
 	go func() {
 		for range ticker.C {
 			checkLastSeen()
