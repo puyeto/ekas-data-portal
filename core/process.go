@@ -210,15 +210,14 @@ func SaveData(m models.DeviceData) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(m)
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
-	if m.TransmissionReason == 255 || m.GroundSpeed > 80 {
 
+	if m.TransmissionReason == 255 || m.GroundSpeed > 80 || m.Offline == true {
 		// perform a db.Query insert
 		query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
 		query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
-		query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect) "
-		query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+		query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect, offline) "
+		query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
 		stmt, err := tx.Prepare(query)
 		if err != nil {
@@ -227,7 +226,7 @@ func SaveData(m models.DeviceData) {
 
 		defer stmt.Close()
 		res, err := stmt.Exec(m.DeviceID, m.SystemCode, m.DateTime, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
-			m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect)
+			m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect, m.Offline)
 
 		if err != nil {
 			fmt.Println(err)
@@ -240,35 +239,33 @@ func SaveData(m models.DeviceData) {
 		var boo int8
 		query = "SELECT EXISTS(SELECT 1 FROM current_violations WHERE device_id=? LIMIT 1)"
 		tx.QueryRow(query, m.DeviceID).Scan(&boo)
+
 		if boo == 1 {
 			var q string
-			if m.Offline {
-				q = "UPDATE current_violations SET offline_trip_data=?, offline_trip_speed=?, offline_trip_date=? WHERE device_id=?"
+			if m.Offline == true {
+				q = "UPDATE current_violations SET offline_trip_data=?, offline_trip_speed=? WHERE device_id=?"
 			} else if m.GroundSpeed > 80 {
-				q = "UPDATE current_violations SET overspeed_trip_data=?, overspeed_speed=?, overspeed_date=? WHERE device_id=?"
-			} else if m.Disconnect {
-				q = "UPDATE current_violations SET disconnect_trip_data=?, disconnect_trip_speed=?, disconnect_trip_date=? WHERE device_id=?"
-			} else if m.Failsafe {
-				q = "UPDATE current_violations SET failsafe_trip_data=?, failsafe_trip_speed=?, failsafe_trip_date=? WHERE device_id=?"
+				q = "UPDATE current_violations SET overspeed_trip_data=?, overspeed_speed=? WHERE device_id=?"
+			} else if m.Disconnect == true {
+				q = "UPDATE current_violations SET disconnect_trip_data=?, disconnect_trip_speed=? WHERE device_id=?"
+			} else if m.Failsafe == true {
+				q = "UPDATE current_violations SET failsafe_trip_data=?, failsafe_trip_speed=? WHERE device_id=?"
 			}
 			stmt, _ := tx.Prepare(q)
-			stmt.Exec(lid, m.GroundSpeed, m.DateTime, m.DeviceID)
+			stmt.Exec(lid, m.GroundSpeed, m.DeviceID)
 		} else {
 			var q string
 			if m.Offline {
-				q = "INSERT INTO current_violations (device_id, name, offline_trip_data, offline_trip_speed, offline_trip_date) VALUES (?,?,?,?)"
+				q = "INSERT INTO current_violations (device_id, name, offline_trip_data, offline_trip_speed) VALUES (?,?,?,?)"
 			} else if m.GroundSpeed > 80 {
-				q = "INSERT INTO current_violations (device_id, name, overspeed_trip_data, overspeed_speed, overspeed_date) VALUES (?,?,?,?)"
+				q = "INSERT INTO current_violations (device_id, name, overspeed_trip_data, overspeed_speed) VALUES (?,?,?,?)"
 			} else if m.Disconnect {
-				q = "INSERT INTO current_violations (device_id, name, disconnect_trip_data, disconnect_trip_speed, disconnect_trip_date) VALUES (?,?,?,?)"
+				q = "INSERT INTO current_violations (device_id, name, disconnect_trip_data, disconnect_trip_speed) VALUES (?,?,?,?)"
 			} else if m.Failsafe {
-				q = "INSERT INTO current_violations (device_id, name, failsafe_trip_data, failsafe_trip_speed, failsafe_trip_date) VALUES (?,?,?,?)"
+				q = "INSERT INTO current_violations (device_id, name, failsafe_trip_data, failsafe_trip_speed) VALUES (?,?,?,?)"
 			}
 			stmt, _ := tx.Prepare(q)
-			if m.DateTime.IsZero() {
-				m.DateTime = time.Now()
-			}
-			stmt.Exec(m.DeviceID, m.Name, lid, m.GroundSpeed, m.DateTime)
+			stmt.Exec(m.DeviceID, m.Name, lid, m.GroundSpeed)
 		}
 
 		// log data to redis
@@ -276,6 +273,7 @@ func SaveData(m models.DeviceData) {
 		currentViolations(m, "currentviolations")
 		SetRedisLog(m, "violations")
 		SetRedisLog(m, "violations:"+device)
+		SetRedisLog(m, "offline:"+device)
 	}
 
 	tx.Commit()
@@ -319,11 +317,5 @@ func SetRedisLog(m models.DeviceData, key string) {
 	_, err := ZAdd(key, m.DateTimeStamp, m)
 	if err != nil {
 		fmt.Println(err)
-	}
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
 	}
 }

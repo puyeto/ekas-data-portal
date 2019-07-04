@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/ekas-data-portal/core"
@@ -34,7 +33,7 @@ func main() {
 	clientJobs := make(chan models.ClientJob)
 	go generateResponses(clientJobs)
 
-	ticker := time.NewTicker(50000 * time.Millisecond)
+	ticker := time.NewTicker(30 * time.Second)
 	go func() {
 		for range ticker.C {
 			checkLastSeen()
@@ -101,13 +100,9 @@ func checkLastSeen() {
 		}
 		if value.SystemCode == "MCPG" {
 			if callTime(value) >= 5 {
-				fmt.Println("device_id", value.DeviceID)
+				// fmt.Println("device_id", value.DeviceID)
 				value.Offline = true
-				// core.SaveData(value)
-				var device = strconv.FormatUint(uint64(value.DeviceID), 10)
-				core.SetRedisLog(value, "violations")
-				core.SetRedisLog(value, "violations:"+device)
-				core.SetRedisLog(value, "offline:"+device)
+				core.SaveData(value)
 			}
 		}
 	}

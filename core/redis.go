@@ -17,7 +17,7 @@ var (
 // InitializeRedis ...
 func InitializeRedis() error {
 	if os.Getenv("GO_ENV") != "production" {
-		dockerURL = "localhost:6379"
+		dockerURL = "157.230.0.138:7001"
 	}
 
 	redisClient = redis.NewClient(&redis.Options{
