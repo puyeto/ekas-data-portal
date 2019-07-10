@@ -154,9 +154,59 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	fmt.Println(deviceData)
-	clientJobs <- models.ClientJob{deviceData, conn}
+	if checkIdleState(deviceData) != "idle3" {
+		clientJobs <- models.ClientJob{deviceData, conn}
+	}
+
 	conn.Close()
 
+}
+
+// check if Device is in idle state
+func checkIdleState(m models.DeviceData) string {
+	err := DBCONN.Ping()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	tx, err := DBCONN.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tx.Rollback()
+
+	var deviceStatus string
+	squery := "SELECT device_status FROM vehicle_configuration "
+	squery += " where device_id=? AND status=? LIMIT ?"
+	// Execute the query
+	err = tx.QueryRow(squery, strconv.FormatUint(uint64(m.DeviceID), 10), 1, 1).Scan(&deviceStatus)
+	if err != nil {
+		return "err"
+	}
+
+	var query string
+	if m.GroundSpeed > 0 {
+		query = "UPDATE vehicle_configuration SET device_status='online' WHERE device_id=? AND status=?"
+	} else if m.GroundSpeed == 0 || deviceStatus == "online" {
+		query = "UPDATE vehicle_configuration SET device_status='idle1' WHERE device_id=? AND status=?"
+	} else if deviceStatus == "idle1" {
+		query = "UPDATE vehicle_configuration SET device_status='idle2' WHERE device_id=? AND status=?"
+	} else {
+		query = "UPDATE vehicle_configuration SET device_status='idle3' WHERE device_id=? AND status=?"
+	}
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return "err"
+	}
+
+	_, err = stmt.Exec(strconv.FormatUint(uint64(m.DeviceID), 10), 1)
+	if err != nil {
+		return "err"
+	}
+
+	tx.Commit()
+
+	return deviceStatus
 }
 
 func hasBit(n int, pos uint) bool {
