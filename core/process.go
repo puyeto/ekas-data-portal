@@ -176,10 +176,11 @@ func checkIdleState(m models.DeviceData) string {
 	defer tx.Rollback()
 
 	var deviceStatus string
+	var deviceid = strconv.FormatUint(uint64(m.DeviceID), 10)
 	squery := "SELECT device_status FROM vehicle_configuration "
 	squery += " where device_id=? AND status=? LIMIT ?"
 	// Execute the query
-	err = tx.QueryRow(squery, strconv.FormatUint(uint64(m.DeviceID), 10), 1, 1).Scan(&deviceStatus)
+	err = tx.QueryRow(squery, deviceid, 1, 1).Scan(&deviceStatus)
 	if err != nil {
 		return "err"
 	}
@@ -192,6 +193,8 @@ func checkIdleState(m models.DeviceData) string {
 	} else if deviceStatus == "idle1" {
 		query = "UPDATE vehicle_configuration SET device_status='idle2' WHERE device_id=? AND status=?"
 	} else {
+		// device data will not be store but redis logs last seen
+		SetRedisLog(m, "offline:"+deviceid)
 		query = "UPDATE vehicle_configuration SET device_status='idle3' WHERE device_id=? AND status=?"
 	}
 	stmt, err := tx.Prepare(query)
@@ -199,7 +202,7 @@ func checkIdleState(m models.DeviceData) string {
 		return "err"
 	}
 
-	_, err = stmt.Exec(strconv.FormatUint(uint64(m.DeviceID), 10), 1)
+	_, err = stmt.Exec(deviceid, 1)
 	if err != nil {
 		return "err"
 	}
