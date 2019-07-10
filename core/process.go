@@ -187,7 +187,7 @@ func checkIdleState(m models.DeviceData) string {
 	var query string
 	if m.GroundSpeed > 0 {
 		query = "UPDATE vehicle_configuration SET device_status='online' WHERE device_id=? AND status=?"
-	} else if m.GroundSpeed == 0 || deviceStatus == "online" {
+	} else if m.GroundSpeed == 0 && deviceStatus == "online" {
 		query = "UPDATE vehicle_configuration SET device_status='idle1' WHERE device_id=? AND status=?"
 	} else if deviceStatus == "idle1" {
 		query = "UPDATE vehicle_configuration SET device_status='idle2' WHERE device_id=? AND status=?"
