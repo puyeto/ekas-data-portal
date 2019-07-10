@@ -212,7 +212,7 @@ func SaveData(m models.DeviceData) {
 
 	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
 
-	if m.TransmissionReason == 255 || m.GroundSpeed > 80 || m.Offline == true {
+	if m.TransmissionReason == 255 || m.GroundSpeed > 84 || m.Offline == true {
 		// perform a db.Query insert
 		query := "INSERT INTO trip_data (device_id, system_code, data_date, speed, speed_direction, "
 		query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
@@ -244,7 +244,7 @@ func SaveData(m models.DeviceData) {
 			var q string
 			if m.Offline == true {
 				q = "UPDATE current_violations SET offline_trip_data=?, offline_trip_speed=? WHERE device_id=?"
-			} else if m.GroundSpeed > 80 {
+			} else if m.GroundSpeed > 84 {
 				q = "UPDATE current_violations SET overspeed_trip_data=?, overspeed_speed=? WHERE device_id=?"
 			} else if m.Disconnect == true {
 				q = "UPDATE current_violations SET disconnect_trip_data=?, disconnect_trip_speed=? WHERE device_id=?"
@@ -257,7 +257,7 @@ func SaveData(m models.DeviceData) {
 			var q string
 			if m.Offline {
 				q = "INSERT INTO current_violations (device_id, name, offline_trip_data, offline_trip_speed) VALUES (?,?,?,?)"
-			} else if m.GroundSpeed > 80 {
+			} else if m.GroundSpeed > 84 {
 				q = "INSERT INTO current_violations (device_id, name, overspeed_trip_data, overspeed_speed) VALUES (?,?,?,?)"
 			} else if m.Disconnect {
 				q = "INSERT INTO current_violations (device_id, name, disconnect_trip_data, disconnect_trip_speed) VALUES (?,?,?,?)"
