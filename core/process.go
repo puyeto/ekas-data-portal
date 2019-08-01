@@ -3,9 +3,12 @@ package core
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -158,8 +161,47 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
-	conn.Close()
+	// send data to ntsa
+	go sendToNTSA(deviceData)
 
+	conn.Close()
+}
+
+func sendToNTSA(deviceData models.DeviceData) {
+	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 1000080 {
+		t := deviceData.DateTime
+		requestBody, err := json.Marshal(map[string]string{
+			"date":                       t.Format("2006-01-02"),
+			"time":                       t.Format("15:04:05"),
+			"device_imei":                strconv.Itoa(int(deviceData.DeviceID)),
+			"company_id":                 "ekasfk2017",
+			"car_plate":                  "KBH 234Y",
+			"speed":                      strconv.Itoa(int(deviceData.GroundSpeed)),
+			"longitude":                  strconv.Itoa(int(deviceData.Longitude)),
+			"longitude_direction":        strconv.Itoa(int(deviceData.SpeedDirection)),
+			"latitude":                   strconv.Itoa(int(deviceData.Latitude)),
+			"latitude_direction":         strconv.Itoa(int(deviceData.SpeedDirection)),
+			"power_disconnection":        strconv.FormatBool(deviceData.Disconnect),
+			"speed_signal_disconnection": strconv.FormatBool(deviceData.Failsafe),
+		})
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		resp, err := http.Post("http://41.206.37.78/speedlimiter/sg_data.php", "application/json", bytes.NewBuffer(requestBody))
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println(string(body))
+	}
 }
 
 // check if Device is in idle state
