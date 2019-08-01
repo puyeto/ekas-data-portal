@@ -3,7 +3,6 @@ package core
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -170,23 +169,30 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 func sendToNTSA(deviceData models.DeviceData) {
 	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 1000080 {
 		t := deviceData.DateTime
-		requestBody, err := json.Marshal(map[string]string{
-			"date":                       t.Format("2006-01-02"),
-			"time":                       t.Format("15:04:05"),
-			"device_imei":                strconv.Itoa(int(deviceData.DeviceID)),
-			"company_id":                 "ekasfk2017",
-			"car_plate":                  "KBH 234Y",
-			"speed":                      strconv.Itoa(int(deviceData.GroundSpeed)),
-			"longitude":                  strconv.Itoa(int(deviceData.Longitude)),
-			"longitude_direction":        strconv.Itoa(int(deviceData.SpeedDirection)),
-			"latitude":                   strconv.Itoa(int(deviceData.Latitude)),
-			"latitude_direction":         strconv.Itoa(int(deviceData.SpeedDirection)),
-			"power_disconnection":        strconv.FormatBool(deviceData.Disconnect),
-			"speed_signal_disconnection": strconv.FormatBool(deviceData.Failsafe),
-		})
-		if err != nil {
-			fmt.Println(err)
-		}
+		// requestBody, err := json.Marshal(map[string]string{
+		// 	"date":                       t.Format("2006-01-02"),
+		// 	"time":                       t.Format("15:04:05"),
+		// 	"device_imei":                strconv.Itoa(int(deviceData.DeviceID)),
+		// 	"company_id":                 "ekasfk2017",
+		// 	"car_plate":                  "KBH 234Y",
+		// 	"speed":                      strconv.Itoa(int(deviceData.GroundSpeed)),
+		// 	"longitude":                  strconv.Itoa(int(deviceData.Longitude)),
+		// 	"longitude_direction":        strconv.Itoa(int(deviceData.SpeedDirection)),
+		// 	"latitude":                   strconv.Itoa(int(deviceData.Latitude)),
+		// 	"latitude_direction":         strconv.Itoa(int(deviceData.SpeedDirection)),
+		// 	"power_disconnection":        strconv.FormatBool(deviceData.Disconnect),
+		// 	"speed_signal_disconnection": strconv.FormatBool(deviceData.Failsafe),
+		// })
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+
+		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + "ekasfk2017, "
+		datastr += "KBH 234Y, " + ", " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)) + ", "
+		datastr += strconv.Itoa(int(deviceData.SpeedDirection)) + ", " + strconv.Itoa(int(deviceData.Latitude)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
+		datastr += strconv.FormatBool(deviceData.Disconnect) + ", " + strconv.FormatBool(deviceData.Failsafe)
+
+		requestBody := []byte(datastr)
 
 		resp, err := http.Post("http://41.206.37.78/speedlimiter/sg_data.php", "application/json", bytes.NewBuffer(requestBody))
 		if err != nil {
