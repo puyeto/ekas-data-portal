@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ekas-data-portal/models"
@@ -186,25 +187,24 @@ func sendToNTSA(deviceData models.DeviceData) {
 		// if err != nil {
 		// 	fmt.Println(err)
 		// }
+		// resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
 
 		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + "ekasfk2017, "
 		datastr += "KBH 234Y, " + ", " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)) + ", "
 		datastr += strconv.Itoa(int(deviceData.SpeedDirection)) + ", " + strconv.Itoa(int(deviceData.Latitude)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
 		datastr += strconv.FormatBool(deviceData.Disconnect) + ", " + strconv.FormatBool(deviceData.Failsafe)
 
-		requestBody := []byte(datastr)
+		url := "http://41.206.37.78/speedlimiter/sg_data.php"
+		payload := strings.NewReader(datastr)
 
-		resp, err := http.Post("http://41.206.37.78/speedlimiter/sg_data.php", "application/json", bytes.NewBuffer(requestBody))
-		if err != nil {
-			fmt.Println(err)
-		}
+		req, _ := http.NewRequest("POST", url, payload)
+		req.Header.Add("content-type", "application/x-www-form-urlencoded")
+		req.Header.Add("cache-control", "no-cache")
 
-		defer resp.Body.Close()
+		res, _ := http.DefaultClient.Do(req)
 
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Println(err)
-		}
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
 
 		fmt.Println(string(body))
 	}
