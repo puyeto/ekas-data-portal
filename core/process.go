@@ -197,8 +197,8 @@ func sendToNTSA(deviceData models.DeviceData) {
 			failsafe = "1"
 		}
 
-		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + "ekasfk2017, "
-		datastr += "KBH 234Y, " + ", " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)) + ", "
+		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + ", ekasfk2017, "
+		datastr += "KBH 234Y, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)) + ", "
 		datastr += strconv.Itoa(int(deviceData.SpeedDirection)) + ", " + strconv.Itoa(int(deviceData.Latitude)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
 		datastr += disconnect + ", " + failsafe
 
