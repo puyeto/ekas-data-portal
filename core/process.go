@@ -187,12 +187,22 @@ func sendToNTSA(deviceData models.DeviceData) {
 		// if err != nil {
 		// 	fmt.Println(err)
 		// }
-		// resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+		// resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody)
+		disconnect := "0"
+		failsafe := "0"
+		if deviceData.Disconnect {
+			disconnect = "1"
+		}
+		if deviceData.Failsafe {
+			failsafe = "1"
+		}
 
 		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + "ekasfk2017, "
 		datastr += "KBH 234Y, " + ", " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)) + ", "
 		datastr += strconv.Itoa(int(deviceData.SpeedDirection)) + ", " + strconv.Itoa(int(deviceData.Latitude)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
-		datastr += strconv.FormatBool(deviceData.Disconnect) + ", " + strconv.FormatBool(deviceData.Failsafe)
+		datastr += disconnect + ", " + failsafe
+
+		fmt.Println(datastr)
 
 		url := "http://41.206.37.78/speedlimiter/sg_data.php"
 		payload := strings.NewReader(datastr)
