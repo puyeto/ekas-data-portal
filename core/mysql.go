@@ -2,21 +2,21 @@ package core
 
 import (
 	"database/sql"
-	"strconv"
 	"log"
+	"strconv"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
-	// DBCONN ...	
-	DBCONN *sql.DB
-	mysqlUsername = "root"
-	mysqlPassword = "safcom2012"
-	mysqlIP = "35.184.65.222" 
-	mysqlDB = "ekas_portal"
-	mysqlPort  = 3306
+	// DBCONN ...
+	DBCONN        *sql.DB
+	mysqlUsername = "ruser"
+	mysqlPassword = "Safcom_2012"
+	mysqlIP       = "157.230.0.138"
+	mysqlDB       = "ekas_portal"
+	mysqlPort     = 3306
 )
 
 const (
