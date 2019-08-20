@@ -42,6 +42,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		return
 	}
 
+	fmt.Println(time.Now(), " data ", string(b))
+
 	byteReader := bytes.NewReader(b)
 
 	scode := make([]byte, 4)
@@ -215,7 +217,7 @@ func sendToNTSA(deviceData models.DeviceData) {
 		defer res.Body.Close()
 		body, _ := ioutil.ReadAll(res.Body)
 
-		fmt.Println(string(body))
+		// fmt.Println(string(body))
 	}
 }
 
