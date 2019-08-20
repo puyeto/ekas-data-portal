@@ -215,7 +215,8 @@ func sendToNTSA(deviceData models.DeviceData) {
 		res, _ := http.DefaultClient.Do(req)
 
 		defer res.Body.Close()
-		body, _ := ioutil.ReadAll(res.Body)
+		// body, _ := ioutil.ReadAll(res.Body)
+		ioutil.ReadAll(res.Body)
 
 		// fmt.Println(string(body))
 	}
