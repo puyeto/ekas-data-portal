@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -161,8 +162,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	fmt.Println(deviceData)
+
 	// log struct to file
-	go logger.Log.Printf("%p\n", &deviceData)
+	e, _ := json.Marshal(deviceData)
+	go logger.Log.Printf("%s\n", string(e))
 
 	if checkIdleState(deviceData) != "idle3" {
 		clientJobs <- models.ClientJob{deviceData, conn}
