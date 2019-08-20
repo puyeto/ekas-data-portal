@@ -2,6 +2,7 @@ package logger
 
 import (
 	"flag"
+	"go/build"
 	"log"
 	"os"
 	"time"
@@ -15,7 +16,7 @@ var (
 func init() {
 	// set location of log file
 	t := time.Now()
-	var logpath = "logger/logs/log-" + t.Format("2006-01-02") + ".log"
+	var logpath = build.Default.GOPATH + "/src/log-" + t.Format("2006-01-02") + ".log"
 
 	flag.Parse()
 
