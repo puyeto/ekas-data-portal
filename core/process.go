@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ekas-data-portal/logger"
 	"github.com/ekas-data-portal/models"
 )
 
@@ -41,7 +42,11 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		fmt.Println(i, " - Invalid Byte Length = ", byteLen)
 		return
 	}
+
+	//log byte data to file
 	// fmt.Println(time.Now(), " data ", string(b))
+	t := time.Now()
+	go logger.Log.Printf("%s %b\n", t.Format("2006-01-02 15:04:05"), b)
 
 	byteReader := bytes.NewReader(b)
 
@@ -156,6 +161,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	fmt.Println(deviceData)
+	// log struct to file
+	go logger.Log.Printf("%p\n", &deviceData)
 
 	if checkIdleState(deviceData) != "idle3" {
 		clientJobs <- models.ClientJob{deviceData, conn}

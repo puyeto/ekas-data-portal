@@ -4,6 +4,8 @@ FROM golang:1.10.3
 LABEL maintainer "ericotieno99@gmail.com"
 LABEL vendor="Ekas Technologies"
 
+RUN mkdir -p /go/logs
+
 # Copy the project in to the container
 ADD . /go/src/github.com/ekas-data-portal
 
