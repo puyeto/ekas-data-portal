@@ -21,6 +21,11 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	totalBytes, res := readNextBytes(conn, 1024)
 	if totalBytes > 0 {
 		byteRead := bytes.NewReader(res)
+
+		// return Response
+		result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
+		conn.Write([]byte(string(result)))
+				
 		for i := 0; i < (totalBytes / byteSize); i++ {
 			if i > 0 {
 				byteRead.Seek(int64((byteSize * i)), 0)
