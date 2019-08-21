@@ -99,7 +99,7 @@ func checkLastSeen() {
 			return
 		}
 		if value.SystemCode == "MCPG" {
-			if callTime(value) >= 5 {
+			if callTime(value) > 1440 {
 				// fmt.Println("device_id", value.DeviceID)
 				value.Offline = true
 				core.SaveData(value)
