@@ -37,6 +37,8 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 
 			processRequest(conn, mb, n1, clientJobs, i)
 		}
+
+		conn.Close()
 	}
 }
 
@@ -170,8 +172,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 	// send data to ntsa
 	go sendToNTSA(deviceData)
-
-	conn.Close()
 }
 
 func sendToNTSA(deviceData models.DeviceData) {
