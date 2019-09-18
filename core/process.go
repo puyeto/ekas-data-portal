@@ -179,19 +179,27 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 }
 
 func sendToAssociation(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 1000080 {
+	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751767 {
 		t := deviceData.DateTime
 		url := "http://134.209.85.190:8888/api/raw/data"
+		powerWireStatus := "off"
+		if deviceData.Disconnect {
+			powerWireStatus = "on"
+		}
+		speedSignalStatus := "off"
+		if deviceData.Failsafe {
+			speedSignalStatus = "on"
+		}
 		requestBody, err := json.Marshal(map[string]string{
-			"companyId":          "6577879314066071821",
+			"companyId":          "ekasfk2017",
 			"dateonly":           t.Format("2006-01-02"),
 			"deviceNumber":       strconv.Itoa(int(deviceData.DeviceID)),
 			"latitude":           strconv.Itoa(int(deviceData.Latitude)),
 			"longitude":          strconv.Itoa(int(deviceData.Longitude)),
-			"powerWireStatus":    strconv.FormatBool(deviceData.Disconnect),
+			"powerWireStatus":    powerWireStatus,
 			"registrationNumber": "KCP 368Q",
 			"speed":              strconv.Itoa(int(deviceData.GroundSpeed)),
-			"speedSignalStatus":  strconv.FormatBool(deviceData.Failsafe),
+			"speedSignalStatus":  speedSignalStatus,
 			"timeonly":           t.Format("15:04:05"),
 		})
 		if err != nil {
