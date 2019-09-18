@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -50,7 +51,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 		return
 	}
 
-	fmt.Println(time.Now(), " data ", string(b))
+	// fmt.Println(time.Now(), " data ", string(b))
 
 	byteReader := bytes.NewReader(b)
 
@@ -171,11 +172,47 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	}
 
 	// send data to ntsa
-	go sendToNTSA(deviceData)
+	// go sendToNTSA(deviceData)
+
+	// send to association
+	go sendToAssociation(deviceData)
+}
+
+func sendToAssociation(deviceData models.DeviceData) {
+	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 1000080 {
+		t := deviceData.DateTime
+		url := "http://134.209.85.190:8888/api/raw/data"
+		requestBody, err := json.Marshal(map[string]string{
+			"companyId":          "6577879314066071821",
+			"dateonly":           t.Format("2006-01-02"),
+			"deviceNumber":       strconv.Itoa(int(deviceData.DeviceID)),
+			"latitude":           strconv.Itoa(int(deviceData.Latitude)),
+			"longitude":          strconv.Itoa(int(deviceData.Longitude)),
+			"powerWireStatus":    strconv.FormatBool(deviceData.Disconnect),
+			"registrationNumber": "KCP 368Q",
+			"speed":              strconv.Itoa(int(deviceData.GroundSpeed)),
+			"speedSignalStatus":  strconv.FormatBool(deviceData.Failsafe),
+			"timeonly":           t.Format("15:04:05"),
+		})
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		defer resp.Body.Close()
+
+		body, _ := ioutil.ReadAll(resp.Body)
+
+		fmt.Println(string(body))
+	}
 }
 
 func sendToNTSA(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 1000080 {
+	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751767 {
 		t := deviceData.DateTime
 		// requestBody, err := json.Marshal(map[string]string{
 		// 	"date":                       t.Format("2006-01-02"),
@@ -218,7 +255,10 @@ func sendToNTSA(deviceData models.DeviceData) {
 		req.Header.Add("content-type", "application/x-www-form-urlencoded")
 		req.Header.Add("cache-control", "no-cache")
 
-		res, _ := http.DefaultClient.Do(req)
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		defer res.Body.Close()
 		// body, _ := ioutil.ReadAll(res.Body)
