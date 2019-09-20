@@ -281,8 +281,8 @@ func sendToNTSA(deviceData models.DeviceData) {
 		}
 
 		datastr := t.Format("02/01/2006") + "," + t.Format("15:04:05") + "," + strconv.Itoa(int(deviceData.DeviceID)) + ",ekasfk2017,"
-		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + long + "," + longdirection + ","
-		datastr += lat + "," + latdirection + "," + disconnect + "," + failsafe
+		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + lat + "," + latdirection + ","
+		datastr += long + "," + longdirection + "," + disconnect + "," + failsafe
 
 		fmt.Println(datastr)
 
