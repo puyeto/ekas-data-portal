@@ -172,11 +172,11 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	}
 
 	// send data to ntsa
-	// go sendToNTSA(deviceData)
+	go sendToNTSA(deviceData)
 
 	// send to association
 	go sendToAssociation(deviceData)
-	go sendToAssociation2(deviceData)
+	// go sendToAssociation2(deviceData)
 }
 
 func sendToAssociation(deviceData models.DeviceData) {
@@ -288,13 +288,13 @@ func sendToNTSA(deviceData models.DeviceData) {
 		}
 
 		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + ", ekasfk2017, "
-		datastr += "KBH 234Y, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)) + ", "
-		datastr += strconv.Itoa(int(deviceData.SpeedDirection)) + ", " + strconv.Itoa(int(deviceData.Latitude)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
+		datastr += "KDH201-5009832, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)/10000000) + ", "
+		datastr += strconv.Itoa(int(deviceData.Latitude)/10000000) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
 		datastr += disconnect + ", " + failsafe
 
 		// fmt.Println(datastr)
 
-		url := "http://41.206.37.78/speedlimiter/sg_data.php"
+		url := "http://bigmachini.net:22023/speedlimiter"
 		payload := strings.NewReader(datastr)
 
 		req, _ := http.NewRequest("POST", url, payload)
