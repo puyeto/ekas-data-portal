@@ -270,8 +270,8 @@ func sendToNTSA(deviceData models.DeviceData) {
 		}
 
 		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + ", ekasfk2017, "
-		datastr += "KDH201-5009832, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + FloatToString(float64(deviceData.Longitude/10000000)) + ", "
-		datastr += FloatToString(float64(deviceData.Latitude/10000000)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
+		datastr += "KDH201-5009832, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + FloatToString(float64(deviceData.Longitude)/10000000) + ", "
+		datastr += FloatToString(float64(deviceData.Latitude)/10000000) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
 		datastr += disconnect + ", " + failsafe
 
 		fmt.Println(datastr)
@@ -296,9 +296,10 @@ func sendToNTSA(deviceData models.DeviceData) {
 	}
 }
 
-func FloatToString(input_num float64) string {
+// FloatToString ...
+func FloatToString(inputnum float64) string {
 	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', 6, 64)
+	return strconv.FormatFloat(inputnum, 'f', 6, 64)
 }
 
 // check if Device is in idle state
