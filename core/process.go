@@ -258,7 +258,7 @@ func sendToAssociation2(deviceData models.DeviceData) {
 }
 
 func sendToNTSA(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751767 {
+	if deviceData.SystemCode == "MCPG" {
 		t := deviceData.DateTime
 		// requestBody, err := json.Marshal(map[string]string{
 		// 	"date":                       t.Format("2006-01-02"),
