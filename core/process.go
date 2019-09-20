@@ -298,7 +298,7 @@ func sendToNTSA(deviceData models.DeviceData) {
 		payload := strings.NewReader(datastr)
 
 		req, _ := http.NewRequest("POST", url, payload)
-		req.Header.Add("content-type", "application/x-www-form-urlencoded")
+		req.Header.Add("content-type", "text/plain")
 		req.Header.Add("cache-control", "no-cache")
 
 		res, err := http.DefaultClient.Do(req)
