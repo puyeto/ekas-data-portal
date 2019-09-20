@@ -216,7 +216,7 @@ func sendToAssociation(deviceData models.DeviceData) {
 
 		body, _ := ioutil.ReadAll(resp.Body)
 
-		fmt.Println("association", string(body))
+		fmt.Println(string(body))
 	}
 }
 
@@ -307,10 +307,10 @@ func sendToNTSA(deviceData models.DeviceData) {
 		}
 
 		defer res.Body.Close()
-		// body, _ := ioutil.ReadAll(res.Body)
-		ioutil.ReadAll(res.Body)
 
-		// fmt.Println(string(body))
+		body, _ := ioutil.ReadAll(res.Body)
+
+		fmt.Println("association 2", string(body))
 	}
 }
 
