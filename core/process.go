@@ -260,24 +260,6 @@ func sendToAssociation2(deviceData models.DeviceData) {
 func sendToNTSA(deviceData models.DeviceData) {
 	if deviceData.SystemCode == "MCPG" {
 		t := deviceData.DateTime
-		// requestBody, err := json.Marshal(map[string]string{
-		// 	"date":                       t.Format("2006-01-02"),
-		// 	"time":                       t.Format("15:04:05"),
-		// 	"device_imei":                strconv.Itoa(int(deviceData.DeviceID)),
-		// 	"company_id":                 "ekasfk2017",
-		// 	"car_plate":                  "KBH 234Y",
-		// 	"speed":                      strconv.Itoa(int(deviceData.GroundSpeed)),
-		// 	"longitude":                  strconv.Itoa(int(deviceData.Longitude)),
-		// 	"longitude_direction":        strconv.Itoa(int(deviceData.SpeedDirection)),
-		// 	"latitude":                   strconv.Itoa(int(deviceData.Latitude)),
-		// 	"latitude_direction":         strconv.Itoa(int(deviceData.SpeedDirection)),
-		// 	"power_disconnection":        strconv.FormatBool(deviceData.Disconnect),
-		// 	"speed_signal_disconnection": strconv.FormatBool(deviceData.Failsafe),
-		// })
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
-		// resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody)
 		disconnect := "0"
 		failsafe := "0"
 		if deviceData.Disconnect {
@@ -288,8 +270,8 @@ func sendToNTSA(deviceData models.DeviceData) {
 		}
 
 		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + ", ekasfk2017, "
-		datastr += "KDH201-5009832, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + strconv.Itoa(int(deviceData.Longitude)/10000000) + ", "
-		datastr += strconv.Itoa(int(deviceData.Latitude)/10000000) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
+		datastr += "KDH201-5009832, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + FloatToString(float64(deviceData.Longitude/10000000)) + ", "
+		datastr += FloatToString(float64(deviceData.Latitude/10000000)) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
 		datastr += disconnect + ", " + failsafe
 
 		fmt.Println(datastr)
@@ -312,6 +294,11 @@ func sendToNTSA(deviceData models.DeviceData) {
 
 		fmt.Println("association 2", string(body))
 	}
+}
+
+func FloatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 6, 64)
 }
 
 // check if Device is in idle state
