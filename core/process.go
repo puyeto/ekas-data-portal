@@ -292,7 +292,7 @@ func sendToNTSA(deviceData models.DeviceData) {
 		datastr += strconv.Itoa(int(deviceData.Latitude)/10000000) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
 		datastr += disconnect + ", " + failsafe
 
-		// fmt.Println(datastr)
+		fmt.Println(datastr)
 
 		url := "http://api.bigmachini.net/speedlimiter"
 		payload := strings.NewReader(datastr)
