@@ -258,7 +258,7 @@ func sendToAssociation2(deviceData models.DeviceData) {
 }
 
 func sendToNTSA(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" {
+	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 100000071 {
 		t := deviceData.DateTime
 		disconnect := "0"
 		failsafe := "0"
@@ -269,10 +269,20 @@ func sendToNTSA(deviceData models.DeviceData) {
 			failsafe = "1"
 		}
 
-		datastr := t.Format("2006-01-02") + ", " + t.Format("15:04:05") + ", " + strconv.Itoa(int(deviceData.DeviceID)) + ", ekasfk2017, "
-		datastr += "KDH201-5009832, " + strconv.Itoa(int(deviceData.GroundSpeed)) + ", " + FloatToString(float64(deviceData.Longitude)/10000000) + ", "
-		datastr += FloatToString(float64(deviceData.Latitude)/10000000) + ", " + strconv.Itoa(int(deviceData.SpeedDirection)) + ", "
-		datastr += disconnect + ", " + failsafe
+		lat := FloatToString(float64(deviceData.Latitude) / 10000000)
+		long := FloatToString(float64(deviceData.Longitude) / 10000000)
+		latdirection := "N"
+		if deviceData.Latitude < 0 {
+			latdirection = "S"
+		}
+		longdirection := "E"
+		if deviceData.Longitude < 0 {
+			longdirection = "W"
+		}
+
+		datastr := t.Format("02/01/2006") + "," + t.Format("15:04:05") + "," + strconv.Itoa(int(deviceData.DeviceID)) + ",ekas,"
+		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + long + "," + longdirection + ","
+		datastr += lat + "," + latdirection + "," + disconnect + "," + failsafe
 
 		fmt.Println(datastr)
 
