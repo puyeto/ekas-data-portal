@@ -286,7 +286,7 @@ func sendToNTSA(deviceData models.DeviceData) {
 
 		fmt.Println(datastr)
 
-		url := "http://api.bigmachini.net/speedlimiter"
+		url := "http://api.speedlimiter.co.ke/speedlimiter"
 		payload := strings.NewReader(datastr)
 
 		req, _ := http.NewRequest("POST", url, payload)
