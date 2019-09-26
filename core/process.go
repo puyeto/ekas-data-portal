@@ -175,8 +175,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	go sendToNTSA(deviceData)
 
 	// send to association
-	go sendToAssociation(deviceData)
-	// go sendToAssociation2(deviceData)
+	// go sendToAssociation(deviceData)
 }
 
 func sendToAssociation(deviceData models.DeviceData) {
@@ -220,45 +219,8 @@ func sendToAssociation(deviceData models.DeviceData) {
 	}
 }
 
-func sendToAssociation2(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751145 {
-		t := deviceData.DateTime
-		url := "http://bigmachini.net:22023/speedlimiter"
-
-		requestBody, err := json.Marshal(map[string]string{
-			"date":                       t.Format("2006-01-02"),
-			"time":                       t.Format("15:04:05"),
-			"device_imei":                strconv.Itoa(int(deviceData.DeviceID)),
-			"company_id":                 "ekasfk2017",
-			"car_plate":                  "KDH201-5009832",
-			"speed":                      strconv.Itoa(int(deviceData.GroundSpeed)),
-			"longitude":                  strconv.Itoa(int(deviceData.Longitude)),
-			"longitude_direction":        strconv.Itoa(int(deviceData.SpeedDirection)),
-			"latitude":                   strconv.Itoa(int(deviceData.Latitude)),
-			"latitude_direction":         strconv.Itoa(int(deviceData.SpeedDirection)),
-			"power_disconnection":        strconv.FormatBool(deviceData.Disconnect),
-			"speed_signal_disconnection": strconv.FormatBool(deviceData.Failsafe),
-		})
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		defer resp.Body.Close()
-
-		body, _ := ioutil.ReadAll(resp.Body)
-
-		fmt.Println("association 2", string(body))
-	}
-}
-
 func sendToNTSA(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 100000071 {
+	if deviceData.DeviceID == 100000071 || deviceData.DeviceID == 1000061 {
 		t := deviceData.DateTime
 		disconnect := "0"
 		failsafe := "0"
