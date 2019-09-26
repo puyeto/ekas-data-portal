@@ -284,9 +284,7 @@ func sendToNTSA(deviceData models.DeviceData) {
 		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + lat + "," + latdirection + ","
 		datastr += long + "," + longdirection + "," + disconnect + "," + failsafe
 
-		fmt.Println(datastr)
-
-		url := "http://api.speedlimiter.co.ke/speedlimiter"
+		url := "http://api.speedlimiter.co.ke/ekas"
 		payload := strings.NewReader(datastr)
 
 		req, _ := http.NewRequest("POST", url, payload)
