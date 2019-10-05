@@ -48,5 +48,6 @@ ENTRYPOINT ./ekas-data-portal
 
 #Expose the port specific to the ekas API Application.
 EXPOSE 8083
+EXPOSE 7001
 
 
