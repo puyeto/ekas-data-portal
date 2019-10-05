@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -52,6 +53,13 @@ func main() {
 
 	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
 
+	server7001 := http.NewServeMux()
+	server7001.HandleFunc("/ping", listenPort7001)
+
+	go func() {
+		http.ListenAndServe(":7001", server7001)
+	}()
+
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
@@ -62,6 +70,17 @@ func main() {
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn, clientJobs)
 	}
+
+}
+
+func listenPort7001(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
+	w.Write([]byte("Listening on 7001: foo "))
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func check(err error, message string) {
