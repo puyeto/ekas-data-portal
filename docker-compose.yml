@@ -3,7 +3,7 @@ services:
   ekas-data:
     image: omollo/ekas-data-portal-prod
     deploy:
-      replicas: 2
+      replicas: 4
       resources:
         limits:
           cpus: "0.3"
