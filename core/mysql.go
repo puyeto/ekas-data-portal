@@ -12,9 +12,9 @@ import (
 var (
 	// DBCONN ...
 	DBCONN        *sql.DB
-	mysqlUsername = "ruser"
-	mysqlPassword = "Safcom_2012"
-	mysqlIP       = "157.230.0.138"
+	mysqlUsername = "re-user"
+	mysqlPassword = "Tracker@2030"
+	mysqlIP       = "167.99.15.200"
 	mysqlDB       = "ekas_portal"
 	mysqlPort     = 3306
 )
