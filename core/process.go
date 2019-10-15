@@ -448,6 +448,80 @@ func SaveData(m models.DeviceData) {
 	// }
 }
 
+// SaveAllData save all records to second db
+func SaveAllData(m models.DeviceData) error {
+	err := DBCONDATA.Ping()
+	if err != nil {
+		return err
+	}
+
+	tx, err := DBCONDATA.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tx.Rollback()
+
+	// create data table
+	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
+	tablename := "data_" + device
+	createquery := "CREATE TABLE IF NOT EXISTS " + tablename + " ( "
+	createquery += "`trip_id` int(10) unsigned NOT NULL AUTO_INCREMENT, "
+	createquery += "`device_id` int(11) NOT NULL, "
+	createquery += "`system_code` varchar(10) NOT NULL DEFAULT '0', "
+	createquery += "`data_date` datetime DEFAULT NULL, "
+	createquery += "`speed` decimal(10,2) NOT NULL DEFAULT 0.00, "
+	createquery += "`speed_direction` varchar(45) NOT NULL DEFAULT '0', "
+	createquery += "`longitude` int(11) NOT NULL DEFAULT 0, "
+	createquery += "`latitude` int(11) NOT NULL DEFAULT 0, "
+	createquery += "`altitude` int(11) NOT NULL DEFAULT 0, "
+	createquery += "`satellites` int(3) NOT NULL DEFAULT 1, "
+	createquery += "`hardware_version` varchar(45) DEFAULT NULL, "
+	createquery += "`software_version` varchar(45) DEFAULT NULL, "
+	createquery += "`transmission_reason` int(3) DEFAULT 0, "
+	createquery += "`transmission_reason_specific_data` varchar(200) DEFAULT NULL, "
+	createquery += "`failsafe` tinyint(1) NOT NULL DEFAULT 0, "
+	createquery += "`disconnect` tinyint(1) NOT NULL DEFAULT 0, "
+	createquery += "`offline` tinyint(1) NOT NULL DEFAULT 0, "
+	createquery += "`created_on` timestamp NULL DEFAULT current_timestamp(), "
+	createquery += "PRIMARY KEY (`trip_id`,`device_id`) "
+	createquery += ") ENGINE=InnoDB AUTO_INCREMENT=497198 DEFAULT CHARSET=utf8;"
+	stmt, err := tx.Prepare(createquery)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer stmt.Close() // danger!
+
+	_, err = stmt.Exec()
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Table created successfully..")
+	}
+
+	// perform a db.Query insert
+	query := "INSERT INTO " + tablename + " (device_id, system_code, data_date, speed, speed_direction, "
+	query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
+	query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect, offline) "
+	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
+	stmt, err = tx.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer stmt.Close()
+	_, err = stmt.Exec(m.DeviceID, m.SystemCode, m.DateTime, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
+		m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect, m.Offline)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
 type lastSeenStruct struct {
 	DateTime   time.Time
 	DeviceData models.DeviceData

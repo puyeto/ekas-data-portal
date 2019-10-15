@@ -11,11 +11,12 @@ import (
 
 var (
 	// DBCONN ...
-	DBCONN        *sql.DB
+	DBCONN *sql.DB
+	// DBCONDATA for data store.
+	DBCONDATA     *sql.DB
 	mysqlUsername = "re-user"
 	mysqlPassword = "Tracker@2030"
 	mysqlIP       = "167.99.15.200"
-	mysqlDB       = "ekas_portal"
 	mysqlPort     = 3306
 )
 
@@ -28,11 +29,11 @@ const (
 )
 
 // DBconnect Initialise a database connection
-func DBconnect() *sql.DB {
+func DBconnect(dbname string) *sql.DB {
 
 	//Construct the host
 	//Note: Values are set using a config file
-	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + mysqlDB + "?parseTime=true"
+	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + dbname + "?parseTime=true"
 
 	db, err := sql.Open(driverName, mysqlHost)
 	if err != nil {

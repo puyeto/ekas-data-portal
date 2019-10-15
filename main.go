@@ -21,7 +21,8 @@ func init() {
 	//Open the database once when the system loads
 	//Do not reopen unless required as Go manages this database from here on
 	//Do NOT CLOSE the db as it is ment to be long lasting
-	core.DBCONN = core.DBconnect()
+	core.DBCONN = core.DBconnect("ekas_portal")
+	core.DBCONDATA = core.DBconnect("ekas_portal_data")
 	err := core.InitializeRedis()
 	if err != nil {
 		// panic(err)
@@ -98,6 +99,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		core.SaveData(clientJob.DeviceData)
+		go core.SaveAllData(clientJob.DeviceData)
 		// }
 
 		// Send back the response.
