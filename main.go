@@ -103,7 +103,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// }
 
 		// Send back the response.
-		clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
+		// clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
 	}
 }
 

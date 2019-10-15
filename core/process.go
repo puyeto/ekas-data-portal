@@ -21,10 +21,6 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var byteSize = 70
 	totalBytes, res := readNextBytes(conn, 1024)
 
-	// return Response
-	result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
-	conn.Write([]byte(string(result)))
-
 	if totalBytes > 0 {
 		byteRead := bytes.NewReader(res)
 
