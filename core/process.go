@@ -494,15 +494,25 @@ func SaveAllData(m models.DeviceData) error {
 	_, err = stmt.Exec()
 	if err != nil {
 		fmt.Println(err.Error())
-	} else {
-		fmt.Println("Table created successfully..")
+	}
+
+	query := "ALTER TABLE " + tablename + " ADD COLUMN `date_time_stamp` INT(10) NULL DEFAULT '0' AFTER `created_on`;"
+	stmt, err = tx.Prepare(query)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer stmt.Close() // danger!
+
+	_, err = stmt.Exec()
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 
 	// perform a db.Query insert
-	query := "INSERT INTO " + tablename + " (device_id, system_code, data_date, speed, speed_direction, "
+	query = "INSERT INTO " + tablename + " (device_id, system_code, data_date, speed, speed_direction, "
 	query += " longitude, latitude, altitude, satellites, hardware_version, software_version, "
-	query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect, offline) "
-	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	query += " transmission_reason, transmission_reason_specific_data, failsafe, disconnect, offline, date_time_stamp) "
+	query += " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
 	stmt, err = tx.Prepare(query)
 	if err != nil {
@@ -511,7 +521,7 @@ func SaveAllData(m models.DeviceData) error {
 
 	defer stmt.Close()
 	_, err = stmt.Exec(m.DeviceID, m.SystemCode, m.DateTime, m.GroundSpeed, m.SpeedDirection, m.Longitude, m.Latitude, m.Altitude, m.NoOfSatellitesUsed, m.HardwareVersion,
-		m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect, m.Offline)
+		m.SoftwareVersion, m.TransmissionReason, m.TransmissionReasonSpecificData, m.Failsafe, m.Disconnect, m.Offline, m.DateTimeStamp)
 
 	if err != nil {
 		fmt.Println(err)
