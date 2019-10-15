@@ -484,7 +484,7 @@ func SaveAllData(m models.DeviceData) error {
 	createquery += "`offline` tinyint(1) NOT NULL DEFAULT 0, "
 	createquery += "`created_on` timestamp NULL DEFAULT current_timestamp(), "
 	createquery += "PRIMARY KEY (`trip_id`,`device_id`) "
-	createquery += ") ENGINE=InnoDB AUTO_INCREMENT=497198 DEFAULT CHARSET=utf8;"
+	createquery += ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
 	stmt, err := tx.Prepare(createquery)
 	if err != nil {
 		fmt.Println(err.Error())
