@@ -496,7 +496,7 @@ func SaveAllData(m models.DeviceData) error {
 		fmt.Println(err.Error())
 	}
 
-	query := "ALTER TABLE " + tablename + " ADD COLUMN `date_time_stamp` INT(10) NULL DEFAULT '0' AFTER `created_on`;"
+	query := "ALTER TABLE " + tablename + " ADD COLUMN IF NOT EXISTS `date_time_stamp` INT(10) NULL DEFAULT '0' AFTER `created_on`;"
 	stmt, err = tx.Prepare(query)
 	if err != nil {
 		fmt.Println(err.Error())
