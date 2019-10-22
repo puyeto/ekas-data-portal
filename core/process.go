@@ -444,7 +444,7 @@ func SaveData(m models.DeviceData) {
 	lastSeen(m, "lastseen:"+device)
 	lastSeen(m, "lastseen")
 	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-	SetRedisLog(m, "data:"+device)
+	// SetRedisLog(m, "data:"+device)
 	// }
 }
 
