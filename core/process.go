@@ -172,7 +172,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	}
 
 	// send data to ntsa
-	go sendToNTSA(deviceData)
+	// go sendToNTSA(deviceData)
 
 	// send to association
 	// go sendToAssociation(deviceData)
