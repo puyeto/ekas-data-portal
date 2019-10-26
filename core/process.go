@@ -466,7 +466,7 @@ func SaveAllData(m models.DeviceData) error {
 	tablename := "data_" + device
 	createquery := "CREATE TABLE IF NOT EXISTS " + tablename + " ( "
 	createquery += "`trip_id` int(10) unsigned NOT NULL AUTO_INCREMENT, "
-	createquery += "`device_id` int(11) NOT NULL, "
+	createquery += "`device_id` BIGINT(20) UNSIGNED NOT NULL, "
 	createquery += "`system_code` varchar(10) NOT NULL DEFAULT '0', "
 	createquery += "`data_date` datetime DEFAULT NULL, "
 	createquery += "`speed` decimal(10,2) NOT NULL DEFAULT 0.00, "
