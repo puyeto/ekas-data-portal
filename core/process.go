@@ -19,8 +19,7 @@ import (
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	var byteSize = 70
-	totalBytes, res := readNextBytes(conn, 1024)
-	fmt.Println("res = ", res)
+	totalBytes, res := readNextBytes(conn, 700)
 
 	// return Response
 	result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
@@ -36,8 +35,6 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 
 			mb := make([]byte, byteSize)
 			n1, _ := byteRead.Read(mb)
-
-			fmt.Println("mb = ", mb)
 
 			processRequest(conn, mb, n1, clientJobs, i)
 		}
