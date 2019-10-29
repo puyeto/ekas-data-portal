@@ -1,10 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/ekas-data-portal/core"
@@ -17,7 +21,17 @@ const (
 	CONN_TYPE = "tcp"
 )
 
+var startTime time.Time
+
+type heartbeatMessage struct {
+	Status string `json:"status"`
+	Build  string `json:"build"`
+	Uptime string `json:"uptime"`
+}
+
 func init() {
+	startTime = time.Now()
+
 	//Open the database once when the system loads
 	//Do not reopen unless required as Go manages this database from here on
 	//Do NOT CLOSE the db as it is ment to be long lasting
@@ -32,15 +46,17 @@ func init() {
 
 func main() {
 
+	time.Now().UnixNano()
+
 	clientJobs := make(chan models.ClientJob)
 	go generateResponses(clientJobs)
 
-	ticker := time.NewTicker(5 * time.Minute)
-	go func() {
-		for range ticker.C {
-			checkLastSeen()
-		}
-	}()
+	// ticker := time.NewTicker(5 * time.Minute)
+	// go func() {
+	// 	for range ticker.C {
+	// 		checkLastSeen()
+	// 	}
+	// }()
 
 	// Listen for incoming connections.
 	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
@@ -54,12 +70,7 @@ func main() {
 
 	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
 
-	server7001 := http.NewServeMux()
-	server7001.HandleFunc("/ping", listenPort7001)
-
-	go func() {
-		http.ListenAndServe(":7001", server7001)
-	}()
+	go runHeartbeatService(":7001")
 
 	for {
 		// Listen for an incoming connection.
@@ -74,10 +85,21 @@ func main() {
 
 }
 
-func listenPort7001(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
+func handler(rw http.ResponseWriter, r *http.Request) {
+	enableCors(&rw)
+	s := rand.New(rand.NewSource(99))
+	hash := s.Int()
 
-	w.Write([]byte("Listening on 7001: foo "))
+	uptime := time.Since(startTime).String()
+	err := json.NewEncoder(rw).Encode(heartbeatMessage{"OK", strconv.Itoa(hash), uptime})
+	if err != nil {
+		log.Fatalf("Failed to write heartbeat message. Reason: %s", err.Error())
+	}
+}
+
+func runHeartbeatService(address string) {
+	http.HandleFunc("/heartbeat", handler)
+	log.Println(http.ListenAndServe(address, nil))
 }
 
 func enableCors(w *http.ResponseWriter) {
