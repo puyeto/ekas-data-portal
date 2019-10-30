@@ -483,23 +483,11 @@ func SaveAllData(m models.DeviceData) error {
 	createquery += "`disconnect` tinyint(1) NOT NULL DEFAULT 0, "
 	createquery += "`offline` tinyint(1) NOT NULL DEFAULT 0, "
 	createquery += "`created_on` timestamp NULL DEFAULT current_timestamp(), "
+	createquery += "`date_time_stamp` INT(10) NOT NULL DEFAULT 0, "
 	createquery += "PRIMARY KEY (`trip_id`,`device_id`) "
 	createquery += ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
 
 	stmt, err := tx.Prepare(createquery)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	defer stmt.Close() // danger!
-
-	_, err = stmt.Exec()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
-	createquery = " ALTER TABLE " + tablename + " ADD COLUMN IF NOT EXISTS `date_time_stamp` INT(10) NULL DEFAULT '0' AFTER `created_on`;"
-
-	stmt, err = tx.Prepare(createquery)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
