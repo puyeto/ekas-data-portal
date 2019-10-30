@@ -14,10 +14,10 @@ var (
 	DBCONN *sql.DB
 	// DBCONDATA for data store.
 	DBCONDATA     *sql.DB
-	mysqlUsername = "re-user"
-	mysqlPassword = "Tracker@2030"
-	mysqlIP       = "167.99.15.200"
-	mysqlPort     = 3306
+	mysqlUsername = "doadmin"
+	mysqlPassword = "vnz5itaj19jqco1n"
+	mysqlIP       = "db-mysql-cluster-do-user-4666162-0.db.ondigitalocean.com"
+	mysqlPort     = 25060
 )
 
 const (
