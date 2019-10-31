@@ -25,33 +25,30 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 	result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
 	conn.Write([]byte(string(result)))
 
-	if totalBytes > 0 {
+	if totalBytes == 700 {
 		byteRead := bytes.NewReader(res)
 
 		for i := 0; i < (totalBytes / byteSize); i++ {
-			if i > 0 {
-				byteRead.Seek(int64((byteSize * i)), 0)
-			}
+
+			byteRead.Seek(int64((byteSize * i)), 0)
 
 			mb := make([]byte, byteSize)
 			n1, _ := byteRead.Read(mb)
 
-			processRequest(conn, mb, n1, clientJobs, i)
+			go processRequest(conn, mb, n1, clientJobs)
 		}
 
 		conn.Close()
 	}
 }
 
-func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models.ClientJob, i int) {
+func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models.ClientJob) {
 	var deviceData models.DeviceData
 
 	if byteLen != 70 {
-		fmt.Println(i, " - Invalid Byte Length = ", byteLen)
+		fmt.Println("Invalid Byte Length = ", byteLen)
 		return
 	}
-
-	// fmt.Println(time.Now(), " data ", string(b))
 
 	byteReader := bytes.NewReader(b)
 
@@ -70,6 +67,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	if deviceData.DeviceID == 0 {
 		return
 	}
+
+	fmt.Println(deviceData.DeviceID, time.Now(), " data received")
 
 	// Transmission Reason – 1 byte
 	byteReader.Seek(18, 0)
@@ -165,9 +164,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-	if deviceData.DeviceID == 1943370335 {
-		fmt.Println(deviceData)
-	}
 
 	if checkIdleState(deviceData) != "idle3" {
 		clientJobs <- models.ClientJob{deviceData, conn}
