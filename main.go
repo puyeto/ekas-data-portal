@@ -13,12 +13,13 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
+	"github.com/pkg/profile"
 )
 
 const (
-	CONN_HOST = "0.0.0.0"
-	CONN_PORT = "8083"
-	CONN_TYPE = "tcp"
+	CONNHOST = "0.0.0.0"
+	CONNPORT = 8083
+	CONNTYPE = "tcp"
 )
 
 var startTime time.Time
@@ -45,6 +46,7 @@ func init() {
 }
 
 func main() {
+	defer profile.Start(profile.MemProfile).Stop()
 
 	time.Now().UnixNano()
 
@@ -59,7 +61,7 @@ func main() {
 	// }()
 
 	// Listen for incoming connections.
-	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
+	l, err := net.ListenTCP(CONNTYPE, &net.TCPAddr{Port: CONNPORT})
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
@@ -68,13 +70,13 @@ func main() {
 	// Close the listener when the application closes.
 	defer l.Close()
 
-	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
+	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 
 	go runHeartbeatService(":7001")
 
 	for {
 		// Listen for an incoming connection.
-		conn, err := l.Accept()
+		conn, err := l.AcceptTCP()
 		if err != nil {
 			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
