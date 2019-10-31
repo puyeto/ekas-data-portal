@@ -165,7 +165,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
-	if checkIdleState(deviceData) != "idle3" {
+	if deviceData.DeviceID = 1900255800 {
 		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
@@ -176,99 +176,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	// go sendToAssociation(deviceData)
 }
 
-func sendToAssociation(deviceData models.DeviceData) {
-	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751145 {
-		t := deviceData.DateTime
-		url := "http://134.209.85.190:8888/api/raw/data"
-		powerWireStatus := "off"
-		if deviceData.Disconnect {
-			powerWireStatus = "on"
-		}
-		speedSignalStatus := "off"
-		if deviceData.Failsafe {
-			speedSignalStatus = "on"
-		}
-		requestBody, err := json.Marshal(map[string]string{
-			"companyId":          "ekasfk2017",
-			"dateonly":           t.Format("2006-01-02"),
-			"deviceNumber":       strconv.Itoa(int(deviceData.DeviceID)),
-			"latitude":           strconv.Itoa(int(deviceData.Latitude)),
-			"longitude":          strconv.Itoa(int(deviceData.Longitude)),
-			"powerWireStatus":    powerWireStatus,
-			"registrationNumber": "KDH201-5009832",
-			"speed":              strconv.Itoa(int(deviceData.GroundSpeed)),
-			"speedSignalStatus":  speedSignalStatus,
-			"timeonly":           t.Format("15:04:05"),
-		})
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		defer resp.Body.Close()
-
-		body, _ := ioutil.ReadAll(resp.Body)
-
-		fmt.Println(string(body))
-	}
-}
-
-func sendToNTSA(deviceData models.DeviceData) {
-	if deviceData.DeviceID == 100000071 || deviceData.DeviceID == 1000061 {
-		t := deviceData.DateTime
-		disconnect := "0"
-		failsafe := "0"
-		if deviceData.Disconnect {
-			disconnect = "1"
-		}
-		if deviceData.Failsafe {
-			failsafe = "1"
-		}
-
-		lat := FloatToString(float64(deviceData.Latitude) / 10000000)
-		long := FloatToString(float64(deviceData.Longitude) / 10000000)
-		latdirection := "N"
-		if deviceData.Latitude < 0 {
-			latdirection = "S"
-		}
-		longdirection := "E"
-		if deviceData.Longitude < 0 {
-			longdirection = "W"
-		}
-
-		datastr := t.Format("02/01/2006") + "," + t.Format("15:04:05") + "," + strconv.Itoa(int(deviceData.DeviceID)) + ",ekasfk2017,"
-		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + lat + "," + latdirection + ","
-		datastr += long + "," + longdirection + "," + disconnect + "," + failsafe
-
-		url := "http://api.speedlimiter.co.ke/ekas"
-		payload := strings.NewReader(datastr)
-
-		req, _ := http.NewRequest("POST", url, payload)
-		req.Header.Add("content-type", "text/plain")
-		req.Header.Add("cache-control", "no-cache")
-
-		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		defer res.Body.Close()
-
-		body, _ := ioutil.ReadAll(res.Body)
-
-		fmt.Println("association 2", string(body))
-	}
-}
-
-// FloatToString ...
-func FloatToString(inputnum float64) string {
-	// to convert a float number to a string
-	return strconv.FormatFloat(inputnum, 'f', 6, 64)
-}
 
 // check if Device is in idle state
 func checkIdleState(m models.DeviceData) string {
@@ -553,4 +460,100 @@ func SetRedisLog(m models.DeviceData, key string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+
+
+func sendToAssociation(deviceData models.DeviceData) {
+	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751145 {
+		t := deviceData.DateTime
+		url := "http://134.209.85.190:8888/api/raw/data"
+		powerWireStatus := "off"
+		if deviceData.Disconnect {
+			powerWireStatus = "on"
+		}
+		speedSignalStatus := "off"
+		if deviceData.Failsafe {
+			speedSignalStatus = "on"
+		}
+		requestBody, err := json.Marshal(map[string]string{
+			"companyId":          "ekasfk2017",
+			"dateonly":           t.Format("2006-01-02"),
+			"deviceNumber":       strconv.Itoa(int(deviceData.DeviceID)),
+			"latitude":           strconv.Itoa(int(deviceData.Latitude)),
+			"longitude":          strconv.Itoa(int(deviceData.Longitude)),
+			"powerWireStatus":    powerWireStatus,
+			"registrationNumber": "KDH201-5009832",
+			"speed":              strconv.Itoa(int(deviceData.GroundSpeed)),
+			"speedSignalStatus":  speedSignalStatus,
+			"timeonly":           t.Format("15:04:05"),
+		})
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		defer resp.Body.Close()
+
+		body, _ := ioutil.ReadAll(resp.Body)
+
+		fmt.Println(string(body))
+	}
+}
+
+func sendToNTSA(deviceData models.DeviceData) {
+	if deviceData.DeviceID == 100000071 || deviceData.DeviceID == 1000061 {
+		t := deviceData.DateTime
+		disconnect := "0"
+		failsafe := "0"
+		if deviceData.Disconnect {
+			disconnect = "1"
+		}
+		if deviceData.Failsafe {
+			failsafe = "1"
+		}
+
+		lat := FloatToString(float64(deviceData.Latitude) / 10000000)
+		long := FloatToString(float64(deviceData.Longitude) / 10000000)
+		latdirection := "N"
+		if deviceData.Latitude < 0 {
+			latdirection = "S"
+		}
+		longdirection := "E"
+		if deviceData.Longitude < 0 {
+			longdirection = "W"
+		}
+
+		datastr := t.Format("02/01/2006") + "," + t.Format("15:04:05") + "," + strconv.Itoa(int(deviceData.DeviceID)) + ",ekasfk2017,"
+		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + lat + "," + latdirection + ","
+		datastr += long + "," + longdirection + "," + disconnect + "," + failsafe
+
+		url := "http://api.speedlimiter.co.ke/ekas"
+		payload := strings.NewReader(datastr)
+
+		req, _ := http.NewRequest("POST", url, payload)
+		req.Header.Add("content-type", "text/plain")
+		req.Header.Add("cache-control", "no-cache")
+
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		defer res.Body.Close()
+
+		body, _ := ioutil.ReadAll(res.Body)
+
+		fmt.Println("association 2", string(body))
+	}
+}
+
+// FloatToString ...
+func FloatToString(inputnum float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(inputnum, 'f', 6, 64)
 }

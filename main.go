@@ -120,7 +120,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-		core.SaveData(clientJob.DeviceData)
+		go core.SaveData(clientJob.DeviceData)
 		go core.SaveAllData(clientJob.DeviceData)
 		// }
 
