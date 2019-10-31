@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	_ "net/http/pprof"
 	"os"
 	"strconv"
 	"time"
@@ -69,12 +68,7 @@ func main() {
 	}
 
 	// Close the listener when the application closes.
-	var connections []net.Conn
-	defer func() {
-		for _, conn := range connections {
-			conn.Close()
-		}
-	}()
+	// defer l.Close()
 
 	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 
@@ -84,21 +78,12 @@ func main() {
 		// Listen for an incoming connection.
 		conn, err := l.AcceptTCP()
 		if err != nil {
-			if ne, ok := err.(net.Error); ok && ne.Temporary() {
-				log.Printf("accept temp err: %v", ne)
-				continue
-			}
-
-			log.Printf("accept err: %v", err)
-			return
+			fmt.Println("Error accepting: ", err.Error())
+			os.Exit(1)
 		}
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn, clientJobs)
-		connections = append(connections, conn)
-		if len(connections)%100 == 0 {
-			log.Printf("total number of connections: %v", len(connections))
-		}
 	}
 
 }
