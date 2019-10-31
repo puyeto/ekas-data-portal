@@ -81,6 +81,16 @@ func main() {
 			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
 		}
+
+		if err = conn.SetKeepAlive(true); err != nil {
+			fmt.Println("conn.SetKeepAlive() error(%v)", err)
+			return
+		}
+		if err = conn.SetReadBuffer(1024); err != nil {
+			fmt.Println("conn.SetReadBuffer() error(%v)", err)
+			return
+		}
+
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn, clientJobs)
 	}
