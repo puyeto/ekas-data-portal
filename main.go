@@ -120,9 +120,9 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-		go core.LogToRedis(clientJob.DeviceData)
+		core.LogToRedis(clientJob.DeviceData)
 		// go core.SaveData(clientJob.DeviceData)
-		go core.SaveAllData(clientJob.DeviceData)
+		core.SaveAllData(clientJob.DeviceData)
 		// }
 
 		// Send back the response.
