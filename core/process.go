@@ -174,6 +174,17 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 
 	// send to association
 	// go sendToAssociation(deviceData)
+
+}
+
+// LogToRedis log data to redis
+func LogToRedis(m models.DeviceData) {
+	var device = strconv.FormatUint(uint64(m.DeviceID), 10)
+	lastSeen(m, "lastseen:"+device)
+	lastSeen(m, "lastseen")
+	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
+	SetRedisLog(m, "data:"+device)
+	// }
 }
 
 // check if Device is in idle state
@@ -344,12 +355,6 @@ func SaveData(m models.DeviceData) {
 	}
 
 	tx.Commit()
-
-	lastSeen(m, "lastseen:"+device)
-	lastSeen(m, "lastseen")
-	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
-	SetRedisLog(m, "data:"+device)
-	// }
 }
 
 // SaveAllData save all records to second db
