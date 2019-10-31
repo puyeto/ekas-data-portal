@@ -18,6 +18,7 @@ import (
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
+	io.Copy(ioutil.Discard, conn)
 	var byteSize = 70
 	totalBytes, res := readNextBytes(conn, 700)
 
