@@ -165,7 +165,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
-	if deviceData.DeviceID = 1900255800 {
+	if deviceData.DeviceID == 1900255800 {
 		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
@@ -175,7 +175,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	// send to association
 	// go sendToAssociation(deviceData)
 }
-
 
 // check if Device is in idle state
 func checkIdleState(m models.DeviceData) string {
@@ -461,8 +460,6 @@ func SetRedisLog(m models.DeviceData, key string) {
 		fmt.Println(err)
 	}
 }
-
-
 
 func sendToAssociation(deviceData models.DeviceData) {
 	if deviceData.SystemCode == "MCPG" && deviceData.DeviceID == 12751145 {
