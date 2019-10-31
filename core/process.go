@@ -165,9 +165,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
-	if deviceData.DeviceID == 1900255800 {
-		clientJobs <- models.ClientJob{deviceData, conn}
-	}
+	// if checkIdleState(deviceData) != "idle3" {
+	clientJobs <- models.ClientJob{deviceData, conn}
+	//}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
