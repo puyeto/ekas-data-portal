@@ -17,7 +17,7 @@ import (
 )
 
 // HandleRequest Handles incoming requests.
-func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
+func HandleRequest(conn net.Conn) {
 
 	var byteSize = 70
 	totalBytes, res := readNextBytes(conn, 700)
@@ -36,13 +36,16 @@ func HandleRequest(conn net.Conn, clientJobs chan models.ClientJob) {
 			mb := make([]byte, byteSize)
 			n1, _ := byteRead.Read(mb)
 
-			go processRequest(conn, mb, n1, clientJobs)
+			go processRequest(conn, mb, n1)
 		}
 
 	}
 }
 
-func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models.ClientJob) {
+func processRequest(conn net.Conn, b []byte, byteLen int) {
+	clientJobs := make(chan models.ClientJob)
+	go generateResponses(clientJobs)
+
 	var deviceData models.DeviceData
 
 	if byteLen != 70 {
@@ -175,6 +178,23 @@ func processRequest(conn net.Conn, b []byte, byteLen int, clientJobs chan models
 	// send to association
 	// go sendToAssociation(deviceData)
 
+}
+
+func generateResponses(clientJobs chan models.ClientJob) {
+	for {
+		// Wait for the next job to come off the queue.
+		clientJob := <-clientJobs
+
+		// Do something thats keeps the CPU busy for a whole second.
+		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
+		LogToRedis(clientJob.DeviceData)
+		// go core.SaveData(clientJob.DeviceData)
+		SaveAllData(clientJob.DeviceData)
+		// }
+
+		// Send back the response.
+		// clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
+	}
 }
 
 // LogToRedis log data to redis

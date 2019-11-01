@@ -50,9 +50,6 @@ func main() {
 
 	time.Now().UnixNano()
 
-	clientJobs := make(chan models.ClientJob)
-	go generateResponses(clientJobs)
-
 	// ticker := time.NewTicker(5 * time.Minute)
 	// go func() {
 	// 	for range ticker.C {
@@ -79,11 +76,10 @@ func main() {
 		conn, err := l.AcceptTCP()
 		if err != nil {
 			fmt.Println("Error accepting: ", err.Error())
-			os.Exit(1)
 		}
 
 		// Handle connections in a new goroutine.
-		go core.HandleRequest(conn, clientJobs)
+		go core.HandleRequest(conn)
 	}
 
 }
@@ -114,23 +110,6 @@ func check(err error, message string) {
 		panic(err)
 	}
 	fmt.Printf("%s\n", message)
-}
-
-func generateResponses(clientJobs chan models.ClientJob) {
-	for {
-		// Wait for the next job to come off the queue.
-		clientJob := <-clientJobs
-
-		// Do something thats keeps the CPU busy for a whole second.
-		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-		core.LogToRedis(clientJob.DeviceData)
-		// go core.SaveData(clientJob.DeviceData)
-		core.SaveAllData(clientJob.DeviceData)
-		// }
-
-		// Send back the response.
-		// clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
-	}
 }
 
 func checkLastSeen() {
