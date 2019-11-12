@@ -71,7 +71,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		return
 	}
 
-	// fmt.Println(deviceData.DeviceID, time.Now(), " data received")
+	fmt.Println(deviceData.DeviceID, time.Now(), " data received")
 
 	// Transmission Reason – 1 byte
 	byteReader.Seek(18, 0)
@@ -172,7 +172,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	if deviceData.DeviceID == 1035374454 {
+	if deviceData.DeviceID == 1012595117 {
 		fmt.Println(deviceData)
 	}
 
