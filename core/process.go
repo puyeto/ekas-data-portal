@@ -71,7 +71,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		return
 	}
 
-	fmt.Println(deviceData.DeviceID, time.Now(), " data received")
+	// fmt.Println(deviceData.DeviceID, time.Now(), " data received")
 
 	// Transmission Reason – 1 byte
 	byteReader.Seek(18, 0)
@@ -171,6 +171,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// if checkIdleState(deviceData) != "idle3" {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
+
+	if deviceData.DeviceID == 1035374454 {
+		fmt.Println(deviceData)
+	}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
