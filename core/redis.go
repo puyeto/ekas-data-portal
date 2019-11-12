@@ -31,6 +31,7 @@ func InitializeRedis() error {
 		return nil
 	}
 	println("Redis Connection Failed")
+	println(GetKeyListByPattern("data:*"))
 	return err
 }
 
