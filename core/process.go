@@ -71,7 +71,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		return
 	}
 
-	// fmt.Println(deviceData.DeviceID, time.Now(), " data received")
+	fmt.Println(deviceData.DeviceID, time.Now(), " data received")
 
 	// Transmission Reason – 1 byte
 	byteReader.Seek(18, 0)
@@ -168,7 +168,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
-	if deviceData.DeviceID == 1966152526 {
+	if devicedata.DeviceID == 1061765187 {
 		fmt.Println(deviceData)
 	}
 
