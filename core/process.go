@@ -192,6 +192,16 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		LogToRedis(clientJob.DeviceData)
+
+		if clientJob.DeviceData.TransmissionReason == 255 || clientJob.DeviceData.GroundSpeed > 84 || clientJob.DeviceData.Offline == true {
+			var device = strconv.FormatUint(uint64(clientJob.DeviceData.DeviceID), 10)
+			// log data to redis
+			currentViolations(clientJob.DeviceData, "currentviolations:"+device)
+			currentViolations(clientJob.DeviceData, "currentviolations")
+			SetRedisLog(clientJob.DeviceData, "violations")
+			SetRedisLog(clientJob.DeviceData, "violations:"+device)
+			SetRedisLog(clientJob.DeviceData, "offline:"+device)
+		}
 		// go core.SaveData(clientJob.DeviceData)
 		SaveAllData(clientJob.DeviceData)
 		// }
