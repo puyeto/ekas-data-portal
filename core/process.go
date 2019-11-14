@@ -169,7 +169,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
 	// if checkIdleState(deviceData) != "idle3" {
-	clientJobs <- models.ClientJob{deviceData, conn}
+	clientJobs <- models.ClientJob{deviceData, nil}
 	//}
 
 	if deviceData.DeviceID == 1012595117 {
@@ -181,6 +181,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	// send to association
 	// go sendToAssociation(deviceData)
+	conn.Close()
 
 }
 
@@ -203,11 +204,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 			SetRedisLog(clientJob.DeviceData, "offline:"+device)
 		}
 		// go core.SaveData(clientJob.DeviceData)
-		SaveAllData(clientJob.DeviceData)
-		// }
-
-		// Send back the response.
-		// clientJob.Conn.Write([]byte("Hello, " + string(clientJob.DeviceData.DeviceID)))
+		go SaveAllData(clientJob.DeviceData)
 	}
 }
 
