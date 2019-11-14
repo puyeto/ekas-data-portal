@@ -23,8 +23,8 @@ func HandleRequest(conn net.Conn) {
 	totalBytes, res := readNextBytes(conn, 700)
 
 	// return Response
-	result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
-	conn.Write([]byte(string(result)))
+	// result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
+	// conn.Write([]byte(string(result)))
 
 	if totalBytes > 0 {
 		byteRead := bytes.NewReader(res)
