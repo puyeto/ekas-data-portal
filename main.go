@@ -79,7 +79,7 @@ func main() {
 		}
 
 		// return Response
-		result := "Portal Received\n"
+		result := "Received Portal\n"
 		conn.Write([]byte(string(result)))
 
 		// Handle connections in a new goroutine.
