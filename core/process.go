@@ -7,14 +7,18 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ekas-data-portal/models"
 )
+
+const queueLimit = 100
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
@@ -203,8 +207,33 @@ func generateResponses(clientJobs chan models.ClientJob) {
 			SetRedisLog(clientJob.DeviceData, "violations:"+device)
 			SetRedisLog(clientJob.DeviceData, "offline:"+device)
 		}
+
+		log.SetFlags(log.Ltime) // format log output hh:mm:ss
+
+		wg := sync.WaitGroup{}
+		queue := make(chan models.DeviceData)
+
+		for worker := 0; worker < queueLimit; worker++ {
+			wg.Add(1)
+
+			go func(worker int) {
+				defer wg.Done()
+
+				for work := range queue {
+					fmt.Println(work, clientJob.DeviceData.DeviceID)
+				}
+			}(worker)
+
+		}
+
+		queue <- clientJob.DeviceData
+
+		close(queue)
+
+		wg.Wait()
+
 		// go core.SaveData(clientJob.DeviceData)
-		go SaveAllData(clientJob.DeviceData)
+		// go SaveAllData(clientJob.DeviceData)
 	}
 }
 
