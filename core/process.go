@@ -169,11 +169,11 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
 	// if checkIdleState(deviceData) != "idle3" {
-	clientJobs <- models.ClientJob{deviceData, nil}
+	// clientJobs <- models.ClientJob{deviceData, nil}
 	//}
 
-	if deviceData.DeviceID == 1012595117 {
-		fmt.Println(deviceData)
+	if deviceData.DeviceID == 1090680894 {
+		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
 	// send data to ntsa
@@ -181,7 +181,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	// send to association
 	// go sendToAssociation(deviceData)
-	conn.Close()
+	// conn.Close()
 
 }
 
