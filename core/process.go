@@ -203,6 +203,13 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		wg := sync.WaitGroup{}
 		queue := make(chan models.DeviceData)
 
+		doWork := func(i int, m models.DeviceData) {
+			time.Sleep(2 * time.Second)
+			log.Printf("Worker %d working on %+v\n", i, m)
+			SaveData(m)
+			SaveAllData(m)
+		}
+
 		for worker := 0; worker < queueLimit; worker++ {
 			wg.Add(1)
 
@@ -210,8 +217,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 				defer wg.Done()
 
 				for work := range queue {
-					SaveData(work)
-					SaveAllData(worker, work)
+					doWork(worker, work) // blocking wait for work
 				}
 			}(worker)
 
@@ -409,8 +415,7 @@ func SaveData(m models.DeviceData) {
 }
 
 // SaveAllData save all records to second db
-func SaveAllData(worker int, m models.DeviceData) error {
-	fmt.Println("Worker", worker, " working on", m)
+func SaveAllData(m models.DeviceData) error {
 	err := DBCONDATA.Ping()
 	if err != nil {
 		return err
