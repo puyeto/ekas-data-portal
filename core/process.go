@@ -211,7 +211,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 				for work := range queue {
 					SaveData(work)
-					SaveAllData(work)
+					SaveAllData(worker, work)
 				}
 			}(worker)
 
@@ -409,7 +409,8 @@ func SaveData(m models.DeviceData) {
 }
 
 // SaveAllData save all records to second db
-func SaveAllData(m models.DeviceData) error {
+func SaveAllData(worker int, m models.DeviceData) error {
+	fmt.Println("Worker", worker, " working on", m)
 	err := DBCONDATA.Ping()
 	if err != nil {
 		return err
