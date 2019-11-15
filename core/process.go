@@ -283,6 +283,7 @@ func checkIdleState(m models.DeviceData) string {
 	if err != nil {
 		return "err"
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(deviceid, 1)
 	if err != nil {
@@ -387,6 +388,7 @@ func SaveData(m models.DeviceData) {
 				q = "UPDATE current_violations SET failsafe_trip_data=?, failsafe_trip_speed=? WHERE device_id=?"
 			}
 			stmt, _ := tx.Prepare(q)
+			defer stmt.Close()
 			stmt.Exec(lid, m.GroundSpeed, m.DeviceID)
 		} else {
 			var q string
@@ -400,6 +402,7 @@ func SaveData(m models.DeviceData) {
 				q = "INSERT INTO current_violations (device_id, name, failsafe_trip_data, failsafe_trip_speed) VALUES (?,?,?,?)"
 			}
 			stmt, _ := tx.Prepare(q)
+			defer stmt.Close()
 			stmt.Exec(m.DeviceID, m.Name, lid, m.GroundSpeed)
 		}
 
