@@ -198,16 +198,6 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		LogToRedis(clientJob.DeviceData)
 
-		if clientJob.DeviceData.TransmissionReason == 255 || clientJob.DeviceData.GroundSpeed > 84 || clientJob.DeviceData.Offline == true {
-			var device = strconv.FormatUint(uint64(clientJob.DeviceData.DeviceID), 10)
-			// log data to redis
-			currentViolations(clientJob.DeviceData, "currentviolations:"+device)
-			currentViolations(clientJob.DeviceData, "currentviolations")
-			SetRedisLog(clientJob.DeviceData, "violations")
-			SetRedisLog(clientJob.DeviceData, "violations:"+device)
-			SetRedisLog(clientJob.DeviceData, "offline:"+device)
-		}
-
 		log.SetFlags(log.Ltime) // format log output hh:mm:ss
 
 		wg := sync.WaitGroup{}
@@ -220,7 +210,8 @@ func generateResponses(clientJobs chan models.ClientJob) {
 				defer wg.Done()
 
 				for work := range queue {
-					fmt.Println(work, clientJob.DeviceData.DeviceID)
+					SaveData(work)
+					SaveAllData(work)
 				}
 			}(worker)
 
