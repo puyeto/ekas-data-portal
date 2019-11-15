@@ -173,6 +173,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	//}
 
 	if deviceData.DeviceID == 1090680894 {
+		fmt.Println(deviceData)
 		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
