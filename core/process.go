@@ -206,7 +206,6 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		doWork := func(i int, m models.DeviceData) {
 			time.Sleep(5 * time.Second)
 			log.Printf("Worker %d working on %+v\n", i, m)
-			// SaveData(m)
 			SaveAllData(m)
 		}
 
