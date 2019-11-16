@@ -65,7 +65,7 @@ func main() {
 	}
 
 	// Close the listener when the application closes.
-	// defer l.Close()
+	defer l.Close()
 
 	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 
@@ -130,7 +130,6 @@ func checkLastSeen() {
 		}
 		if value.SystemCode == "MCPG" {
 			if callTime(value) > 1440 {
-				// fmt.Println("device_id", value.DeviceID)
 				value.Offline = true
 				core.SaveData(value)
 			}
