@@ -13,8 +13,6 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
-	"github.com/gobwas/ws"
-	"github.com/pkg/profile"
 )
 
 const (
@@ -47,7 +45,6 @@ func init() {
 }
 
 func main() {
-	defer profile.Start(profile.MemProfile).Stop()
 
 	time.Now().UnixNano()
 
@@ -79,10 +76,10 @@ func main() {
 			fmt.Println("Error accepting: ", err.Error())
 		}
 
-		_, err = ws.Upgrade(conn)
-		if err != nil {
-			fmt.Println("Error upgrading: ", err.Error())
-		}
+		// _, err = ws.Upgrade(conn)
+		// if err != nil {
+		// 	fmt.Println("Error upgrading: ", err.Error())
+		// }
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)

@@ -21,6 +21,7 @@ const queueLimit = 20
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
+	defer conn.Close()
 
 	var byteSize = 70
 	totalBytes, res := readNextBytes(conn, 700)
