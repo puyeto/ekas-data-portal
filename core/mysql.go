@@ -14,17 +14,16 @@ var (
 	DBCONN *sql.DB
 	// DBCONDATA for data store.
 	DBCONDATA     *sql.DB
-	mysqlUsername = "doadmin"
-	mysqlPassword = "vnz5itaj19jqco1n"
-	mysqlIP       = "db-mysql-cluster-do-user-4666162-0.db.ondigitalocean.com"
-	mysqlPort     = 25060
+	mysqlUsername = "re-user"
+	mysqlPassword = "Tracker@2030"
+	mysqlIP       = "167.99.15.200"
+	mysqlPort     = 3306
 )
 
 const (
 	//Keeping a connection idle for a long time can cause problems
 	//http://go-database-sql.org/connection-pool.html
 	maxIdleConns = 0
-	maxOpenConns = 150
 
 	driverName = "mysql"
 )
@@ -42,7 +41,6 @@ func DBconnect(dbname string) *sql.DB {
 	}
 
 	db.SetMaxIdleConns(maxIdleConns)
-	db.SetMaxOpenConns(maxOpenConns)
 
 	return db
 }
