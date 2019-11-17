@@ -14,6 +14,7 @@ import (
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
 	"github.com/gobwas/ws"
+	"github.com/pkg/profile"
 )
 
 const (
@@ -46,6 +47,8 @@ func init() {
 }
 
 func main() {
+	defer profile.Start(profile.MemProfile).Stop()
+
 	time.Now().UnixNano()
 
 	// ticker := time.NewTicker(5 * time.Minute)
@@ -56,7 +59,7 @@ func main() {
 	// }()
 
 	// Listen for incoming connections.
-	l, err := net.Listen("tcp", ":"+strconv.Itoa(CONNPORT))
+	l, err := net.Listen(CONNTYPE, ":"+strconv.Itoa(CONNPORT))
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
@@ -69,42 +72,20 @@ func main() {
 
 	go runHeartbeatService(":7001")
 
-	// for {
-	// 	// Listen for an incoming connection.
-	// 	conn, err := l.AcceptTCP()
-	// 	if err != nil {
-	// 		fmt.Println("Error accepting: ", err.Error())
-	// 	}
-
-	// 	// Handle connections in a new goroutine.
-	// 	go core.HandleRequest(conn)
-	// }
-
-	u := ws.Upgrader{
-		OnHeader: func(key, value []byte) (err error) {
-			log.Printf("non-websocket header: %q=%q", key, value)
-			return
-		},
-	}
-
 	for {
+		// Listen for an incoming connection.
 		conn, err := l.Accept()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println("Error accepting: ", err.Error())
 		}
-		cd, err := u.Upgrade(conn)
-		fmt.Println(cd)
+
+		_, err = ws.Upgrade(conn)
 		if err != nil {
-			log.Printf("upgrade error: %s", err)
+			fmt.Println("Error upgrading: ", err.Error())
 		}
 
-		go func() {
-			defer conn.Close()
-
-			core.HandleRequest(conn)
-
-		}()
-
+		// Handle connections in a new goroutine.
+		go core.HandleRequest(conn)
 	}
 
 }
