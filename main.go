@@ -14,7 +14,6 @@ import (
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
 	"github.com/gobwas/ws"
-	"github.com/pkg/profile"
 )
 
 const (
@@ -47,8 +46,6 @@ func init() {
 }
 
 func main() {
-	defer profile.Start(profile.MemProfile).Stop()
-
 	time.Now().UnixNano()
 
 	// ticker := time.NewTicker(5 * time.Minute)
