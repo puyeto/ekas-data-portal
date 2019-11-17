@@ -8,13 +8,11 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
-	"github.com/gobwas/httphead"
 	"github.com/gobwas/ws"
 	"github.com/pkg/profile"
 )
@@ -85,45 +83,10 @@ func main() {
 	// 	go core.HandleRequest(conn)
 	// }
 
-	// Prepare handshake header writer from http.Header mapping.
-	header := ws.HandshakeHeaderHTTP(http.Header{
-		"X-Go-Version": []string{runtime.Version()},
-	})
-
 	u := ws.Upgrader{
-		OnHost: func(host []byte) error {
-			fmt.Println(string(host))
-			if string(host) == "github.com" {
-				return nil
-			}
-			return ws.RejectConnectionError(
-				ws.RejectionStatus(403),
-				ws.RejectionHeader(ws.HandshakeHeaderString(
-					"X-Want-Host: github.com\r\n",
-				)),
-			)
-		},
-		OnHeader: func(key, value []byte) error {
-			fmt.Println(string(key), value)
-			if string(key) != "Cookie" {
-				return nil
-			}
-			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
-				// Check session here or do some other stuff with cookies.
-				// Maybe copy some values for future use.
-				return true
-			})
-			if ok {
-				return nil
-			}
-			return ws.RejectConnectionError(
-				ws.RejectionReason("bad cookie"),
-				ws.RejectionStatus(400),
-			)
-		},
-		OnBeforeUpgrade: func() (ws.HandshakeHeader, error) {
-			fmt.Println("header header")
-			return header, nil
+		OnHeader: func(key, value []byte) (err error) {
+			log.Printf("non-websocket header: %q=%q", key, value)
+			return
 		},
 	}
 
