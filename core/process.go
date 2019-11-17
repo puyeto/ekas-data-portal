@@ -191,7 +191,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 func generateResponses(clientJobs chan models.ClientJob) {
 	for {
 		// use a WaitGroup
-		var wg sync.WaitGroup
+		// var wg sync.WaitGroup
 
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
@@ -201,30 +201,22 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		LogToRedis(clientJob.DeviceData)
 
 		// make a channel with a capacity of 100.
-		jobChan := make(chan models.DeviceData, queueLimit)
-
-		worker := func(jobChan <-chan models.DeviceData) {
-			defer wg.Done()
-			for job := range jobChan {
-				SaveAllData(job)
-			}
-		}
 
 		// increment the WaitGroup before starting the worker
-		wg.Add(1)
-		go worker(jobChan)
+		// wg.Add(1)
+		// go worker(jobChan)
 
 		// enqueue a job
-		jobChan <- clientJob.DeviceData
+		// jobChan <- clientJob.DeviceData
 
 		// to stop the worker, first close the job channel
-		close(jobChan)
+		// close(jobChan)
 
 		// then wait using the WaitGroup
-		WaitTimeout(&wg, 2*time.Second)
+		// WaitTimeout(&wg, 3*time.Second)
 
 		// go core.SaveData(clientJob.DeviceData)
-		// go SaveAllData(clientJob.DeviceData)
+		go SaveAllData(clientJob.DeviceData)
 	}
 }
 
