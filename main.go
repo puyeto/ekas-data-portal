@@ -78,10 +78,6 @@ func main() {
 			fmt.Println("Error accepting: ", err.Error())
 		}
 
-		// return Response
-		result := "Received Portal\n"
-		conn.Write([]byte(string(result)))
-
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)
 	}
