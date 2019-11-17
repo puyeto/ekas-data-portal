@@ -8,11 +8,14 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
+	"github.com/gobwas/httphead"
+	"github.com/gobwas/ws"
 	"github.com/pkg/profile"
 )
 
@@ -71,15 +74,66 @@ func main() {
 
 	go runHeartbeatService(":7001")
 
-	for {
-		// Listen for an incoming connection.
-		conn, err := l.AcceptTCP()
-		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
-		}
+	// for {
+	// 	// Listen for an incoming connection.
+	// 	conn, err := l.AcceptTCP()
+	// 	if err != nil {
+	// 		fmt.Println("Error accepting: ", err.Error())
+	// 	}
 
-		// Handle connections in a new goroutine.
-		go core.HandleRequest(conn)
+	// 	// Handle connections in a new goroutine.
+	// 	go core.HandleRequest(conn)
+	// }
+
+	// Prepare handshake header writer from http.Header mapping.
+	header := ws.HandshakeHeaderHTTP(http.Header{
+		"X-Go-Version": []string{runtime.Version()},
+	})
+
+	u := ws.Upgrader{
+		OnHost: func(host []byte) error {
+			fmt.Println(host)
+			if string(host) == "github.com" {
+				return nil
+			}
+			return ws.RejectConnectionError(
+				ws.RejectionStatus(403),
+				ws.RejectionHeader(ws.HandshakeHeaderString(
+					"X-Want-Host: github.com\r\n",
+				)),
+			)
+		},
+		OnHeader: func(key, value []byte) error {
+			if string(key) != "Cookie" {
+				return nil
+			}
+			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
+				// Check session here or do some other stuff with cookies.
+				// Maybe copy some values for future use.
+				return true
+			})
+			if ok {
+				return nil
+			}
+			return ws.RejectConnectionError(
+				ws.RejectionReason("bad cookie"),
+				ws.RejectionStatus(400),
+			)
+		},
+		OnBeforeUpgrade: func() (ws.HandshakeHeader, error) {
+			return header, nil
+		},
+	}
+
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = u.Upgrade(conn)
+		if err != nil {
+			log.Printf("upgrade error: %s", err)
+		}
 	}
 
 }
