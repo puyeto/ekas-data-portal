@@ -13,6 +13,7 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
+	"github.com/pkg/profile"
 )
 
 const (
@@ -45,6 +46,7 @@ func init() {
 }
 
 func main() {
+	defer profile.Start(profile.MemProfile).Stop()
 
 	time.Now().UnixNano()
 
@@ -56,7 +58,7 @@ func main() {
 	// }()
 
 	// Listen for incoming connections.
-	l, err := net.Listen(CONNTYPE, ":"+strconv.Itoa(CONNPORT))
+	l, err := net.ListenTCP(CONNTYPE, &net.TCPAddr{Port: CONNPORT})
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
@@ -71,15 +73,14 @@ func main() {
 
 	for {
 		// Listen for an incoming connection.
-		conn, err := l.Accept()
+		conn, err := l.AcceptTCP()
 		if err != nil {
 			fmt.Println("Error accepting: ", err.Error())
 		}
 
-		// _, err = ws.Upgrade(conn)
-		// if err != nil {
-		// 	fmt.Println("Error upgrading: ", err.Error())
-		// }
+		// return Response
+		result := "Received Portal\n"
+		conn.Write([]byte(string(result)))
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)

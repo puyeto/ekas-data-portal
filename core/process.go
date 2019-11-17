@@ -17,18 +17,17 @@ import (
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 20
+const queueLimit = 10
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
-	defer conn.Close()
 
 	var byteSize = 70
 	totalBytes, res := readNextBytes(conn, 700)
 
 	// return Response
-	result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
-	conn.Write([]byte(string(result)))
+	// result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
+	// conn.Write([]byte(string(result)))
 
 	if totalBytes > 0 {
 		byteRead := bytes.NewReader(res)
@@ -48,7 +47,7 @@ func HandleRequest(conn net.Conn) {
 
 func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs := make(chan models.ClientJob)
-	generateResponses(clientJobs)
+	go generateResponses(clientJobs)
 
 	var deviceData models.DeviceData
 
@@ -176,9 +175,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	// if deviceData.DeviceID == 1055005512 {
-	fmt.Println(deviceData)
-	//}
+	// if deviceData.DeviceID == 1047715544 {
+		fmt.Println(deviceData)
+	// }
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
@@ -199,7 +198,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-		go LogToRedis(clientJob.DeviceData)
+		LogToRedis(clientJob.DeviceData)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
