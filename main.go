@@ -132,10 +132,20 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		_, err = u.Upgrade(conn)
+		cd, err := u.Upgrade(conn)
+		fmt.Println(cd)
 		if err != nil {
 			log.Printf("upgrade error: %s", err)
 		}
+
+		go func() {
+			defer conn.Close()
+
+			for {
+				core.HandleRequest(conn)
+			}
+		}()
+
 	}
 
 }
