@@ -11,12 +11,13 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 20
+const queueLimit = 10
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
@@ -189,6 +190,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 func generateResponses(clientJobs chan models.ClientJob) {
 	for {
+		// use a WaitGroup
+		var wg sync.WaitGroup
+
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
 
@@ -199,20 +203,25 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
 
-		// start the worker
+		worker := func(jobChan <-chan models.DeviceData) {
+			defer wg.Done()
+			for job := range jobChan {
+				SaveAllData(job)
+			}
+		}
+
+		// increment the WaitGroup before starting the worker
+		wg.Add(1)
 		go worker(jobChan)
 
 		// enqueue a job
 		jobChan <- clientJob.DeviceData
 
+		// then wait using the WaitGroup
+		wg.Wait()
+
 		// go core.SaveData(clientJob.DeviceData)
 		// go SaveAllData(clientJob.DeviceData)
-	}
-}
-
-func worker(jobChan <-chan models.DeviceData) {
-	for job := range jobChan {
-		SaveAllData(job)
 	}
 }
 
