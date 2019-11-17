@@ -17,7 +17,7 @@ import (
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 10
+const queueLimit = 50
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
@@ -176,7 +176,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	//}
 
 	// if deviceData.DeviceID == 1047715544 {
-		fmt.Println(deviceData)
+	fmt.Println(deviceData)
 	// }
 
 	// send data to ntsa
