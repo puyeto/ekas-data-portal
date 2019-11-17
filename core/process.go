@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 10
+const queueLimit = 100
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
@@ -198,38 +196,23 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		LogToRedis(clientJob.DeviceData)
 
-		log.SetFlags(log.Ltime) // format log output hh:mm:ss
+		// make a channel with a capacity of 100.
+		jobChan := make(chan models.DeviceData, queueLimit)
 
-		wg := sync.WaitGroup{}
-		queue := make(chan models.DeviceData)
+		// start the worker
+		go worker(jobChan)
 
-		doWork := func(i int, m models.DeviceData) {
-			time.Sleep(5 * time.Second)
-			log.Printf("Worker %d working on %+v\n", i, m)
-			SaveAllData(m)
-		}
-
-		for worker := 0; worker < queueLimit; worker++ {
-			wg.Add(1)
-
-			go func(worker int) {
-				defer wg.Done()
-
-				for work := range queue {
-					doWork(worker, work) // blocking wait for work
-				}
-			}(worker)
-
-		}
-
-		queue <- clientJob.DeviceData
-
-		close(queue)
-
-		wg.Wait()
+		// enqueue a job
+		jobChan <- clientJob.DeviceData
 
 		// go core.SaveData(clientJob.DeviceData)
 		// go SaveAllData(clientJob.DeviceData)
+	}
+}
+
+func worker(jobChan <-chan models.DeviceData) {
+	for job := range jobChan {
+		SaveAllData(job)
 	}
 }
 
