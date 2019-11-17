@@ -214,14 +214,14 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		wg.Add(1)
 		go worker(jobChan)
 
+		// enqueue a job
+		jobChan <- clientJob.DeviceData
+
 		// to stop the worker, first close the job channel
 		close(jobChan)
 
 		// then wait using the WaitGroup
 		WaitTimeout(&wg, 2*time.Second)
-
-		// enqueue a job
-		jobChan <- clientJob.DeviceData
 
 		// go core.SaveData(clientJob.DeviceData)
 		// go SaveAllData(clientJob.DeviceData)
