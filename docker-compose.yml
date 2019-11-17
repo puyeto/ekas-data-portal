@@ -3,11 +3,11 @@ services:
   ekas-data:
     image: omollo/ekas-data-portal-prod
     deploy:
-      replicas: 3
+      replicas: 5
       resources:
         limits:
-          cpus: "0.8"
-          memory: 3G
+          cpus: "0.3"
+          memory: 1G
     ports:
       - "8083:8083"
       - "7001:7001"

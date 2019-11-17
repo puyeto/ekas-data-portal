@@ -18,7 +18,7 @@ import (
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 100
+const queueLimit = 10
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
@@ -206,7 +206,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		doWork := func(i int, m models.DeviceData) {
 			time.Sleep(5 * time.Second)
 			log.Printf("Worker %d working on %+v\n", i, m)
-			// SaveAllData(m)
+			SaveAllData(m)
 		}
 
 		for worker := 0; worker < queueLimit; worker++ {
