@@ -92,7 +92,7 @@ func main() {
 
 	u := ws.Upgrader{
 		OnHost: func(host []byte) error {
-			fmt.Println(host)
+			fmt.Println(string(host))
 			if string(host) == "github.com" {
 				return nil
 			}
@@ -104,6 +104,7 @@ func main() {
 			)
 		},
 		OnHeader: func(key, value []byte) error {
+			fmt.Println(string(key), value)
 			if string(key) != "Cookie" {
 				return nil
 			}
@@ -121,6 +122,7 @@ func main() {
 			)
 		},
 		OnBeforeUpgrade: func() (ws.HandshakeHeader, error) {
+			fmt.Println("header header")
 			return header, nil
 		},
 	}
