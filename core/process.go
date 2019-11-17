@@ -17,7 +17,7 @@ import (
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 10
+const queueLimit = 20
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
@@ -175,7 +175,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	if deviceData.DeviceID == 1047715544 {
+	if deviceData.DeviceID == 1067898181 {
 		fmt.Println(deviceData)
 	}
 
