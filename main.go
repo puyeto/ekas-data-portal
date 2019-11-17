@@ -59,7 +59,7 @@ func main() {
 	// }()
 
 	// Listen for incoming connections.
-	l, err := net.ListenTCP(CONNTYPE, &net.TCPAddr{Port: CONNPORT})
+	l, err := net.Listen("tcp", ":"+strconv.Itoa(CONNPORT))
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
@@ -104,9 +104,8 @@ func main() {
 		go func() {
 			defer conn.Close()
 
-			for {
-				core.HandleRequest(conn)
-			}
+			go core.HandleRequest(conn)
+
 		}()
 
 	}
