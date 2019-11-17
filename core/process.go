@@ -16,7 +16,7 @@ import (
 	"github.com/ekas-data-portal/models"
 )
 
-const queueLimit = 100
+const queueLimit = 20
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
