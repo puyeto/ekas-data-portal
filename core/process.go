@@ -47,7 +47,7 @@ func HandleRequest(conn net.Conn) {
 
 func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs := make(chan models.ClientJob)
-	go generateResponses(clientJobs)
+	generateResponses(clientJobs)
 
 	var deviceData models.DeviceData
 
@@ -198,7 +198,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-		LogToRedis(clientJob.DeviceData)
+		go LogToRedis(clientJob.DeviceData)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)

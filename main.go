@@ -101,7 +101,7 @@ func main() {
 		go func() {
 			defer conn.Close()
 
-			go core.HandleRequest(conn)
+			core.HandleRequest(conn)
 
 		}()
 
