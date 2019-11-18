@@ -107,6 +107,7 @@ func (client *Client) receive() {
 		}
 		if length > 0 {
 			fmt.Println("RECEIVED: ", length, string(message))
+			fmt.Println("length: " + strconv.Itoa(length))
 		}
 	}
 }
@@ -114,13 +115,8 @@ func (client *Client) receive() {
 func (manager *ClientManager) send(client *Client) {
 	defer client.socket.Close()
 	for {
-		select {
-		case message, ok := <-client.data:
-			if !ok {
-				return
-			}
-			client.socket.Write(message)
-		}
+		result := "Received - Portal\n"
+		client.socket.Write([]byte(string(result)))
 	}
 }
 
