@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/ekas-data-portal/core"
@@ -108,7 +106,7 @@ func (client *Client) receive() {
 			break
 		}
 		if length > 0 {
-			fmt.Println("RECEIVED: " + string(message))
+			fmt.Println("RECEIVED: ", length, string(message))
 		}
 	}
 }
@@ -148,21 +146,6 @@ func startServerMode() {
 		manager.register <- client
 		go manager.receive(client)
 		go manager.send(client)
-	}
-}
-
-func startClientMode() {
-	fmt.Println("Starting client...")
-	connection, error := net.Dial("tcp", "localhost:12345")
-	if error != nil {
-		fmt.Println(error)
-	}
-	client := &Client{socket: connection}
-	go client.receive()
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		message, _ := reader.ReadString('\n')
-		connection.Write([]byte(strings.TrimRight(message, "\n")))
 	}
 }
 
