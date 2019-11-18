@@ -69,15 +69,6 @@ func (manager *ClientManager) start() {
 				delete(manager.clients, connection)
 				fmt.Println("A connection has terminated!")
 			}
-		case message := <-manager.broadcast:
-			for connection := range manager.clients {
-				select {
-				case connection.data <- message:
-				default:
-					close(connection.data)
-					delete(manager.clients, connection)
-				}
-			}
 		}
 	}
 }
@@ -93,7 +84,6 @@ func (manager *ClientManager) receive(client *Client) {
 			break
 		}
 		if length > 0 {
-			manager.broadcast <- message
 			fmt.Println("Length: " + strconv.Itoa(length))
 			byteRead := bytes.NewReader(message)
 
