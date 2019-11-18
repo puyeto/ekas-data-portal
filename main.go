@@ -13,6 +13,8 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
+	"github.com/gobwas/ws"
+	"github.com/gobwas/ws/wsutil"
 )
 
 const (
@@ -69,6 +71,17 @@ func main() {
 		conn, err := l.AcceptTCP()
 		if err != nil {
 			continue
+		}
+
+		upgrader := ws.Upgrader{}
+		if _, err = upgrader.Upgrade(conn); err != nil {
+			// handle error
+		}
+
+		// send message
+		result := "Received - Portal\n"
+		if err := wsutil.WriteServerText(conn, []byte(string(result))); err != nil {
+			// handle error
 		}
 
 		// Handle connections in a new goroutine.
