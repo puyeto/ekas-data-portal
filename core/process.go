@@ -21,32 +21,61 @@ const queueLimit = 50
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
+	// set 2 minutes timeout
+	conn.SetReadDeadline(time.Now().Add(2 * time.Minute))
+	defer conn.Close()
 
 	var byteSize = 70
 	// return Response
 	result := "Received - Portal\n"
 	conn.Write([]byte(string(result)))
 
-	totalBytes, res := readNextBytes(conn, 700)
+	byteData := make([]byte, 700)
 
-	// return Response
-	// result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
-	// conn.Write([]byte(string(result)))
-
-	if totalBytes > 0 {
-		byteRead := bytes.NewReader(res)
-
-		for i := 0; i < (totalBytes / byteSize); i++ {
-
-			byteRead.Seek(int64((byteSize * i)), 0)
-
-			mb := make([]byte, byteSize)
-			n1, _ := byteRead.Read(mb)
-
-			go processRequest(conn, mb, n1)
+	for {
+		reqLen, err := conn.Read(byteData)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println("End of file error:", err)
+			}
+			fmt.Println("Error reading:", err.Error(), reqLen)
 		}
 
+		fmt.Println(reqLen)
+
+		// return Response
+		// result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
+		// conn.Write([]byte(string(result)))
+
+		if reqLen > 0 {
+			byteRead := bytes.NewReader(byteData)
+
+			for i := 0; i < (reqLen / byteSize); i++ {
+
+				byteRead.Seek(int64((byteSize * i)), 0)
+
+				mb := make([]byte, byteSize)
+				n1, _ := byteRead.Read(mb)
+
+				go processRequest(conn, mb, n1)
+			}
+
+		}
 	}
+}
+
+func readNextBytes(conn net.Conn, number int) (int, []byte) {
+	bytes := make([]byte, number)
+
+	reqLen, err := conn.Read(bytes)
+	if err != nil {
+		if err != io.EOF {
+			fmt.Println("End of file error:", err)
+		}
+		fmt.Println("Error reading:", err.Error(), reqLen)
+	}
+
+	return reqLen, bytes
 }
 
 func processRequest(conn net.Conn, b []byte, byteLen int) {
@@ -313,20 +342,6 @@ func checkIdleState(m models.DeviceData) string {
 func hasBit(n int, pos uint) bool {
 	val := n & (1 << pos)
 	return (val > 0)
-}
-
-func readNextBytes(conn net.Conn, number int) (int, []byte) {
-	bytes := make([]byte, number)
-
-	reqLen, err := conn.Read(bytes)
-	if err != nil {
-		if err != io.EOF {
-			fmt.Println("End of file error:", err)
-		}
-		fmt.Println("Error reading:", err.Error(), reqLen)
-	}
-
-	return reqLen, bytes
 }
 
 func readInt32(data []byte) (ret int32) {

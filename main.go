@@ -47,6 +47,8 @@ func init() {
 func main() {
 	time.Now().UnixNano()
 
+	go runHeartbeatService(":7001")
+
 	// ticker := time.NewTicker(5 * time.Minute)
 	// go func() {
 	// 	for range ticker.C {
@@ -54,31 +56,32 @@ func main() {
 	// 	}
 	// }()
 
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":"+strconv.Itoa(CONNPORT))
+	checkError(err)
 	// Listen for incoming connections.
-	l, err := net.ListenTCP(CONNTYPE, &net.TCPAddr{Port: CONNPORT})
-	if err != nil {
-		fmt.Println("Error listening:", err.Error())
-		os.Exit(1)
-	}
-
-	// Close the listener when the application closes.
-	defer l.Close()
+	l, err := net.ListenTCP(CONNTYPE, tcpAddr)
+	checkError(err)
 
 	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
-
-	go runHeartbeatService(":7001")
 
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.AcceptTCP()
 		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
+			continue
 		}
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)
 	}
 
+}
+
+func checkError(err error) {
+	if err != nil {
+		fmt.Println(os.Stderr, "Fatal error: %s", err.Error())
+		os.Exit(1)
+	}
 }
 
 func handler(rw http.ResponseWriter, r *http.Request) {
