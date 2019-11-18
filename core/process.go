@@ -23,7 +23,7 @@ const queueLimit = 50
 func HandleRequest(conn net.Conn) {
 	// set 2 minutes timeout
 	conn.SetReadDeadline(time.Now().Add(2 * time.Minute))
-	defer conn.Close()
+	// defer conn.Close()
 
 	var byteSize = 70
 	// return Response
