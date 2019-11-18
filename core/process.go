@@ -62,7 +62,7 @@ func HandleRequest(conn net.Conn) {
 				mb := make([]byte, byteSize)
 				n1, _ := byteRead.Read(mb)
 
-				go processRequest(conn, mb, n1)
+				go ProcessRequest(mb, n1)
 			}
 
 		}
@@ -83,7 +83,8 @@ func readNextBytes(conn net.Conn, number int) (int, []byte) {
 	return reqLen, bytes
 }
 
-func processRequest(conn net.Conn, b []byte, byteLen int) {
+// ProcessRequest ...
+func ProcessRequest(b []byte, byteLen int) {
 	clientJobs := make(chan models.ClientJob)
 	go generateResponses(clientJobs)
 
@@ -210,7 +211,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
 	// if checkIdleState(deviceData) != "idle3" {
-	clientJobs <- models.ClientJob{deviceData, conn}
+	clientJobs <- models.ClientJob{deviceData, nil}
 	//}
 
 	// if deviceData.DeviceID == 1067898181 {
