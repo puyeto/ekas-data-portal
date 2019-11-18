@@ -128,7 +128,7 @@ func (manager *ClientManager) send(client *Client) {
 
 func startServerMode() {
 	fmt.Println("Starting server...")
-	listener, error := net.Listen("tcp", ":6033")
+	listener, error := net.Listen("tcp", ":8083")
 	if error != nil {
 		fmt.Println(error)
 	}
