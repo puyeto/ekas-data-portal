@@ -52,7 +52,6 @@ type ClientManager struct {
 	unregister chan *Client
 }
 
-// Client ...
 type Client struct {
 	socket net.Conn
 	data   chan []byte
@@ -74,17 +73,6 @@ func (manager *ClientManager) start() {
 			for connection := range manager.clients {
 				select {
 				case connection.data <- message:
-					fmt.Println("message message", message)
-					byteRead := bytes.NewReader(message)
-					for i := 0; i < 10; i++ {
-
-						byteRead.Seek(int64((70 * i)), 0)
-
-						mb := make([]byte, 70)
-						n1, _ := byteRead.Read(mb)
-
-						core.ProcessRequest(mb, n1)
-					}
 				default:
 					close(connection.data)
 					delete(manager.clients, connection)
@@ -95,6 +83,7 @@ func (manager *ClientManager) start() {
 }
 
 func (manager *ClientManager) receive(client *Client) {
+	var byteSize = 70
 	for {
 		message := make([]byte, 4096)
 		length, err := client.socket.Read(message)
@@ -104,8 +93,20 @@ func (manager *ClientManager) receive(client *Client) {
 			break
 		}
 		if length > 0 {
-			fmt.Println("RECEIVED: ", length, string(message))
+			fmt.Println("RECEIVED: " + string(message))
 			manager.broadcast <- message
+			fmt.Println("Length: " + strconv.Itoa(length))
+			byteRead := bytes.NewReader(message)
+
+			for i := 0; i < (length / byteSize); i++ {
+
+				byteRead.Seek(int64((byteSize * i)), 0)
+
+				mb := make([]byte, byteSize)
+				n1, _ := byteRead.Read(mb)
+
+				go core.ProcessRequest(mb, n1)
+			}
 		}
 	}
 }
