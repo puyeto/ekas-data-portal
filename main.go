@@ -85,7 +85,7 @@ func (manager *ClientManager) start() {
 func (manager *ClientManager) receive(client *Client) {
 	var byteSize = 70
 	for {
-		message := make([]byte, 4096)
+		message := make([]byte, 700)
 		length, err := client.socket.Read(message)
 		if err != nil {
 			manager.unregister <- client
@@ -93,7 +93,6 @@ func (manager *ClientManager) receive(client *Client) {
 			break
 		}
 		if length > 0 {
-			fmt.Println("RECEIVED: " + string(message))
 			manager.broadcast <- message
 			fmt.Println("Length: " + strconv.Itoa(length))
 			byteRead := bytes.NewReader(message)
@@ -106,32 +105,6 @@ func (manager *ClientManager) receive(client *Client) {
 				n1, _ := byteRead.Read(mb)
 
 				go core.ProcessRequest(mb, n1)
-			}
-		}
-	}
-}
-
-func (client *Client) receive() {
-	var byteSize = 70
-	for {
-		message := make([]byte, 4096)
-		length, err := client.socket.Read(message)
-		if err != nil {
-			client.socket.Close()
-			break
-		}
-		if length > 0 {
-			fmt.Println("Length: " + strconv.Itoa(length))
-			byteRead := bytes.NewReader(message)
-
-			for i := 0; i < (length / byteSize); i++ {
-
-				byteRead.Seek(int64((byteSize * i)), 0)
-
-				mb := make([]byte, byteSize)
-				n1, _ := byteRead.Read(mb)
-
-				core.ProcessRequest(mb, n1)
 			}
 		}
 	}
