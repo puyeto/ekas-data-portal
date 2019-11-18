@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -98,6 +99,7 @@ func (manager *ClientManager) receive(client *Client) {
 }
 
 func (client *Client) receive() {
+	var byteSize = 70
 	for {
 		message := make([]byte, 4096)
 		length, err := client.socket.Read(message)
@@ -106,8 +108,18 @@ func (client *Client) receive() {
 			break
 		}
 		if length > 0 {
-			fmt.Println("RECEIVED: ", length, string(message))
-			fmt.Println("length: " + strconv.Itoa(length))
+			fmt.Println("Length: " + strconv.Itoa(length))
+			byteRead := bytes.NewReader(message)
+
+			for i := 0; i < (length / byteSize); i++ {
+
+				byteRead.Seek(int64((byteSize * i)), 0)
+
+				mb := make([]byte, byteSize)
+				n1, _ := byteRead.Read(mb)
+
+				core.ProcessRequest(mb, n1)
+			}
 		}
 	}
 }
