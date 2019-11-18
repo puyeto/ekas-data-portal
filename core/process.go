@@ -39,6 +39,7 @@ func HandleRequest(conn net.Conn) {
 				fmt.Println("End of file error:", err)
 			}
 			fmt.Println("Error reading:", err.Error(), reqLen)
+			break
 		}
 
 		fmt.Println(reqLen)
@@ -46,6 +47,10 @@ func HandleRequest(conn net.Conn) {
 		// return Response
 		// result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
 		// conn.Write([]byte(string(result)))
+
+		if reqLen == 0 {
+			break // connection already closed by client
+		}
 
 		if reqLen > 0 {
 			byteRead := bytes.NewReader(byteData)
@@ -208,9 +213,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	if deviceData.DeviceID == 1067898181 {
-		fmt.Println(deviceData)
-	}
+	// if deviceData.DeviceID == 1067898181 {
+	fmt.Println(deviceData)
+	// }
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
