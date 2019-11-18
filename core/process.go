@@ -23,6 +23,10 @@ const queueLimit = 50
 func HandleRequest(conn net.Conn) {
 
 	var byteSize = 70
+	// return Response
+	result := "Received - Portal\n"
+	conn.Write([]byte(string(result)))
+
 	totalBytes, res := readNextBytes(conn, 700)
 
 	// return Response
