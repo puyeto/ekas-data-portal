@@ -45,8 +45,8 @@ func HandleRequest(conn net.Conn) {
 		fmt.Println(reqLen)
 
 		// return Response
-		// result := "Received byte size = " + strconv.Itoa(totalBytes) + "\n"
-		// conn.Write([]byte(string(result)))
+		result := "Received byte size = " + strconv.Itoa(reqLen) + "\n"
+		conn.Write([]byte(string(result)))
 
 		if reqLen == 0 {
 			break // connection already closed by client
