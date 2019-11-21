@@ -67,9 +67,7 @@ func main() {
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.AcceptTCP()
-		if err != nil {
-			continue
-		}
+		checkError(err)
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)
