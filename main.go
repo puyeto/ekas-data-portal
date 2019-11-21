@@ -61,6 +61,8 @@ func main() {
 	// Listen for incoming connections.
 	l, err := net.ListenTCP(CONNTYPE, tcpAddr)
 	checkError(err)
+	defer l.Close()
+	rand.Seed(time.Now().Unix())
 
 	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 
@@ -78,7 +80,7 @@ func main() {
 func checkError(err error) {
 	if err != nil {
 		fmt.Println(os.Stderr, "Fatal error: %s", err.Error())
-		os.Exit(1)
+		return
 	}
 }
 
