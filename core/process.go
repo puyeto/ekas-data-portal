@@ -38,8 +38,6 @@ func HandleRequest(conn net.Conn) {
 			break
 		}
 
-		fmt.Println(reqLen)
-
 		// return Response
 		result := "Received byte size = " + strconv.Itoa(reqLen) + "\n"
 		conn.Write([]byte(string(result)))
@@ -209,9 +207,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	// if deviceData.DeviceID == 1192729163 {
-	//	fmt.Println(deviceData)
-	// }
+	if deviceData.DeviceID == 1125576575 {
+		fmt.Println(deviceData)
+	}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
