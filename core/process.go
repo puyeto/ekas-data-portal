@@ -28,39 +28,39 @@ func HandleRequest(conn net.Conn) {
 	var byteSize = 70
 	byteData := make([]byte, 700)
 
-	//for {
-	reqLen, err := conn.Read(byteData)
-	if err != nil {
-		if err != io.EOF {
-			fmt.Println("End of file error:", err)
-		}
-		fmt.Println("Error reading:", err.Error(), reqLen)
-		return
-	}
-
-	// return Response
-	result := "Received byte size = " + strconv.Itoa(reqLen) + "\n"
-	conn.Write([]byte(string(result)))
-
-	if reqLen == 0 {
-		return // connection already closed by client
-	}
-
-	if reqLen > 0 {
-		byteRead := bytes.NewReader(byteData)
-
-		for i := 0; i < (reqLen / byteSize); i++ {
-
-			byteRead.Seek(int64((byteSize * i)), 0)
-
-			mb := make([]byte, byteSize)
-			n1, _ := byteRead.Read(mb)
-
-			go processRequest(conn, mb, n1)
+	for {
+		reqLen, err := conn.Read(byteData)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println("End of file error:", err)
+			}
+			fmt.Println("Error reading:", err.Error(), reqLen)
+			return
 		}
 
+		// return Response
+		result := "Received byte size = " + strconv.Itoa(reqLen) + "\n"
+		conn.Write([]byte(string(result)))
+
+		if reqLen == 0 {
+			return // connection already closed by client
+		}
+
+		if reqLen > 0 {
+			byteRead := bytes.NewReader(byteData)
+
+			for i := 0; i < (reqLen / byteSize); i++ {
+
+				byteRead.Seek(int64((byteSize * i)), 0)
+
+				mb := make([]byte, byteSize)
+				n1, _ := byteRead.Read(mb)
+
+				go processRequest(conn, mb, n1)
+			}
+
+		}
 	}
-	//}
 }
 
 func readNextBytes(conn net.Conn, number int) (int, []byte) {
@@ -504,7 +504,7 @@ func SaveAllData(m models.DeviceData) error {
 
 	stmt, err = tx.Prepare(query)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(m.DeviceID, err)
 	}
 
 	defer stmt.Close()
