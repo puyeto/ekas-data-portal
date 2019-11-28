@@ -95,6 +95,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
 		fmt.Println("data not valid", deviceData.SystemCode)
+		fmt.Println("device data", deviceData)
 		return
 	}
 
