@@ -207,8 +207,23 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	if deviceData.DeviceID == 1188717335 {
-		fmt.Println(deviceData)
+	if deviceData.DeviceID == 1155145381 {
+		// fmt.Println(deviceData)
+		url := "http://equscabanus.com:6055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
+		url += "&lat= " + strconv.Itoa(int(deviceData.Latitude)) + "&lon=" + strconv.Itoa(int(deviceData.Longitude))
+		url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
+		url += "&speed=5"
+		response, err := http.Get(url)
+		if err != nil {
+			fmt.Printf("%s", err)
+		} else {
+			defer response.Body.Close()
+			contents, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				fmt.Printf("%s", err)
+			}
+			fmt.Printf("%s\n", string(contents))
+		}
 	}
 
 	// send data to ntsa
