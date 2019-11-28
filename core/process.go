@@ -208,10 +208,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	if deviceData.DeviceID == 1191745489 {
+	if deviceData.DeviceID == 119174548 {
 		fmt.Println(deviceData)
-		url := "http://equscabanus.com:6055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
-		url += "&lat= " + strconv.Itoa(int(deviceData.Latitude)) + "&lon=" + strconv.Itoa(int(deviceData.Longitude))
+		url := "http://equscabanus.com:6055?id=" + strconv.Itoa(int(deviceData.DeviceID))
+		url += "&lat=" + strconv.Itoa(int(deviceData.Latitude)) + "&lon=" + strconv.Itoa(int(deviceData.Longitude))
 		url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
 		url += "&speed=5"
 		response, err := http.Get(url)
