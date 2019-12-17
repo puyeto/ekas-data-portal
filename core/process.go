@@ -208,11 +208,11 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}
 
-	// if deviceData.DeviceID == 1161100576 {
-	// 	deviceData.DeviceID = 1116165664
-	// 	deviceData.GroundSpeed = 0
-	// 	clientJobs <- models.ClientJob{deviceData, conn}
-	// }
+	if deviceData.DeviceID == 1196793936 {
+		deviceData.DeviceID = 1193313879
+		deviceData.GroundSpeed = 0
+		clientJobs <- models.ClientJob{deviceData, conn}
+	}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
