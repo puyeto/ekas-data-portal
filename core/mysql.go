@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
+	"time"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
@@ -33,6 +34,7 @@ func DBconnect(dbname string) *sql.DB {
 	}
 
 	db.SetMaxIdleConns(0)
+	db.SetConnMaxLifetime(time.Minute * 2)
 
 	return db
 }
