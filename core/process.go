@@ -204,6 +204,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
+	fmt.Println(deviceData.DeviceID)
 	// if checkIdleState(deviceData) != "idle3" {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	//}

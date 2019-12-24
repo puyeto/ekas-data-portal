@@ -70,10 +70,10 @@ func main() {
 		// Listen for an incoming connection.
 		conn, err := l.AcceptTCP()
 		if err != nil {
-			log.Println("Failed to accept connection ", conn, " due to error ", err)
+			// log.Println("Failed to accept connection ", conn, " due to error ", err)
 			continue
 		}
-		log.Println("Client ", conn.RemoteAddr(), " connected")
+		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)
