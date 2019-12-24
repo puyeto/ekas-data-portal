@@ -260,7 +260,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		WaitTimeout(&wg, 1*time.Second)
 
 		// go core.SaveData(clientJob.DeviceData)
-		// go SaveAllData(clientJob.DeviceData)
+		go SaveAllData(clientJob.DeviceData)
 	}
 }
 
