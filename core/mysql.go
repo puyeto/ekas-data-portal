@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
-	"time"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
@@ -24,7 +23,7 @@ var (
 const (
 	//Keeping a connection idle for a long time can cause problems
 	//http://go-database-sql.org/connection-pool.html
-	maxIdleConns = 0
+	maxIdleConns = 2
 
 	driverName = "mysql"
 )
@@ -42,6 +41,5 @@ func DBconnect(dbname string) *sql.DB {
 	}
 
 	db.SetMaxIdleConns(maxIdleConns)
-	db.SetConnMaxLifetime(time.Second)
 	return db
 }

@@ -240,10 +240,9 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		worker := func(jobChan <-chan models.DeviceData) {
 			defer wg.Done()
-			for job := range jobChan {
-				time.Sleep(time.Second)
-				SaveAllData(job)
-			}
+			// for job := range jobChan {
+			// 	SaveAllData(job)
+			// }
 		}
 
 		// increment the WaitGroup before starting the worker
