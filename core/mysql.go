@@ -34,7 +34,7 @@ func DBconnect(dbname string) *sql.DB {
 	}
 
 	db.SetMaxIdleConns(0)
-	db.SetConnMaxLifetime(time.Minute * 2)
+	db.SetConnMaxLifetime(time.Second * 10)
 
 	return db
 }
