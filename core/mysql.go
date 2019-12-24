@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
-	"time"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
@@ -21,14 +20,6 @@ var (
 	mysqlPort     = 3306
 )
 
-const (
-	//Keeping a connection idle for a long time can cause problems
-	//http://go-database-sql.org/connection-pool.html
-	maxIdleConns = 2
-
-	driverName = "mysql"
-)
-
 // DBconnect Initialise a database connection
 func DBconnect(dbname string) *sql.DB {
 
@@ -36,13 +27,12 @@ func DBconnect(dbname string) *sql.DB {
 	//Note: Values are set using a config file
 	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + dbname + "?parseTime=true&net_write_timeout=6000"
 
-	db, err := sql.Open(driverName, mysqlHost)
+	db, err := sql.Open("mysql", mysqlHost)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db.SetMaxIdleConns(maxIdleConns)
-	db.SetConnMaxLifetime(time.Second * 5)
+	db.SetMaxIdleConns(0)
 
 	return db
 }
