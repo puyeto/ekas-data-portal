@@ -452,6 +452,9 @@ func SaveData(m models.DeviceData) {
 
 // SaveAllData save all records to second db
 func SaveAllData(m models.DeviceData) error {
+	if DBCONDATA == nil {
+		fmt.Println("db nil")
+	}
 	err := DBCONDATA.Ping()
 	if err != nil {
 		return err
