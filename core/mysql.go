@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
+	"time"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
@@ -33,7 +34,7 @@ func DBconnect(dbname string) *sql.DB {
 
 	//Construct the host
 	//Note: Values are set using a config file
-	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + dbname + "?parseTime=true"
+	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + dbname + "?parseTime=true&net_write_timeout=6000"
 
 	db, err := sql.Open(driverName, mysqlHost)
 	if err != nil {
@@ -41,6 +42,6 @@ func DBconnect(dbname string) *sql.DB {
 	}
 
 	db.SetMaxIdleConns(maxIdleConns)
-
+	db.SetConnMaxLifetime(time.Second)
 	return db
 }

@@ -241,6 +241,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		worker := func(jobChan <-chan models.DeviceData) {
 			defer wg.Done()
 			for job := range jobChan {
+				time.Sleep(time.Second)
 				SaveAllData(job)
 			}
 		}
