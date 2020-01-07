@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"bytes"
@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
 )
 
@@ -21,9 +22,6 @@ const queueLimit = 50
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
-	// set 2 minutes timeout
-	conn.SetReadDeadline(time.Now().Add(2 * time.Minute))
-	defer conn.Close()
 
 	var byteSize = 70
 	byteData := make([]byte, 700)
@@ -60,6 +58,8 @@ func HandleRequest(conn net.Conn) {
 			}
 
 		}
+
+		opsRate.Mark(1)
 	}
 }
 
@@ -292,12 +292,12 @@ func LogToRedis(m models.DeviceData) {
 
 // check if Device is in idle state
 func checkIdleState(m models.DeviceData) string {
-	err := DBCONN.Ping()
+	err := core.DBCONN.Ping()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	tx, err := DBCONN.Begin()
+	tx, err := core.DBCONN.Begin()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -358,12 +358,12 @@ func readInt32(data []byte) (ret int32) {
 
 // SaveData Save data to db
 func SaveData(m models.DeviceData) {
-	err := DBCONN.Ping()
+	err := core.DBCONN.Ping()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	tx, err := DBCONN.Begin()
+	tx, err := core.DBCONN.Begin()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -451,15 +451,15 @@ func SaveData(m models.DeviceData) {
 
 // SaveAllData save all records to second db
 func SaveAllData(m models.DeviceData) error {
-	if DBCONDATA == nil {
+	if core.DBCONDATA == nil {
 		fmt.Println("db nil")
 	}
-	err := DBCONDATA.Ping()
+	err := core.DBCONDATA.Ping()
 	if err != nil {
 		return err
 	}
 
-	tx, err := DBCONDATA.Begin()
+	tx, err := core.DBCONDATA.Begin()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -537,7 +537,7 @@ func lastSeen(m models.DeviceData, key string) {
 		DeviceData: m,
 	}
 	// SET object
-	_, err := SetValue(key, data)
+	_, err := core.SetValue(key, data)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -545,7 +545,7 @@ func lastSeen(m models.DeviceData, key string) {
 
 func currentViolations(m models.DeviceData, key string) {
 	// SET object
-	_, err := SetValue(key, m)
+	_, err := core.SetValue(key, m)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -555,7 +555,7 @@ func currentViolations(m models.DeviceData, key string) {
 func SetRedisLog(m models.DeviceData, key string) {
 
 	// SET object
-	_, err := ZAdd(key, m.DateTimeStamp, m)
+	_, err := core.ZAdd(key, m.DateTimeStamp, m)
 	if err != nil {
 		fmt.Println(err)
 	}

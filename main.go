@@ -14,6 +14,7 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
+	"github.com/rcrowley/go-metrics"
 )
 
 const (
@@ -22,7 +23,10 @@ const (
 	CONNTYPE = "tcp"
 )
 
-var startTime time.Time
+var (
+	opsRate   = metrics.NewRegisteredMeter("ops", nil)
+	startTime time.Time
+)
 
 type heartbeatMessage struct {
 	Status string `json:"status"`
@@ -48,6 +52,8 @@ func init() {
 func main() {
 	time.Now().UnixNano()
 	// setLimit()
+
+	go metrics.Log(metrics.DefaultRegistry, 5*time.Second, log.New(os.Stderr, "metrics: ", log.Lmicroseconds))
 
 	go runHeartbeatService(":7001")
 
@@ -90,7 +96,7 @@ func main() {
 		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
 		// Handle connections in a new goroutine.
-		go core.HandleRequest(conn)
+		go HandleRequest(conn)
 
 		connections = append(connections, conn)
 		if len(connections)%100 == 0 {
@@ -163,7 +169,7 @@ func checkLastSeen() {
 		if value.SystemCode == "MCPG" {
 			if callTime(value) > 1440 {
 				value.Offline = true
-				core.SaveData(value)
+				SaveData(value)
 			}
 		}
 	}
