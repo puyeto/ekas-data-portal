@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"strconv"
 	"time"
@@ -46,6 +47,7 @@ func init() {
 
 func main() {
 	time.Now().UnixNano()
+	// setLimit()
 
 	go runHeartbeatService(":7001")
 
@@ -60,9 +62,16 @@ func main() {
 	checkError(err)
 	// Listen for incoming connections.
 	l, err := net.ListenTCP(CONNTYPE, tcpAddr)
-	checkError(err)
-	defer l.Close()
-	rand.Seed(time.Now().Unix())
+	if err != nil {
+		panic(err)
+	}
+
+	var connections []net.Conn
+	defer func() {
+		for _, conn := range connections {
+			conn.Close()
+		}
+	}()
 
 	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 
@@ -70,13 +79,23 @@ func main() {
 		// Listen for an incoming connection.
 		conn, err := l.AcceptTCP()
 		if err != nil {
-			// log.Println("Failed to accept connection ", conn, " due to error ", err)
-			continue
+			if ne, ok := err.(net.Error); ok && ne.Temporary() {
+				fmt.Printf("accept temp err: %v", ne)
+				continue
+			}
+
+			fmt.Printf("accept err: %v", err)
+			return
 		}
 		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
 		// Handle connections in a new goroutine.
 		go core.HandleRequest(conn)
+
+		connections = append(connections, conn)
+		if len(connections)%100 == 0 {
+			fmt.Printf("total number of connections: %v", len(connections))
+		}
 	}
 
 }
@@ -87,6 +106,19 @@ func checkError(err error) {
 		return
 	}
 }
+
+// func setLimit() {
+// 	var rLimit syscall.Rlimit
+// 	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
+// 		panic(err)
+// 	}
+// 	rLimit.Cur = rLimit.Max
+// 	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
+// 		panic(err)
+// 	}
+
+// 	fmt.Printf("set cur limit: %d", rLimit.Cur)
+// }
 
 func handler(rw http.ResponseWriter, r *http.Request) {
 	enableCors(&rw)
