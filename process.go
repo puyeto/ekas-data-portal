@@ -58,8 +58,6 @@ func HandleRequest(conn net.Conn) {
 			}
 
 		}
-
-		opsRate.Mark(1)
 	}
 }
 
@@ -94,8 +92,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	byteReader.Read(scode)
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
-		fmt.Println("data not valid", deviceData.SystemCode)
-		fmt.Println("device data", deviceData)
 		return
 	}
 
@@ -487,7 +483,7 @@ func SaveAllData(m models.DeviceData) error {
 	createquery += "`disconnect` tinyint(1) NOT NULL DEFAULT 0, "
 	createquery += "`offline` tinyint(1) NOT NULL DEFAULT 0, "
 	createquery += "`created_on` timestamp NULL DEFAULT current_timestamp(), "
-	createquery += "`date_time_stamp` INT(10) NOT NULL DEFAULT 0, "
+	createquery += "`date_time_stamp` INT(11) NOT NULL DEFAULT 0, "
 	createquery += "PRIMARY KEY (`trip_id`,`device_id`) "
 	createquery += ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
 
