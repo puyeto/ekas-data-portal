@@ -14,7 +14,6 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
-	"github.com/hibiken/asynq"
 )
 
 const (
@@ -53,15 +52,6 @@ func main() {
 	// setLimit()
 
 	go runHeartbeatService(":7001")
-
-	// Asynq is a simple Go library for queueing tasks
-	asynqClient := asynq.NewClient(rediss)
-
-	bg := asynq.NewBackground(rediss, &asynq.Config{
-		Concurrency: 50,
-	})
-
-	bg.Run(asynq.HandlerFunc(asynqHandler))
 
 	// ticker := time.NewTicker(5 * time.Minute)
 	// go func() {
@@ -102,7 +92,7 @@ func main() {
 		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
 		// Handle connections in a new goroutine.
-		go HandleRequest(conn, asynqClient)
+		go HandleRequest(conn)
 
 		connections = append(connections, conn)
 		if len(connections)%100 == 0 {
@@ -110,23 +100,6 @@ func main() {
 		}
 	}
 
-}
-
-func asynqHandler(t *asynq.Task) error {
-	switch t.Type {
-	case "save_to_mysql":
-		data, err := t.Payload.GetStringMap("data")
-		// SaveAllData(data)
-		if err != nil {
-			fmt.Println("1111", err)
-			return err
-		}
-		fmt.Println(data)
-
-	default:
-		return fmt.Errorf("unexpected task type: %s", t.Type)
-	}
-	return nil
 }
 
 func checkError(err error) {

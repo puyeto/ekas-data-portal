@@ -16,13 +16,12 @@ import (
 
 	"github.com/ekas-data-portal/core"
 	"github.com/ekas-data-portal/models"
-	"github.com/hibiken/asynq"
 )
 
 const queueLimit = 50
 
 // HandleRequest Handles incoming requests.
-func HandleRequest(conn net.Conn, asynqClient *asynq.Client) {
+func HandleRequest(conn net.Conn) {
 
 	var byteSize = 70
 	byteData := make([]byte, 700)
@@ -55,7 +54,7 @@ func HandleRequest(conn net.Conn, asynqClient *asynq.Client) {
 				mb := make([]byte, byteSize)
 				n1, _ := byteRead.Read(mb)
 
-				go processRequest(conn, mb, n1, asynqClient)
+				go processRequest(conn, mb, n1)
 			}
 
 		}
@@ -76,10 +75,9 @@ func readNextBytes(conn net.Conn, number int) (int, []byte) {
 	return reqLen, bytes
 }
 
-func processRequest(conn net.Conn, b []byte, byteLen int, asynqClient *asynq.Client) {
+func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs := make(chan models.ClientJob)
 	go generateResponses(clientJobs)
-	go JobSchedule(clientJobs, asynqClient)
 
 	var deviceData models.DeviceData
 
