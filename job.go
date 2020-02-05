@@ -36,7 +36,7 @@ func JobSchedule(clientJobs chan models.ClientJob, asynqClient *asynq.Client) {
 
 		// Schedule the task t to be processed a minute from now.
 		if err := asynqClient.Schedule(t, time.Now().Add(time.Second)); err != nil {
-			fmt.Println("Failed to save to redis")
+			fmt.Println("Failed to schedule to mysql: ", err)
 		}
 
 	}
