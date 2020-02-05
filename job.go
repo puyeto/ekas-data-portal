@@ -35,7 +35,10 @@ func JobSchedule(clientJobs chan models.ClientJob, asynqClient *asynq.Client) {
 			map[string]interface{}{"data": clientJob.DeviceData})
 
 		// Schedule the task t to be processed a minute from now.
-		if err := asynqClient.Schedule(t, time.Now().Add(time.Second)); err != nil {
+		err := asynqClient.Schedule(t, time.Now())
+		if err == nil {
+			fmt.Println("Scheduled to mysql")
+		} else {
 			fmt.Println("Failed to schedule to mysql: ", err)
 		}
 

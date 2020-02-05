@@ -56,13 +56,12 @@ func main() {
 
 	// Asynq is a simple Go library for queueing tasks
 	asynqClient := asynq.NewClient(rediss)
-	go func() {
-		bg := asynq.NewBackground(rediss, &asynq.Config{
-			Concurrency: 10,
-		})
 
-		bg.Run(asynq.HandlerFunc(asynqHandler))
-	}()
+	bg := asynq.NewBackground(rediss, &asynq.Config{
+		Concurrency: 50,
+	})
+
+	bg.Run(asynq.HandlerFunc(asynqHandler))
 
 	// ticker := time.NewTicker(5 * time.Minute)
 	// go func() {
@@ -116,8 +115,12 @@ func main() {
 func asynqHandler(t *asynq.Task) error {
 	switch t.Type {
 	case "save_to_mysql":
-		data, _ := t.Payload.GetStringMap("data")
+		data, err := t.Payload.GetStringMap("data")
 		// SaveAllData(data)
+		if err != nil {
+			fmt.Println("1111", err)
+			return err
+		}
 		fmt.Println(data)
 
 	default:
