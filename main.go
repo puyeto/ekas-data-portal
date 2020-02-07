@@ -53,12 +53,12 @@ func main() {
 
 	go runHeartbeatService(":7001")
 
-	ticker := time.NewTicker(10 * time.Minute)
-	go func() {
-		for range ticker.C {
-			checkLastSeen()
-		}
-	}()
+	// ticker := time.NewTicker(10 * time.Minute)
+	// go func() {
+	// 	for range ticker.C {
+	// 		checkLastSeen()
+	// 	}
+	// }()
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":"+strconv.Itoa(CONNPORT))
 	checkError(err)
