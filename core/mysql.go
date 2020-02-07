@@ -17,7 +17,7 @@ var (
 	DBCONDATA     *sql.DB
 	mysqlUsername = "re-user"
 	mysqlPassword = "Tracker@2030"
-	mysqlIP       = "167.99.15.200"
+	mysqlIP       = "206.81.15.1"
 	mysqlPort     = 3306
 )
 
