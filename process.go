@@ -309,14 +309,12 @@ func checkIdleState(m models.DeviceData) string {
 		return "err"
 	}
 
-	var query string
-	if m.GroundSpeed > 0 {
-		query = "UPDATE vehicle_configuration SET device_status='online' WHERE device_id=? AND status=?"
-	} else if m.GroundSpeed == 0 && deviceStatus == "online" {
+	var query = "UPDATE vehicle_configuration SET device_status='online' WHERE device_id=? AND status=?"
+	if m.GroundSpeed == 0 && deviceStatus == "online" {
 		query = "UPDATE vehicle_configuration SET device_status='idle1' WHERE device_id=? AND status=?"
 	} else if deviceStatus == "idle1" {
 		query = "UPDATE vehicle_configuration SET device_status='idle2' WHERE device_id=? AND status=?"
-	} else {
+	} else if deviceStatus == "idle2" {
 		// device data will not be store but redis logs last seen
 		SetRedisLog(m, "offline:"+deviceid)
 		query = "UPDATE vehicle_configuration SET device_status='idle3' WHERE device_id=? AND status=?"
