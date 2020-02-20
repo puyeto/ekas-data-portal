@@ -200,9 +200,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
-	if checkIdleState(deviceData) != "idle3" {
-		clientJobs <- models.ClientJob{deviceData, conn}
-	}
+	// if checkIdleState(deviceData) != "idle3" {
+	clientJobs <- models.ClientJob{deviceData, conn}
+	// }
 
 	// if deviceData.DeviceID == 1112205155 {
 	// 	deviceData.DeviceID = 1101111150
@@ -309,12 +309,14 @@ func checkIdleState(m models.DeviceData) string {
 		return "err"
 	}
 
-	var query = "UPDATE vehicle_configuration SET device_status='online' WHERE device_id=? AND status=?"
-	if m.GroundSpeed == 0 && deviceStatus == "online" {
+	var query string
+	if m.GroundSpeed > 0 {
+		query = "UPDATE vehicle_configuration SET device_status='online' WHERE device_id=? AND status=?"
+	} else if m.GroundSpeed == 0 && deviceStatus == "online" {
 		query = "UPDATE vehicle_configuration SET device_status='idle1' WHERE device_id=? AND status=?"
 	} else if deviceStatus == "idle1" {
 		query = "UPDATE vehicle_configuration SET device_status='idle2' WHERE device_id=? AND status=?"
-	} else if deviceStatus == "idle2" {
+	} else {
 		// device data will not be store but redis logs last seen
 		SetRedisLog(m, "offline:"+deviceid)
 		query = "UPDATE vehicle_configuration SET device_status='idle3' WHERE device_id=? AND status=?"
