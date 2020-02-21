@@ -206,7 +206,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	if deviceData.DeviceID == 1119200521 {
 		deviceData.DeviceID = 1142009814
-		deviceData.GroundSpeed = 0
 		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
