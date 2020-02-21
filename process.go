@@ -204,15 +204,15 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	// }
 
-	if deviceData.DeviceID == 1121206423 {
+	if deviceData.DeviceID == 1119200521 {
+		deviceData.DeviceID = 1142009814
+		clientJobs <- models.ClientJob{deviceData, conn}
+
 		deviceData.DeviceID = 1113208531
 		deviceData.GroundSpeed = 0
 		clientJobs <- models.ClientJob{deviceData, conn}
-	}
 
-	if deviceData.DeviceID == 1121206423 {
 		deviceData.DeviceID = 1119202851
-		deviceData.GroundSpeed = 0
 		clientJobs <- models.ClientJob{deviceData, conn}
 	}
 
