@@ -95,7 +95,7 @@ func main() {
 		go HandleRequest(conn)
 
 		connections = append(connections, conn)
-		if len(connections)%100 == 0 {
+		if len(connections)%1000 == 0 {
 			fmt.Printf("total number of connections: %v", len(connections))
 		}
 	}
