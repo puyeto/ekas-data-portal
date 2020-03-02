@@ -58,6 +58,7 @@ func HandleRequest(conn net.Conn) {
 			}
 
 		}
+		opsRate.Mark(1)
 	}
 }
 
@@ -201,7 +202,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
 	// if checkIdleState(deviceData) != "idle3" {
-	fmt.Println(deviceData.DeviceID)
 	clientJobs <- models.ClientJob{deviceData, conn}
 	// }
 
