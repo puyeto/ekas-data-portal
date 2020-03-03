@@ -25,7 +25,7 @@ const (
 
 var (
 	startTime time.Time
-	opsRate   = metrics.NewRegisteredMeter("ops", nil)
+	opsRate   = metrics.NewRegisteredMeter("portal-data", nil)
 )
 
 type heartbeatMessage struct {
