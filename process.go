@@ -520,6 +520,18 @@ func SaveAllData(m models.DeviceData) error {
 
 	tx.Commit()
 
+	if m.TransmissionReason == 255 || m.GroundSpeed > 84 || m.Offline == true {
+		// log data to redis
+		currentViolations(m, "currentviolations:"+device)
+		currentViolations(m, "currentviolations")
+		SetRedisLog(m, "violations")
+		SetRedisLog(m, "violations:"+device)
+
+		if m.Offline == true {
+			SetRedisLog(m, "offline:"+device)
+		}
+	}
+
 	return nil
 }
 
