@@ -524,7 +524,7 @@ func SaveAllData(m models.DeviceData) error {
 		// log data to redis
 		currentViolations(m, "currentviolations:"+device)
 		currentViolations(m, "currentviolations")
-		SetRedisLog(m, "violations")
+		SetRedisLogViolations(m, "violations")
 		SetRedisLog(m, "violations:"+device)
 
 		if m.Offline == true {
@@ -560,10 +560,16 @@ func currentViolations(m models.DeviceData, key string) {
 	}
 }
 
+// SetRedisLogViolations log to redis
+func SetRedisLogViolations(m models.DeviceData, key string) {
+	_, err := core.ZAdd(key, int64(m.DeviceID), m)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 // SetRedisLog log to redis
 func SetRedisLog(m models.DeviceData, key string) {
-
-	// SET object
 	_, err := core.ZAdd(key, m.DateTimeStamp, m)
 	if err != nil {
 		fmt.Println(err)
