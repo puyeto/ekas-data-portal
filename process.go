@@ -201,15 +201,23 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
+	// if deviceData.DeviceID == 1212208985 && deviceData.GroundSpeed > 85 {
+	// 	rand.Seed(time.Now().UnixNano())
+	// 	min := 75
+	// 	max := 83
+
+	// 	deviceData.GroundSpeed = uint32(rand.Intn(max-min+1) + min)
+	// }
+
 	// if checkIdleState(deviceData) != "idle3" {
 	clientJobs <- models.ClientJob{deviceData, conn}
 	// }
 
-	if deviceData.DeviceID == 1205205360 {
-		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1161512252
-		clientJobs <- models.ClientJob{deviceData, conn}
-	}
+	// if deviceData.DeviceID == 1205205360 {
+	// 	deviceData.GroundSpeed = 0
+	// 	deviceData.DeviceID = 1161512252
+	// 	clientJobs <- models.ClientJob{deviceData, conn}
+	// }
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
