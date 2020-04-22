@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -89,35 +90,25 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	byteReader := bytes.NewReader(b)
 
-	scode := make([]byte, 4)
-	byteReader.Read(scode)
+	scode := processSeeked(byteReader, 4, 0)
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
 		return
 	}
 
-	byteReader.Seek(5, 0)
-	did := make([]byte, 4)
-	byteReader.Read(did)
+	did := processSeeked(byteReader, 4, 5)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
 	if deviceData.DeviceID == 0 {
 		return
 	}
-
-	// fmt.Println(deviceData.DeviceID, time.Now(), " data received")
-
 	// Transmission Reason – 1 byte
-	byteReader.Seek(18, 0)
-	reason := make([]byte, 1)
-	byteReader.Read(reason)
+	reason := processSeeked(byteReader, 1, 18)
 	deviceData.TransmissionReason = int(reason[0])
 
 	// Transmission Reason Specific data – 1 byte
 	trsd := 0
 	if deviceData.TransmissionReason == 255 {
-		byteReader.Seek(17, 0)
-		specific := make([]byte, 1)
-		byteReader.Read(specific)
+		specific := processSeeked(byteReader, 1, 17)
 
 		var a = int(specific[0])
 		// Failsafe
@@ -131,71 +122,45 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.TransmissionReasonSpecificData = trsd
 
 	// Number of satellites used (from GPS) – 1 byte
-	byteReader.Seek(43, 0)
-	satellites := make([]byte, 1)
-	byteReader.Read(satellites)
+	satellites := processSeeked(byteReader, 1, 43)
 	deviceData.NoOfSatellitesUsed = int(satellites[0])
 
 	// Longitude – 4 bytes
-	byteReader.Seek(44, 0)
-	long := make([]byte, 4)
-	byteReader.Read(long)
+	long := processSeeked(byteReader, 4, 44)
 	deviceData.Longitude = readInt32(long)
 
 	//  Latitude – 4 bytes
-	byteReader.Seek(48, 0)
-	lat := make([]byte, 4)
-	byteReader.Read(lat)
+	lat := processSeeked(byteReader, 4, 48)
 	deviceData.Latitude = readInt32(lat)
 
 	// Altitude
-	byteReader.Seek(52, 0)
-	alt := make([]byte, 4)
-	byteReader.Read(alt)
+	alt := processSeeked(byteReader, 4, 52)
 	deviceData.Altitude = readInt32(alt)
 
 	// Ground speed – 4 bytes
-	byteReader.Seek(56, 0)
-	gspeed := make([]byte, 4)
-	byteReader.Read(gspeed)
+	gspeed := processSeeked(byteReader, 4, 56)
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
 
 	// Speed direction – 2 bytes
-	byteReader.Seek(60, 0)
-	speedd := make([]byte, 2)
-	byteReader.Read(speedd)
+	speedd := processSeeked(byteReader, 2, 60)
 	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(speedd))
 
-	// UTC time – 3 bytes (hours, minutes, seconds)
-	byteReader.Seek(62, 0)
-	sec := make([]byte, 1)
-	byteReader.Read(sec)
+	sec := processSeeked(byteReader, 1, 62)
 	deviceData.UTCTimeSeconds = int(sec[0])
 
-	byteReader.Seek(63, 0)
-	min := make([]byte, 1)
-	byteReader.Read(min)
+	min := processSeeked(byteReader, 1, 63)
 	deviceData.UTCTimeMinutes = int(min[0])
 
-	byteReader.Seek(64, 0)
-	hrs := make([]byte, 1)
-	byteReader.Read(hrs)
+	hrs := processSeeked(byteReader, 1, 64)
 	deviceData.UTCTimeHours = int(hrs[0])
 
-	// UTC date – 4 bytes (day, month, year)
-	byteReader.Seek(65, 0)
-	day := make([]byte, 1)
-	byteReader.Read(day)
+	day := processSeeked(byteReader, 1, 65)
 	deviceData.UTCTimeDay = int(day[0])
 
-	byteReader.Seek(66, 0)
-	mon := make([]byte, 1)
-	byteReader.Read(mon)
+	mon := processSeeked(byteReader, 1, 66)
 	deviceData.UTCTimeMonth = int(mon[0])
 
-	byteReader.Seek(67, 0)
-	yr := make([]byte, 2)
-	byteReader.Read(yr)
+	yr := processSeeked(byteReader, 2, 67)
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
@@ -231,6 +196,13 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 }
 
+func processSeeked(byteReader *bytes.Reader, bytesize, seek int64) []byte {
+	byteReader.Seek(seek, 0)
+	val := make([]byte, bytesize)
+	byteReader.Read(val)
+	return val
+}
+
 func generateResponses(clientJobs chan models.ClientJob) {
 	for {
 		// use a WaitGroup
@@ -238,10 +210,11 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
-
+		m := clientJob.DeviceData
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
-		LogToRedis(clientJob.DeviceData)
+		LogToRedis(m)
+		LogToMongoDB(m)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
@@ -269,6 +242,14 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// go core.SaveData(clientJob.DeviceData)
 		// go SaveAllData(clientJob.DeviceData)
 	}
+}
+
+// LogToMongoDB ...
+func LogToMongoDB(m models.DeviceData) error {
+	collection := core.MongoDB.Collection("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	_, err := collection.InsertOne(ctx, m)
+	return err
 }
 
 // WaitTimeout does a Wait on a sync.WaitGroup object but with a specified
