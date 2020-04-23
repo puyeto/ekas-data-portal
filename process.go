@@ -178,7 +178,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// }
 
 	// if checkIdleState(deviceData) != "idle3" {
-	clientJobs <- models.ClientJob{deviceData, conn}
+	if deviceData.DateTimeStamp > 1577836801 {
+		clientJobs <- models.ClientJob{deviceData, conn}
+	}
 	// }
 
 	// if deviceData.DeviceID == 1205205360 {
