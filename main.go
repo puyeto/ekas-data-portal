@@ -42,7 +42,7 @@ func init() {
 	//Do NOT CLOSE the db as it is ment to be long lasting
 	core.DBCONN = core.DBconnect("ekas_portal")
 	core.DBCONDATA = core.DBconnect("ekas_portal_data")
-	core.MongoDB = core.InitializeMongoDB("mongodb://root:safcom2012@localhost:27017/?authSource=admin", "ekas_portal")
+	core.MongoDB = core.InitializeMongoDB("mongodb://root:safcom2012@0.0.0.0:27017/?authSource=admin", "ekas_portal")
 	err := core.InitializeRedis()
 	if err != nil {
 		// panic(err)
