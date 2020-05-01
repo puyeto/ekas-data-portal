@@ -27,7 +27,7 @@ func InitLogger() {
 		if err == nil {
 			Logger.Out = file
 		} else {
-			Logger.Info("Failed to log to file, using default stderr")
+			Logger.Infof("Failed to log to file, using default stderr %v", err)
 		}
 	}
 }
