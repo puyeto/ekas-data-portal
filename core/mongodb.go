@@ -54,6 +54,6 @@ func LoglastSeenMongoDB(m models.DeviceData) error {
 
 	collection := MongoDB.Collection("a_device_lastseen")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_, err := collection.UpdateOne(ctx, bson.M{"id": m.DeviceID}, data)
+	_, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data)
 	return err
 }
