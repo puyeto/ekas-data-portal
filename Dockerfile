@@ -45,7 +45,6 @@ COPY --from=build-env /go/src/github.com/ekas-data-portal/logs/data.json /go/log
 # Use an unprivileged user.
 USER appuser
 
-RUN chown -R appuser:appuser /go/logs
 RUN chmod -R 666 /go/logs
 
 # Set the working environment.
