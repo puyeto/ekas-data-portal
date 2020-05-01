@@ -15,8 +15,6 @@ services:
     networks:
       - host
     volumes:
-      - ekas_portal_data_container:/go/logs
-volumes:
-  ekas_portal_data_container:
+      - /var/ekas/logs:/go/logs
 networks:
   host:
