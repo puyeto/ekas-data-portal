@@ -7,7 +7,7 @@ LABEL vendor="Ekas Technologies"
 RUN apk update && apk add --no-cache git ca-certificates && update-ca-certificates
 
 # Create appuser
-RUN adduser -D -g '' appuser
+# RUN adduser -D -g '' appuser
 
 WORKDIR /go/src/github.com/ekas-data-portal
 
@@ -43,7 +43,7 @@ COPY --from=build-env /go/src/github.com/ekas-data-portal/ekas-data-portal /go/e
 COPY --from=build-env /go/src/github.com/ekas-data-portal/logs/data.json /go/logs/data.json
 
 # Use an unprivileged user.
-USER appuser
+# USER appuser
 
 RUN chmod -R 666 /go/logs
 
