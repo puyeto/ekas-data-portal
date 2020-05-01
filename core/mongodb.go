@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -30,7 +29,7 @@ func InitializeMongoDB(dbURL, dbName string) *mongo.Database {
 	}
 	// defer client.Disconnect(ctx)
 
-	fmt.Println("Mongo DB initialized", dbName)
+	Logger.Infof("Mongo DB initialized: %v", dbName)
 	return client.Database(dbName)
 }
 

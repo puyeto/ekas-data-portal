@@ -8,7 +8,6 @@ import (
 	"net"
 	"net/http"
 	_ "net/http/pprof"
-	"os"
 	"strconv"
 	"time"
 
@@ -48,12 +47,13 @@ func init() {
 		// panic(err)
 		fmt.Println(err)
 	}
+	core.InitLogger()
 }
 
 func main() {
 	time.Now().UnixNano()
 	// setLimit()
-	go metrics.Log(metrics.DefaultRegistry, 5*time.Second, log.New(os.Stderr, "metrics: ", log.Lmicroseconds))
+	// go metrics.Log(metrics.DefaultRegistry, 5*time.Second, log.New(os.Stderr, "metrics: ", log.Lmicroseconds))
 
 	go runHeartbeatService(":7001")
 
@@ -79,7 +79,8 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
+	// fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
+	core.Logger.Infoln("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 
 	for {
 		// Listen for an incoming connection.
@@ -101,6 +102,7 @@ func main() {
 		connections = append(connections, conn)
 		if len(connections)%1000 == 0 {
 			fmt.Printf("total number of connections: %v", len(connections))
+			core.Logger.Infoln("total number of connections: %v", len(connections))
 		}
 	}
 
@@ -108,7 +110,7 @@ func main() {
 
 func checkError(err error) {
 	if err != nil {
-		fmt.Println(os.Stderr, "Fatal error: %s", err.Error())
+		core.Logger.Errorf("Fatal error: %v", err.Error())
 		return
 	}
 }
@@ -151,7 +153,7 @@ func check(err error, message string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%s\n", message)
+	core.Logger.Errorf("%v\n", message)
 }
 
 func checkLastSeen() {

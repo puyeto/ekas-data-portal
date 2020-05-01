@@ -217,9 +217,11 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		LogToRedis(m)
 		if err := core.LogToMongoDB(m); err != nil {
 			// log data
+			core.Logger.Warn("Mongo DB - logging error")
 		}
 		if err := core.LoglastSeenMongoDB(m); err != nil {
 			// log data
+			core.Logger.Warn("Mongo DB - logging last seen error")
 		}
 
 		// make a channel with a capacity of 100.

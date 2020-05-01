@@ -27,11 +27,10 @@ func InitializeRedis() error {
 
 	ping, err := redisClient.Ping().Result()
 	if err == nil && len(ping) > 0 {
-		println("Connected to Redis")
+		Logger.Info("Connected to Redis")
 		return nil
 	}
-	println("Redis Connection Failed")
-	println(GetKeyListByPattern("data:*"))
+	Logger.Error("Redis Connection Failed")
 	return err
 }
 
