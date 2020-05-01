@@ -44,11 +44,7 @@ func init() {
 	core.DBCONN = core.DBconnect("ekas_portal")
 	core.DBCONDATA = core.DBconnect("ekas_portal_data")
 	core.MongoDB = core.InitializeMongoDB("mongodb://root:safcom2012@68.183.39.248:27017/?authSource=admin", "ekas_portal")
-	err := core.InitializeRedis()
-	if err != nil {
-		// panic(err)
-		fmt.Println(err)
-	}
+	core.InitializeRedis()
 }
 
 func main() {

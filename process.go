@@ -68,9 +68,9 @@ func readNextBytes(conn net.Conn, number int) (int, []byte) {
 	reqLen, err := conn.Read(bytes)
 	if err != nil {
 		if err != io.EOF {
-			fmt.Println("End of file error:", err)
+			core.Logger.Warnf("End of file error: %v", err)
 		}
-		fmt.Println("Error reading:", err.Error(), reqLen)
+		core.Logger.Warnf("Error reading: %v %v", err.Error(), reqLen)
 	}
 
 	return reqLen, bytes
@@ -83,7 +83,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	var deviceData models.DeviceData
 
 	if byteLen != 70 {
-		fmt.Println("Invalid Byte Length = ", byteLen)
+		core.Logger.Errorf("Invalid Byte Length: %v", byteLen)
 		return
 	}
 
@@ -164,9 +164,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-	if deviceData.DeviceID == 1220209944 {
-		fmt.Println(deviceData)
-	}
 
 	// if deviceData.DeviceID == 1212208985 && deviceData.GroundSpeed > 85 {
 	// 	rand.Seed(time.Now().UnixNano())
