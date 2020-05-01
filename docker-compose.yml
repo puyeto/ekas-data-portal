@@ -13,5 +13,7 @@ services:
       - "7001:7001"
     networks:
       - host
+    volumes:
+      - /etc/ekas/logs:/go/logs
 networks:
   host:

@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -216,7 +215,8 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		LogToRedis(m)
-		LogToMongoDB(m)
+		core.LogToMongoDB(m)
+		core.LoglastSeenMongoDB(m)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
@@ -244,15 +244,6 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// go core.SaveData(clientJob.DeviceData)
 		// go SaveAllData(clientJob.DeviceData)
 	}
-}
-
-// LogToMongoDB ...
-func LogToMongoDB(m models.DeviceData) error {
-	collection := core.MongoDB.Collection("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_, err := collection.InsertOne(ctx, m)
-	fmt.Println(err)
-	return err
 }
 
 // WaitTimeout does a Wait on a sync.WaitGroup object but with a specified
@@ -283,7 +274,7 @@ func LogToRedis(m models.DeviceData) {
 }
 
 // check if Device is in idle state
-func checkIdleState(m models.DeviceData) string {
+func checkIdleStateMysql(m models.DeviceData) string {
 	err := core.DBCONN.Ping()
 	if err != nil {
 		fmt.Println(err)

@@ -31,3 +31,4 @@ server
 main
 
 # vendor
+/logs/data-*

@@ -40,6 +40,7 @@ WORKDIR /go/
 COPY --from=build-env /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build-env /etc/passwd /etc/passwd
 COPY --from=build-env /go/src/github.com/ekas-data-portal/ekas-data-portal /go/ekas-data-portal
+COPY --from=build-env /go/src/github.com/ekas-data-portal/logs/data.json /go/logs/data.json
 
 # Use an unprivileged user.
 USER appuser
