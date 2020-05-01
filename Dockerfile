@@ -45,6 +45,9 @@ COPY --from=build-env /go/src/github.com/ekas-data-portal/logs/data.json /go/log
 # Use an unprivileged user.
 USER appuser
 
+# Set the working environment.
+ENV GO_ENV production
+
 ENTRYPOINT ./ekas-data-portal
 
 #Expose the port specific to the ekas API Application.

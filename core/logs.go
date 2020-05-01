@@ -17,6 +17,7 @@ func InitLogger() {
 	// The API for setting attributes is a little different than the package level
 	// exported Logger. See Godoc.
 	Logger.Out = os.Stdout
+	Logger.Formatter = &logrus.JSONFormatter{}
 
 	if os.Getenv("GO_ENV") == "production" {
 		// You could set this to any `io.Writer` such as a file

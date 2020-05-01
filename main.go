@@ -36,6 +36,8 @@ type heartbeatMessage struct {
 func init() {
 	startTime = time.Now()
 
+	core.InitLogger()
+
 	//Open the database once when the system loads
 	//Do not reopen unless required as Go manages this database from here on
 	//Do NOT CLOSE the db as it is ment to be long lasting
@@ -47,7 +49,6 @@ func init() {
 		// panic(err)
 		fmt.Println(err)
 	}
-	core.InitLogger()
 }
 
 func main() {
