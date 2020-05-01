@@ -39,7 +39,6 @@ func LogToMongoDB(m models.DeviceData) error {
 	collection := MongoDB.Collection("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	_, err := collection.InsertOne(ctx, m)
-	fmt.Println(err)
 	return err
 }
 
@@ -56,6 +55,5 @@ func LoglastSeenMongoDB(m models.DeviceData) error {
 	collection := MongoDB.Collection("a_device_lastseen")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	_, err := collection.UpdateOne(ctx, bson.M{"id": m.DeviceID}, data)
-	fmt.Println(err)
 	return err
 }

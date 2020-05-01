@@ -215,8 +215,12 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		LogToRedis(m)
-		core.LogToMongoDB(m)
-		core.LoglastSeenMongoDB(m)
+		if err := core.LogToMongoDB(m); err != nil {
+			// log data
+		}
+		if err := core.LoglastSeenMongoDB(m); err != nil {
+			// log data
+		}
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
