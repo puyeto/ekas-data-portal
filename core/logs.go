@@ -23,7 +23,7 @@ func InitLogger() {
 		// You could set this to any `io.Writer` such as a file
 		t := time.Now()
 		name := "data_" + t.Format("2006-01-02")
-		file, err := os.OpenFile("./logs/"+name+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		file, err := os.OpenFile("./logs/"+name+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
 		if err == nil {
 			Logger.Out = file
 		} else {
