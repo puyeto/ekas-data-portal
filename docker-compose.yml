@@ -2,6 +2,7 @@ version: "3"
 services:
   ekas-data:
     image: omollo/ekas-data-portal-prod
+    container_name: ekas-data-portal
     deploy:
       replicas: 3
       resources:
@@ -14,6 +15,6 @@ services:
     networks:
       - host
     volumes:
-      - /etc/ekas/logs:/go/logs
+      - /var/ekas/logs:/go/logs
 networks:
   host:
