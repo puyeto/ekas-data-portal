@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -53,6 +54,16 @@ func LoglastSeenMongoDB(m models.DeviceData) error {
 
 	collection := MongoDB.Collection("a_device_lastseen")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data)
+
+	UpdateResult, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data)
+	fmt.Println(UpdateResult)
+	if UpdateResult.MatchedCount == 0 {
+		_, err = collection.InsertOne(ctx, bson.M{
+			"_id":            m.DeviceID,
+			"last_seen_date": m.DateTime,
+			"last_seen_unix": m.DateTimeStamp,
+			"updated_at":     time.Now(),
+		})
+	}
 	return err
 }
