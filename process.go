@@ -212,14 +212,6 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		// Do something thats keeps the CPU busy for a whole second.
 		// for start := time.Now(); time.Now().Sub(start) < time.Second; {
 		LogToRedis(m)
-		if err := core.LogToMongoDB(m); err != nil {
-			// log data
-			core.Logger.Warnf("Mongo DB - logging error: %v", err)
-		}
-		if err := core.LoglastSeenMongoDB(m); err != nil {
-			// log data
-			core.Logger.Warnf("Mongo DB - logging last seen error: %v", err)
-		}
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
@@ -228,6 +220,14 @@ func generateResponses(clientJobs chan models.ClientJob) {
 			defer wg.Done()
 			for job := range jobChan {
 				SaveAllData(job)
+				if err := core.LogToMongoDB(m); err != nil {
+					// log data
+					core.Logger.Warnf("Mongo DB - logging error: %v", err)
+				}
+				if err := core.LoglastSeenMongoDB(m); err != nil {
+					// log data
+					core.Logger.Warnf("Mongo DB - logging last seen error: %v", err)
+				}
 			}
 		}
 
