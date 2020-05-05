@@ -16,7 +16,7 @@ import (
 // MongoDB ...
 var MongoDB *mongo.Database
 
-// InitializeMongoCon Initialize MongoDB Connection
+// InitializeMongoDB Initialize MongoDB Connection
 func InitializeMongoDB(dbURL, dbName string) *mongo.Database {
 	client, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
 	if err != nil {
