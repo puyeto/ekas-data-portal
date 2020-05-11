@@ -170,15 +170,13 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.GroundSpeed = uint32(rand.Intn(max-min+1) + min)
 	// }
 
-	loc, _ := time.LoadLocation("Africa/Nairobi")
-	later := time.Now().In(loc)
-	before := time.Now().In(loc)
-	oneHourLater := later.Add(time.Hour * 1).Unix()
-	oneHourBefore := before.Add(time.Hour * -1).Unix()
+	loc, _ := time.LoadLocation("UTC")
+	now := time.Now().In(loc)
+	oneHourLater := now.Add(time.Hour * 1).Unix()
+	oneHourBefore := now.Add(-time.Hour * 1).Unix()
 
 	// if checkIdleState(deviceData) != "idle3" {
 	if deviceData.DateTimeStamp < oneHourBefore || deviceData.DateTimeStamp > oneHourLater {
-		now := time.Now().In(loc)
 		deviceData.UTCTimeMinutes = now.Minute()
 		deviceData.UTCTimeHours = now.Hour()
 		deviceData.UTCTimeDay = now.Day()
