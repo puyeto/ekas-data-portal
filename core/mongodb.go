@@ -64,13 +64,7 @@ func LoglastSeenMongoDB(m models.DeviceData) error {
 		},
 	}
 
-	collection := MongoDB.Collection("a_device_lastseen")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	opts := options.Update().SetUpsert(true)
-
-	_, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data, opts)
-
-	return err
+	return upsert(data, m.DeviceID, "a_device_lastseen")
 }
 
 // LogCurrentViolationSeenMongoDB update current violation
@@ -83,11 +77,15 @@ func LogCurrentViolationSeenMongoDB(m models.DeviceData) error {
 		},
 	}
 
-	collection := MongoDB.Collection("current_violations")
+	return upsert(data, m.DeviceID, "current_violations")
+}
+
+func upsert(data bson.M, deviceID uint32, table string) error {
+	collection := MongoDB.Collection(table)
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	opts := options.Update().SetUpsert(true)
 
-	_, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data, opts)
+	_, err := collection.UpdateOne(ctx, bson.M{"_id": deviceID}, data, opts)
 
 	return err
 }
