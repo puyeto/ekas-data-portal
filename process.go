@@ -170,7 +170,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.GroundSpeed = uint32(rand.Intn(max-min+1) + min)
 	// }
 
-	loc, _ := time.LoadLocation("UTC")
+	loc := time.FixedZone("UTC+3", 3*60*60)
 	now := time.Now().In(loc)
 	oneHourLater := now.Add(time.Hour * 1).Unix()
 	oneHourBefore := now.Add(-time.Hour * 1).Unix()
