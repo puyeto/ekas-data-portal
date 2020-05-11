@@ -218,12 +218,15 @@ func generateResponses(clientJobs chan models.ClientJob) {
 				// SaveAllData(job)
 				LogToRedis(job)
 				if err := core.LogToMongoDB(job); err != nil {
-					// log data
 					core.Logger.Warnf("Mongo DB - logging error: %v", err)
 				}
 				if err := core.LoglastSeenMongoDB(job); err != nil {
-					// log data
 					core.Logger.Warnf("Mongo DB - logging last seen error: %v", err)
+				}
+				if job.TransmissionReason == 255 || job.GroundSpeed > 84 || job.Offline == true {
+					if err := core.LogCurrentViolationSeenMongoDB(job); err != nil {
+						core.Logger.Warnf("Mongo DB - logging current violations error: %v", err)
+					}
 				}
 			}
 		}
@@ -240,9 +243,6 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// then wait using the WaitGroup
 		WaitTimeout(&wg, 1*time.Second)
-
-		// go core.SaveData(clientJob.DeviceData)
-		// go SaveAllData(clientJob.DeviceData)
 	}
 }
 

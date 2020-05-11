@@ -38,7 +38,20 @@ func LogToMongoDB(m models.DeviceData) error {
 	collection := MongoDB.Collection("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	_, err := collection.InsertOne(ctx, m)
+	CreateIndexMongo("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
 	return err
+}
+
+// CreateIndexMongo create a mongodn index
+func CreateIndexMongo(colName string) (string, error) {
+	mod := mongo.IndexModel{
+		Keys: bson.M{
+			"datetimestamp": -1, // index in ascending order
+		}, Options: nil,
+	}
+	collection := MongoDB.Collection(colName)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	return collection.Indexes().CreateOne(ctx, mod)
 }
 
 // LoglastSeenMongoDB update last seen
@@ -56,5 +69,25 @@ func LoglastSeenMongoDB(m models.DeviceData) error {
 	opts := options.Update().SetUpsert(true)
 
 	_, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data, opts)
+
+	return err
+}
+
+// LogCurrentViolationSeenMongoDB update current violation
+func LogCurrentViolationSeenMongoDB(m models.DeviceData) error {
+	data := bson.M{
+		"$set": bson.M{
+			"data":         m,
+			"datetime":     m.DateTime,
+			"datetimeunix": m.DateTimeStamp,
+		},
+	}
+
+	collection := MongoDB.Collection("current_violations")
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	opts := options.Update().SetUpsert(true)
+
+	_, err := collection.UpdateOne(ctx, bson.M{"_id": m.DeviceID}, data, opts)
+
 	return err
 }
