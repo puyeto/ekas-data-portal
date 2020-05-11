@@ -162,9 +162,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	yr := processSeeked(byteReader, 2, 67)
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
-	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
-	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-
 	// if deviceData.DeviceID == 1212208985 && deviceData.GroundSpeed > 85 {
 	// 	rand.Seed(time.Now().UnixNano())
 	// 	min := 75
@@ -173,10 +170,23 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.GroundSpeed = uint32(rand.Intn(max-min+1) + min)
 	// }
 
+	later := time.Now()
+	before := time.Now()
+	oneHourLater := later.Add(time.Hour * 1).Unix()
+	oneHourBefore := before.Add(time.Hour * -1).Unix()
+
 	// if checkIdleState(deviceData) != "idle3" {
-	if deviceData.DateTimeStamp > 1577836801 {
-		clientJobs <- models.ClientJob{deviceData, conn}
+	if deviceData.DateTimeStamp < oneHourBefore || deviceData.DateTimeStamp > oneHourLater {
+		now := time.Now()
+		deviceData.UTCTimeMinutes = now.Minute()
+		deviceData.UTCTimeHours = now.Hour()
+		deviceData.UTCTimeDay = now.Day()
+		deviceData.UTCTimeMonth = int(now.Month())
+		deviceData.UTCTimeYear = now.Year()
 	}
+	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
+	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
+	clientJobs <- models.ClientJob{deviceData, conn}
 	// }
 
 	// if deviceData.DeviceID == 1205205360 {
