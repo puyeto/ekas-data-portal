@@ -170,19 +170,19 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.GroundSpeed = uint32(rand.Intn(max-min+1) + min)
 	// }
 
-	loc := time.FixedZone("UTC+3", 3*60*60)
-	now := time.Now().In(loc)
-	oneHourLater := now.Add(time.Hour * 1).Unix()
-	oneHourBefore := now.Add(-time.Hour * 1).Unix()
+	// loc := time.FixedZone("UTC+3", 3*60*60)
+	// now := time.Now().In(loc)
+	// oneHourLater := now.Add(time.Hour * 1).Unix()
+	// oneHourBefore := now.Add(-time.Hour * 1).Unix()
 
-	// if checkIdleState(deviceData) != "idle3" {
-	if deviceData.DateTimeStamp < oneHourBefore || deviceData.DateTimeStamp > oneHourLater {
-		deviceData.UTCTimeMinutes = now.Minute()
-		deviceData.UTCTimeHours = now.Hour()
-		deviceData.UTCTimeDay = now.Day()
-		deviceData.UTCTimeMonth = int(now.Month())
-		deviceData.UTCTimeYear = now.Year()
-	}
+	// // if checkIdleState(deviceData) != "idle3" {
+	// if deviceData.DateTimeStamp < oneHourBefore || deviceData.DateTimeStamp > oneHourLater {
+	// 	deviceData.UTCTimeMinutes = now.Minute()
+	// 	deviceData.UTCTimeHours = now.Hour()
+	// 	deviceData.UTCTimeDay = now.Day()
+	// 	deviceData.UTCTimeMonth = int(now.Month())
+	// 	deviceData.UTCTimeYear = now.Year()
+	// }
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	clientJobs <- models.ClientJob{deviceData, conn}
