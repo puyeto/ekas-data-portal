@@ -225,7 +225,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 			defer wg.Done()
 			for job := range jobChan {
 				// SaveAllData(job)
-				LogToRedis(job)
+				go LogToRedis(job)
 				if err := core.LogToMongoDB(job); err != nil {
 					core.Logger.Warnf("Mongo DB - logging error: %v", err)
 				}
