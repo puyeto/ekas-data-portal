@@ -217,6 +217,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
+		LogToRedis(job)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
@@ -224,8 +225,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		worker := func(jobChan <-chan models.DeviceData) {
 			defer wg.Done()
 			for job := range jobChan {
-				// SaveAllData(job)
-				go LogToRedis(job)
+				// SaveAllData(job)				
 				if err := core.LogToMongoDB(job); err != nil {
 					core.Logger.Warnf("Mongo DB - logging error: %v", err)
 				}
