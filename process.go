@@ -183,16 +183,16 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.UTCTimeMonth = int(now.Month())
 	// 	deviceData.UTCTimeYear = now.Year()
 	// }
-	if deviceData.UTCTimeYear > now.Year() {
+	if deviceData.UTCTimeYear > now.Year() || deviceData.UTCTimeYear < now.Year() {
 		deviceData.UTCTimeYear = now.Year()
 	}
-	if time.Month(deviceData.UTCTimeMonth) > now.Month() {
+	if time.Month(deviceData.UTCTimeMonth) > now.Month() || time.Month(deviceData.UTCTimeMonth) < now.Month() {
 		deviceData.UTCTimeMonth = int(now.Month())
 	}
-	if deviceData.UTCTimeDay > now.Day() {
+	if deviceData.UTCTimeDay > now.Day() || deviceData.UTCTimeDay < now.Day() {
 		deviceData.UTCTimeDay = now.Day()
 	}
-	if deviceData.UTCTimeHours > now.Hour() {
+	if deviceData.UTCTimeHours > now.Hour() || deviceData.UTCTimeHours < now.Hour() {
 		deviceData.UTCTimeHours = now.Hour()
 	}
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
