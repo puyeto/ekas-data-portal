@@ -170,8 +170,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.GroundSpeed = uint32(rand.Intn(max-min+1) + min)
 	// }
 
-	// loc := time.FixedZone("UTC+3", 3*60*60)
-	// now := time.Now().In(loc)
+	loc := time.FixedZone("UTC+3", 3*60*60)
+	now := time.Now().In(loc)
 	// oneHourLater := now.Add(time.Hour * 1).Unix()
 	// oneHourBefore := now.Add(-time.Hour * 1).Unix()
 
@@ -183,6 +183,18 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// 	deviceData.UTCTimeMonth = int(now.Month())
 	// 	deviceData.UTCTimeYear = now.Year()
 	// }
+	if deviceData.UTCTimeYear > now.Year() {
+		deviceData.UTCTimeYear = now.Year()
+	}
+	if time.Month(deviceData.UTCTimeMonth) > now.Month() {
+		deviceData.UTCTimeMonth = int(now.Month())
+	}
+	if deviceData.UTCTimeDay > now.Day() {
+		deviceData.UTCTimeDay = now.Day()
+	}
+	if deviceData.UTCTimeHours > now.Hour() {
+		deviceData.UTCTimeHours = now.Hour()
+	}
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	clientJobs <- models.ClientJob{deviceData, conn}
