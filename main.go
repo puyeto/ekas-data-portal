@@ -17,8 +17,11 @@ import (
 )
 
 const (
+	// CONNHOST connection host
 	CONNHOST = "0.0.0.0"
+	// CONNPORT connection port
 	CONNPORT = 8083
+	// CONNTYPE connection type
 	CONNTYPE = "tcp"
 )
 
