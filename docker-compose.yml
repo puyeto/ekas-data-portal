@@ -4,11 +4,7 @@ services:
     image: omollo/ekas-data-portal-prod
     container_name: ekas-data-portal
     deploy:
-      replicas: 3
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 2G
+      replicas: 5
     ports:
       - "8083:8083"
       - "7001:7001"
