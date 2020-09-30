@@ -162,6 +162,18 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	yr := processSeeked(byteReader, 2, 67)
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
+	checksum := processSeeked(byteReader, 1, 69)
+	deviceData.Checksum = int(checksum[0])
+
+	chks := make([]byte, 1)
+	for i := 4; i < 68; i++ {
+		chks[0] += b[i]
+	}
+
+	if chks[0] != checksum[0] {
+		// return
+	}
+
 	// if deviceData.DeviceID == 1212208985 && deviceData.GroundSpeed > 85 {
 	// 	rand.Seed(time.Now().UnixNano())
 	// 	min := 75
@@ -200,14 +212,17 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	}
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-	clientJobs <- models.ClientJob{deviceData, conn}
+	clientJobs <- models.ClientJob{
+		DeviceData: deviceData,
+		Conn:       conn,
+	}
 	// }
 
-	// if deviceData.DeviceID == 1151916152 {
-	// 	deviceData.GroundSpeed = 0
-	// 	deviceData.DeviceID = 1131310581
-	// 	clientJobs <- models.ClientJob{deviceData, conn}
-	// }
+	if deviceData.DeviceID == 1830208067 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1830202152
+		clientJobs <- models.ClientJob{deviceData, conn}
+	}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)

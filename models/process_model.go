@@ -56,6 +56,7 @@ type DeviceData struct {
 	DateTime                       time.Time `json:"date_time,omitempty"`
 	Name                           string    `json:"name,omitempty"`
 	DateTimeStamp                  int64     `json:"date_time_stamp,omitempty"`
+	Checksum                       int       `json:"checksum,omitempty"`
 }
 
 // LastSeenStruct ...
