@@ -59,9 +59,9 @@ pipeline {
             stage('CLEAN-UP') {
                 steps {
                     // sh 'docker stop ekas-data-portal-dev'
-                    // sh 'docker service scale ekas-data-portal-prod_ekas-data=0'
+                    sh 'docker service scale ekas-data-portal-prod_ekas-data=0'
                     sh 'docker system prune -f'
-                    // sh 'docker service scale ekas-data-portal-prod_ekas-data=2'
+                    sh 'docker service scale ekas-data-portal-prod_ekas-data=5'
                     deleteDir()
                 }
             }
