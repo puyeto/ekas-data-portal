@@ -200,15 +200,12 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	}
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-	clientJobs <- models.ClientJob{
-		DeviceData: deviceData,
-		Conn:       conn,
-	}
+	clientJobs <- models.ClientJob{deviceData, conn}
 	// }
 
-	// if deviceData.DeviceID == 1830208067 {
+	// if deviceData.DeviceID == 1151916152 {
 	// 	deviceData.GroundSpeed = 0
-	// 	deviceData.DeviceID = 1830202152
+	// 	deviceData.DeviceID = 1131310581
 	// 	clientJobs <- models.ClientJob{deviceData, conn}
 	// }
 
