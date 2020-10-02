@@ -244,6 +244,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 				if err := core.LogToMongoDB(job); err != nil {
 					core.Logger.Warnf("Mongo DB - logging error: %v", err)
 				}
+				core.LogToMongoDB2(job)
 				if err := core.LoglastSeenMongoDB(job); err != nil {
 					core.Logger.Warnf("Mongo DB - logging last seen error: %v", err)
 				}

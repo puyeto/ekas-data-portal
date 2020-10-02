@@ -47,6 +47,7 @@ func init() {
 	core.DBCONN = core.DBconnect("ekas_portal")
 	core.DBCONDATA = core.DBconnect("ekas_portal_data")
 	core.MongoDB = core.InitializeMongoDB("mongodb://root:safcom2012@68.183.39.248:27017/?authSource=admin", "ekas_portal")
+	core.MongoDB2 = core.InitializeMongoDB2("mongodb://159.203.72.237:27017/?gssapiServiceName=mongodb", "ekas_portal")
 	core.InitializeRedis()
 }
 
