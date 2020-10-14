@@ -60,27 +60,6 @@ func LogToMongoDB(m models.DeviceData) error {
 	return err
 }
 
-// LogToMongoDB2 ...
-func LogToMongoDB2(m models.DeviceData) error {
-	collection := MongoDB2.Collection("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_, err := collection.InsertOne(ctx, m)
-	CreateIndexMongo2("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
-	return err
-}
-
-// CreateIndexMongo2 create a mongodn index
-func CreateIndexMongo2(colName string) (string, error) {
-	mod := mongo.IndexModel{
-		Keys: bson.M{
-			"datetimestamp": -1, // index in ascending order
-		}, Options: nil,
-	}
-	collection := MongoDB2.Collection(colName)
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	return collection.Indexes().CreateOne(ctx, mod)
-}
-
 // CreateIndexMongo create a mongodn index
 func CreateIndexMongo(colName string) (string, error) {
 	mod := mongo.IndexModel{

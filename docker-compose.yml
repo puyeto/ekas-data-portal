@@ -4,7 +4,7 @@ services:
     image: omollo/ekas-data-portal-prod
     container_name: ekas-data-portal
     deploy:
-      replicas: 5
+      replicas: 4
     ports:
       - "8083:8083"
       - "7001:7001"
