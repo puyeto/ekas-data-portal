@@ -15,27 +15,9 @@ import (
 
 // MongoDB ...
 var MongoDB *mongo.Database
-var MongoDB2 *mongo.Database
 
 // InitializeMongoDB Initialize MongoDB Connection
 func InitializeMongoDB(dbURL, dbName string) *mongo.Database {
-	client, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// defer client.Disconnect(ctx)
-
-	Logger.Infof("Mongo DB initialized: %v", dbName)
-	return client.Database(dbName)
-}
-
-// InitializeMongoDB2 Initialize MongoDB Connection
-func InitializeMongoDB2(dbURL, dbName string) *mongo.Database {
 	client, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
 	if err != nil {
 		log.Fatal(err)
