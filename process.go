@@ -22,12 +22,12 @@ const queueLimit = 50
 
 // HandleRequest Handles incoming requests.
 func HandleRequest(conn net.Conn) {
+	defer conn.Close()
 
 	var byteSize = 70
 	byteData := make([]byte, 700)
 
 	for {
-		defer conn.Close()
 
 		reqLen, err := conn.Read(byteData)
 		if err != nil {
@@ -35,6 +35,7 @@ func HandleRequest(conn net.Conn) {
 				fmt.Println("End of file error:", err)
 			}
 			fmt.Println("Error reading:", err.Error(), reqLen)
+			conn.Close()
 			return
 		}
 
