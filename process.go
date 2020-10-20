@@ -41,7 +41,7 @@ func HandleRequest(conn net.Conn) {
 		conn.Write([]byte(string(result)))
 
 		if reqLen == 0 {
-			return // connection already closed by client
+			exit // connection already closed by client
 		}
 
 		if reqLen > 0 {
@@ -214,7 +214,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	// send to association
 	// go sendToAssociation(deviceData)
-	// conn.Close()
+	conn.Close()
 
 }
 
