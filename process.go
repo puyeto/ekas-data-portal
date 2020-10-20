@@ -27,6 +27,8 @@ func HandleRequest(conn net.Conn) {
 	byteData := make([]byte, 700)
 
 	for {
+		defer conn.Close()
+
 		reqLen, err := conn.Read(byteData)
 		if err != nil {
 			if err != io.EOF {
@@ -200,7 +202,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	}
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-	clientJobs <- models.ClientJob{deviceData, conn}
+	clientJobs <- models.ClientJob{
+		DeviceData: deviceData,
+		Conn:       conn,
+	}
 	// }
 
 	// if deviceData.DeviceID == 1151916152 {
@@ -214,7 +219,6 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	// send to association
 	// go sendToAssociation(deviceData)
-	conn.Close()
 
 }
 
