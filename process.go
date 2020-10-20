@@ -41,7 +41,7 @@ func HandleRequest(conn net.Conn) {
 		conn.Write([]byte(string(result)))
 
 		if reqLen == 0 {
-			exit // connection already closed by client
+			return // connection already closed by client
 		}
 
 		if reqLen > 0 {
