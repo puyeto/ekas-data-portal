@@ -92,7 +92,7 @@ func main() {
 			}
 
 			fmt.Printf("accept err: %v", err)
-			return
+			break
 		}
 		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
