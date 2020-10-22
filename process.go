@@ -24,6 +24,14 @@ const queueLimit = 50
 func HandleRequest(conn net.Conn) {
 	defer conn.Close()
 
+	// set SetReadDeadline
+	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	if err != nil {
+		fmt.Println("SetReadDeadline failed:", err)
+		// do something else, for example create new conn
+		return
+	}
+
 	var byteSize = 70
 	byteData := make([]byte, 700)
 
