@@ -37,7 +37,7 @@ func HandleRequest(conn net.Conn) {
 			}
 			fmt.Println("Error reading:", err.Error(), reqLen)
 			conn.Close()
-			return
+			break
 		}
 
 		// return Response
@@ -45,7 +45,7 @@ func HandleRequest(conn net.Conn) {
 		conn.Write([]byte(string(result)))
 
 		if reqLen == 0 {
-			return // connection already closed by client
+			break // connection already closed by client
 		}
 
 		if reqLen > 0 {
@@ -58,7 +58,7 @@ func HandleRequest(conn net.Conn) {
 				mb := make([]byte, byteSize)
 				n1, _ := byteRead.Read(mb)
 
-				go processRequest(conn, mb, n1)
+				processRequest(conn, mb, n1)
 			}
 
 		}
