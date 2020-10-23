@@ -72,12 +72,12 @@ func main() {
 		panic(err)
 	}
 
-	var connections []net.Conn
-	defer func() {
-		for _, conn := range connections {
-			conn.Close()
-		}
-	}()
+	// var connections []net.Conn
+	// defer func() {
+	// 	for _, conn := range connections {
+	// 		conn.Close()
+	// 	}
+	// }()
 
 	// fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 	core.Logger.Infoln("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
@@ -94,16 +94,17 @@ func main() {
 			fmt.Printf("accept err: %v", err)
 			break
 		}
+		defer conn.Close()
 		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
 		// Handle connections in a new goroutine.
 		go HandleRequest(conn)
 
-		connections = append(connections, conn)
-		if len(connections)%10000 == 0 {
-			fmt.Printf("total number of connections: %v", len(connections))
-			core.Logger.Infoln("total number of connections: %v", len(connections))
-		}
+		// connections = append(connections, conn)
+		// if len(connections)%10000 == 0 {
+		// 	fmt.Printf("total number of connections: %v", len(connections))
+		// 	core.Logger.Infoln("total number of connections: %v", len(connections))
+		// }
 	}
 
 }
