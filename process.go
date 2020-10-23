@@ -25,13 +25,12 @@ func HandleRequest(conn net.Conn) {
 	defer conn.Close()
 
 	// set SetReadDeadline
-	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	err := conn.SetDeadline(time.Time{})
 	if err != nil {
-		fmt.Println("SetReadDeadline failed:", err)
+		fmt.Println("SetDeadline failed:", err)
 		// do something else, for example create new conn
 		return
 	}
-
 	var byteSize = 70
 	byteData := make([]byte, 700)
 
