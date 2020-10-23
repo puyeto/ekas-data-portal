@@ -41,11 +41,11 @@ func HandleRequest(conn net.Conn) {
 		if err != nil {
 			if err != io.EOF {
 				fmt.Println("End of file error:", err)
-				break
+				return
 			}
 			fmt.Println("Error reading:", err.Error(), reqLen)
 			conn.Close()
-			break
+			return
 		}
 
 		// return Response
@@ -53,7 +53,7 @@ func HandleRequest(conn net.Conn) {
 		conn.Write([]byte(string(result)))
 
 		if reqLen == 0 {
-			break // connection already closed by client
+			return
 		}
 
 		if reqLen > 0 {
