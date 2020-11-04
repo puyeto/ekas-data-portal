@@ -205,12 +205,12 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	if deviceData.UTCTimeDay > now.Day() || deviceData.UTCTimeDay < now.Day() {
 		deviceData.UTCTimeDay = now.Day()
 	}
-	if deviceData.UTCTimeHours > now.Hour() || deviceData.UTCTimeHours < now.Hour() {
+	if deviceData.UTCTimeHours > now.Hour() { //|| deviceData.UTCTimeHours < now.Hour() {
 		deviceData.UTCTimeHours = now.Hour()
 	}
-	if deviceData.UTCTimeMinutes > now.Minute() {
-		deviceData.UTCTimeMinutes = now.Minute()
-	}
+	// if deviceData.UTCTimeMinutes > now.Minute() {
+	// 	deviceData.UTCTimeMinutes = now.Minute()
+	// }
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 	clientJobs <- models.ClientJob{
