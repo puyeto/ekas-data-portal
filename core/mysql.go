@@ -15,8 +15,8 @@ var (
 	DBCONN *sql.DB
 	// DBCONDATA for data store.
 	DBCONDATA     *sql.DB
-	mysqlUsername = "root"
-	mysqlPassword = "Safcom@2012"
+	mysqlUsername = "remote"
+	mysqlPassword = "Safcom-2030"
 	mysqlIP       = "178.62.75.148"
 	mysqlPort     = 3306
 )
