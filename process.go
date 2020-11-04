@@ -88,7 +88,7 @@ func readNextBytes(conn net.Conn, number int) (int, []byte) {
 }
 
 func processRequest(conn net.Conn, b []byte, byteLen int) {
-	clientJobs := make(chan models.ClientJob)
+	clientJobs := make(chan models.DeviceData)
 	go generateResponses(clientJobs)
 
 	var deviceData models.DeviceData
@@ -211,13 +211,23 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// if deviceData.UTCTimeMinutes > now.Minute() {
 	// 	deviceData.UTCTimeMinutes = now.Minute()
 	// }
+
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
-	clientJobs <- models.ClientJob{
-		DeviceData: deviceData,
-		Conn:       conn,
+
+	checksum := processSeeked(byteReader, 1, 69)
+	deviceData.Checksum = int(checksum[0])
+
+	chks := make([]byte, 1)
+	for i := 4; i < 69; i++ {
+		chks[0] += b[i]
 	}
-	// }
+
+	if checksum[0] <= 0 || chks[0] != checksum[0] {
+		return
+	}
+
+	clientJobs <- deviceData
 
 	// if deviceData.DeviceID == 1151916152 {
 	// 	deviceData.GroundSpeed = 0
@@ -233,6 +243,19 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 }
 
+func checkSum(msg []byte) uint16 {
+	sum := 0
+
+	// assume even for now
+	for n := 1; n < len(msg)-1; n += 2 {
+		sum += int(msg[n])*256 + int(msg[n+1])
+	}
+	sum = (sum >> 16) + (sum & 0xffff)
+	sum += (sum >> 16)
+	var answer uint16 = uint16(^sum)
+	return answer
+}
+
 func processSeeked(byteReader *bytes.Reader, bytesize, seek int64) []byte {
 	byteReader.Seek(seek, 0)
 	val := make([]byte, bytesize)
@@ -240,14 +263,14 @@ func processSeeked(byteReader *bytes.Reader, bytesize, seek int64) []byte {
 	return val
 }
 
-func generateResponses(clientJobs chan models.ClientJob) {
+func generateResponses(clientJobs chan models.DeviceData) {
 	for {
 		// use a WaitGroup
 		var wg sync.WaitGroup
 
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
-		LogToRedis(clientJob.DeviceData)
+		LogToRedis(clientJob)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
@@ -275,7 +298,7 @@ func generateResponses(clientJobs chan models.ClientJob) {
 		go worker(jobChan)
 
 		// enqueue a job
-		jobChan <- clientJob.DeviceData
+		jobChan <- clientJob
 
 		// to stop the worker, first close the job channel
 		close(jobChan)

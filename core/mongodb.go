@@ -22,7 +22,9 @@ func InitializeMongoDB(dbURL, dbName string) *mongo.Database {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -36,7 +38,9 @@ func InitializeMongoDB(dbURL, dbName string) *mongo.Database {
 // LogToMongoDB ...
 func LogToMongoDB(m models.DeviceData) error {
 	collection := MongoDB.Collection("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	_, err := collection.InsertOne(ctx, m)
 	CreateIndexMongo("data_" + strconv.FormatInt(int64(m.DeviceID), 10))
 	return err
@@ -50,7 +54,8 @@ func CreateIndexMongo(colName string) (string, error) {
 		}, Options: nil,
 	}
 	collection := MongoDB.Collection(colName)
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	return collection.Indexes().CreateOne(ctx, mod)
 }
 
@@ -82,7 +87,8 @@ func LogCurrentViolationSeenMongoDB(m models.DeviceData) error {
 
 func upsert(data bson.M, deviceID uint32, table string) error {
 	collection := MongoDB.Collection(table)
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 	opts := options.Update().SetUpsert(true)
 
 	_, err := collection.UpdateOne(ctx, bson.M{"_id": deviceID}, data, opts)
