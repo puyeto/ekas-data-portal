@@ -11,7 +11,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bamzi/jobrunner"
 	"github.com/ekas-data-portal/core"
+	"github.com/ekas-data-portal/cron/expireddevices"
 	"github.com/ekas-data-portal/models"
 	"github.com/rcrowley/go-metrics"
 )
@@ -54,6 +56,9 @@ func main() {
 	time.Now().UnixNano()
 	// setLimit()
 	// go metrics.Log(metrics.DefaultRegistry, 5*time.Second, log.New(os.Stderr, "metrics: ", log.Lmicroseconds))
+
+	jobrunner.Start() // optional: jobrunner.Start(pool int, concurrent int) (10, 1)
+	jobrunner.Schedule("@every 30m", expireddevices.Status{})
 
 	go runHeartbeatService(":7001")
 

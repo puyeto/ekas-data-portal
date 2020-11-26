@@ -111,6 +111,12 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	if deviceData.DeviceID == 0 {
 		return
 	}
+
+	_, found := Find(core.ExpiredDeviceIDs, int32(deviceData.DeviceID))
+	if found {
+		return
+	}
+
 	// Transmission Reason – 1 byte
 	reason := processSeeked(byteReader, 1, 18)
 	deviceData.TransmissionReason = int(reason[0])
@@ -130,6 +136,17 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		trsd = int(a)
 	}
 	deviceData.TransmissionReasonSpecificData = trsd
+
+	// Engine Off – 1 byte
+	ignition := processSeeked(byteReader, 1, 19)
+	deviceData.IgnitionStatus = int8(ignition[0])
+
+	// GPS Lock Status
+	gps := processSeeked(byteReader, 1, 20)
+	deviceData.GPSLockStatus = int8(gps[0])
+	if deviceData.GPSLockStatus == 0 {
+		return
+	}
 
 	// Number of satellites used (from GPS) – 1 byte
 	satellites := processSeeked(byteReader, 1, 43)
@@ -223,11 +240,14 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		chks[0] += b[i]
 	}
 
-	if checksum[0] <= 0 || chks[0] != checksum[0] {
+	if chks[0] != checksum[0] {
 		return
 	}
 
-	clientJobs <- deviceData
+	fmt.Println(deviceData.GPSLockStatus)
+	fmt.Println(deviceData.IgnitionStatus)
+
+	// clientJobs <- deviceData
 
 	// if deviceData.DeviceID == 1151916152 {
 	// 	deviceData.GroundSpeed = 0
@@ -403,10 +423,6 @@ func readInt32(data []byte) (ret int32) {
 
 // SaveData Save data to db
 func SaveData(m models.DeviceData) {
-	err := core.DBCONN.Ping()
-	if err != nil {
-		fmt.Println(err)
-	}
 
 	tx, err := core.DBCONN.Begin()
 	if err != nil {
@@ -716,4 +732,15 @@ func sendToNTSA(deviceData models.DeviceData) {
 func FloatToString(inputnum float64) string {
 	// to convert a float number to a string
 	return strconv.FormatFloat(inputnum, 'f', 6, 64)
+}
+
+// Find takes a slice and looks for an element in it. If found it will
+// return it's key, otherwise it will return -1 and a bool of false.
+func Find(slice []int32, val int32) (int, bool) {
+	for i, item := range slice {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
 }
