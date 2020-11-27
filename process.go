@@ -144,6 +144,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// GPS Lock Status
 	gps := processSeeked(byteReader, 1, 20)
 	deviceData.GPSLockStatus = int8(gps[0])
+
 	if deviceData.GPSLockStatus == 0 {
 		return
 	}
@@ -244,10 +245,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		return
 	}
 
-	fmt.Println(deviceData.GPSLockStatus)
-	fmt.Println(deviceData.IgnitionStatus)
-
-	// clientJobs <- deviceData
+	clientJobs <- deviceData
 
 	// if deviceData.DeviceID == 1151916152 {
 	// 	deviceData.GroundSpeed = 0

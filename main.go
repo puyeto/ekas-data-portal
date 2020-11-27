@@ -59,6 +59,7 @@ func main() {
 
 	jobrunner.Start() // optional: jobrunner.Start(pool int, concurrent int) (10, 1)
 	jobrunner.Schedule("@every 30m", expireddevices.Status{})
+	jobrunner.In(2*time.Second, expireddevices.Status{})
 
 	go runHeartbeatService(":7001")
 
