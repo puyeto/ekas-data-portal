@@ -251,65 +251,38 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	clientJobs <- deviceData
 
 	if deviceData.DeviceID == 1103211150 {
+
+		deviceData.DeviceID = 1104584291
+		clientJobs <- deviceData
+
+		deviceData.DeviceID = 1225592601
+		clientJobs <- deviceData
+
+		deviceData.DeviceID = 1242027050
+		clientJobs <- deviceData
+
+		deviceData.DeviceID = 1238821354
+		clientJobs <- deviceData
+
+		deviceData.DeviceID = 1268182506
+		clientJobs <- deviceData
+
 		deviceData.GroundSpeed = 0
 		deviceData.DeviceID = 1210005578
 		clientJobs <- deviceData
-	}
 
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
 		deviceData.DeviceID = 1223775589
 		clientJobs <- deviceData
-	}
 
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
 		deviceData.DeviceID = 1291328388
 		clientJobs <- deviceData
-	}
 
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
 		deviceData.DeviceID = 1111758719
 		clientJobs <- deviceData
-	}
 
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
 		deviceData.DeviceID = 1151577747
 		clientJobs <- deviceData
-	}
 
-	//
-
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1104584291
-		clientJobs <- deviceData
-	}
-
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1225592601
-		clientJobs <- deviceData
-	}
-
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1242027050
-		clientJobs <- deviceData
-	}
-
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1238821354
-		clientJobs <- deviceData
-	}
-
-	if deviceData.DeviceID == 1103211150 {
-		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1268182506
-		clientJobs <- deviceData
 	}
 
 	// send data to ntsa
