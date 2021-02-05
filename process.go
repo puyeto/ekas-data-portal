@@ -111,9 +111,12 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	if deviceData.DeviceID == 0 {
 		return
 	}
+	fmt.Println(deviceData.DeviceID)
 
 	_, found := Find(core.ExpiredDeviceIDs, int32(deviceData.DeviceID))
 	if found {
+		// update device status
+		updateVehicleStatus(deviceData.DeviceID, "offline", "GPS Offline")
 		return
 	}
 
@@ -247,11 +250,23 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	clientJobs <- deviceData
 
-	// if deviceData.DeviceID == 1151916152 {
-	// 	deviceData.GroundSpeed = 0
-	// 	deviceData.DeviceID = 1131310581
-	// 	clientJobs <- models.ClientJob{deviceData, conn}
-	// }
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1210005578
+		clientJobs <- deviceData
+	}
+
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1223775589
+		clientJobs <- deviceData
+	}
+
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1291328388
+		clientJobs <- deviceData
+	}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
@@ -351,6 +366,36 @@ func LogToRedis(m models.DeviceData) {
 	// if m.TransmissionReason != 255 && m.GroundSpeed != 0 {
 	SetRedisLog(m, "data:"+device)
 	// }
+}
+
+// update vehicle status
+func updateVehicleStatus(deviceid uint32, status, statusreason string) error {
+	err := core.DBCONN.Ping()
+	if err != nil {
+		return err
+	}
+
+	tx, err := core.DBCONN.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	query := "UPDATE vehicle_configuration SET device_status=?, status_reason=? WHERE device_id=?"
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(status, statusreason, deviceid)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
 }
 
 // check if Device is in idle state
