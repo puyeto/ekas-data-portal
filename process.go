@@ -282,6 +282,36 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	//
 
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1104584291
+		clientJobs <- deviceData
+	}
+
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1225592601
+		clientJobs <- deviceData
+	}
+
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1242027050
+		clientJobs <- deviceData
+	}
+
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1238821354
+		clientJobs <- deviceData
+	}
+
+	if deviceData.DeviceID == 1029219111 {
+		deviceData.GroundSpeed = 0
+		deviceData.DeviceID = 1268182506
+		clientJobs <- deviceData
+	}
+
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
 
