@@ -250,63 +250,21 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	clientJobs <- deviceData
 
-	if deviceData.DeviceID == 1103211150 {
+	if deviceData.DeviceID == 1108216691 {
 		deviceData.GroundSpeed = 0
-		deviceData.DeviceID = 1104584291
+		deviceData.DeviceID = 1266101833
 		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1225592601
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1242027050
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1238821354
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1268182506
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1210005578
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1223775589
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1291328388
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1111758719
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1151577747
-		clientJobs <- deviceData
-
-		//
-		deviceData.DeviceID = 1177790866
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1254555524
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1183053123
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1122512203
-		clientJobs <- deviceData
-
-		deviceData.DeviceID = 1200789588
-		clientJobs <- deviceData
-
-		//
 
 		deviceData.DeviceID = 1254205030
 		clientJobs <- deviceData
 
-		deviceData.DeviceID = 1266101833
+		deviceData.DeviceID = 1271881077
 		clientJobs <- deviceData
 
-		deviceData.DeviceID = 1131210222
+		deviceData.DeviceID = 1106069688
+		clientJobs <- deviceData
+
+		deviceData.DeviceID = 1242027050
 		clientJobs <- deviceData
 
 	}
