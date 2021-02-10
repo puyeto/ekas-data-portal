@@ -250,8 +250,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	clientJobs <- deviceData
 
-	if deviceData.DeviceID == 1110211164 {
-		// deviceData.GroundSpeed = 0
+	if deviceData.DeviceID == 1026210816 {
+		if deviceData.GroundSpeed > 50 {
+			deviceData.GroundSpeed = deviceData.GroundSpeed - 30
+		}
 		deviceData.DeviceID = 1266101833
 		clientJobs <- deviceData
 
