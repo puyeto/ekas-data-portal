@@ -260,6 +260,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 		deviceData.DeviceID = 1104584291
 		clientJobs <- deviceData
 
+		deviceData.DeviceID = 1242027050
+		clientJobs <- deviceData
+
 	}
 
 	// send data to ntsa
