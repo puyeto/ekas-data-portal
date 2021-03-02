@@ -171,6 +171,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// Ground speed – 4 bytes
 	gspeed := processSeeked(byteReader, 4, 56)
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
+	if deviceData.GroundSpeed > 160 {
+		return
+	}
 
 	// Speed direction – 2 bytes
 	speedd := processSeeked(byteReader, 2, 60)
