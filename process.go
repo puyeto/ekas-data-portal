@@ -65,7 +65,7 @@ func HandleRequest(conn net.Conn) {
 				mb := make([]byte, byteSize)
 				n1, _ := byteRead.Read(mb)
 
-				processRequest(conn, mb, n1)
+				processRequest(mb, n1)
 			}
 
 		}
@@ -87,7 +87,7 @@ func readNextBytes(conn net.Conn, number int) (int, []byte) {
 	return reqLen, bytes
 }
 
-func processRequest(conn net.Conn, b []byte, byteLen int) {
+func processRequest(b []byte, byteLen int) {
 	clientJobs := make(chan models.DeviceData)
 	go generateResponses(clientJobs)
 

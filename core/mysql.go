@@ -16,7 +16,7 @@ var (
 	// DBCONDATA for data store.
 	DBCONDATA     *sql.DB
 	mysqlUsername = "remote"
-	mysqlPassword = "Safcom-2030"
+	mysqlPassword = "2030-Ekas12"
 	mysqlIP       = "178.62.75.148"
 	mysqlPort     = 3306
 )
