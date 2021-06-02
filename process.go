@@ -111,14 +111,6 @@ func processRequest(b []byte, byteLen int) {
 	if deviceData.DeviceID == 0 {
 		return
 	}
-	fmt.Println(deviceData.DeviceID)
-
-	_, found := Find(core.ExpiredDeviceIDs, int32(deviceData.DeviceID))
-	if found {
-		// update device status
-		updateVehicleStatus(deviceData.DeviceID, "offline", "GPS Offline")
-		return
-	}
 
 	// Transmission Reason – 1 byte
 	reason := processSeeked(byteReader, 1, 18)
@@ -147,10 +139,6 @@ func processRequest(b []byte, byteLen int) {
 	// GPS Lock Status
 	gps := processSeeked(byteReader, 1, 20)
 	deviceData.GPSLockStatus = int8(gps[0])
-
-	if deviceData.GPSLockStatus == 0 {
-		return
-	}
 
 	// Number of satellites used (from GPS) – 1 byte
 	satellites := processSeeked(byteReader, 1, 43)
@@ -251,22 +239,37 @@ func processRequest(b []byte, byteLen int) {
 		return
 	}
 
+	if deviceData.GPSLockStatus == 0 {
+		updateVehicleStatus(deviceData.DeviceID, "offline", "GPS Offline", deviceData.DateTime)
+		return
+	}
+
+	asyncFound := DoneAsyncFound(deviceData.DeviceID)
+	found := <-asyncFound
+	if found {
+		// update device status
+		updateVehicleStatus(deviceData.DeviceID, "offline", "Expired", deviceData.DateTime)
+		return
+	}
+
+	go updateVehicleStatus(deviceData.DeviceID, "online", "Online", deviceData.DateTime)
+
 	clientJobs <- deviceData
 
-	if deviceData.DeviceID == 1115211566 {
-		if deviceData.GroundSpeed > 50 {
-			deviceData.GroundSpeed = deviceData.GroundSpeed - 30
-		}
-		deviceData.DeviceID = 1210005578
-		clientJobs <- deviceData
+	// if deviceData.DeviceID == 1115211566 {
+	// 	if deviceData.GroundSpeed > 50 {
+	// 		deviceData.GroundSpeed = deviceData.GroundSpeed - 30
+	// 	}
+	// 	deviceData.DeviceID = 1210005578
+	// 	clientJobs <- deviceData
 
-		deviceData.DeviceID = 1104584291
-		clientJobs <- deviceData
+	// 	deviceData.DeviceID = 1104584291
+	// 	clientJobs <- deviceData
 
-		deviceData.DeviceID = 1242027050
-		clientJobs <- deviceData
+	// 	deviceData.DeviceID = 1242027050
+	// 	clientJobs <- deviceData
 
-	}
+	// }
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
@@ -274,6 +277,16 @@ func processRequest(b []byte, byteLen int) {
 	// send to association
 	// go sendToAssociation(deviceData)
 
+}
+
+func DoneAsyncFound(deviceID uint32) chan bool {
+	found := make(chan bool)
+	go func() {
+		_, r := Find(core.ExpiredDeviceIDs, int32(deviceID))
+		found <- r
+
+	}()
+	return found
 }
 
 func checkSum(msg []byte) uint16 {
@@ -369,7 +382,7 @@ func LogToRedis(m models.DeviceData) {
 }
 
 // update vehicle status
-func updateVehicleStatus(deviceid uint32, status, statusreason string) error {
+func updateVehicleStatus(deviceid uint32, status, statusreason string, lastseen time.Time) error {
 	err := core.DBCONN.Ping()
 	if err != nil {
 		return err
@@ -381,14 +394,14 @@ func updateVehicleStatus(deviceid uint32, status, statusreason string) error {
 	}
 	defer tx.Rollback()
 
-	query := "UPDATE vehicle_configuration SET device_status=?, status_reason=? WHERE device_id=?"
+	query := "UPDATE vehicle_configuration SET last_seen = ?, device_status=?, status_reason=? WHERE device_id=?"
 	stmt, err := tx.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(status, statusreason, deviceid)
+	_, err = stmt.Exec(lastseen, status, statusreason, deviceid)
 	if err != nil {
 		return err
 	}
