@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
-	"time"
 
 	// ...
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +16,7 @@ var (
 	DBCONDATA     *sql.DB
 	mysqlUsername = "remote"
 	mysqlPassword = "2030-Ekas12"
-	mysqlIP       = "159.65.92.201"
+	mysqlIP       = "138.197.205.177"
 	mysqlPort     = 3306
 )
 
@@ -26,15 +25,16 @@ func DBconnect(dbname string) *sql.DB {
 
 	//Construct the host
 	//Note: Values are set using a config file
-	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + dbname + "?parseTime=true&net_write_timeout=6000"
+	mysqlHost := mysqlUsername + ":" + mysqlPassword + "@tcp(" + mysqlIP + ":" + strconv.Itoa(mysqlPort) + ")/" + dbname + "?parseTime=true"
 
 	db, err := sql.Open("mysql", mysqlHost)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db.SetMaxIdleConns(0)
-	db.SetConnMaxLifetime(time.Second * 10)
+	db.SetConnMaxLifetime(0)
+	db.SetMaxIdleConns(3)
+	db.SetMaxOpenConns(300)
 
 	return db
 }
