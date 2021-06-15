@@ -252,7 +252,7 @@ func processRequest(b []byte, byteLen int) {
 		return
 	}
 
-	updateVehicleStatus(deviceData.DeviceID, "online", "Online", deviceData.DateTime)
+	// updateVehicleStatus(deviceData.DeviceID, "online", "Online", deviceData.DateTime)
 
 	clientJobs <- deviceData
 
