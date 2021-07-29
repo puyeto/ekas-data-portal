@@ -256,20 +256,14 @@ func processRequest(b []byte, byteLen int) {
 
 	clientJobs <- deviceData
 
-	// if deviceData.DeviceID == 1115211566 {
-	// 	if deviceData.GroundSpeed > 50 {
-	// 		deviceData.GroundSpeed = deviceData.GroundSpeed - 30
-	// 	}
-	// 	deviceData.DeviceID = 1210005578
-	// 	clientJobs <- deviceData
+	if deviceData.DeviceID == 1627211111 {
+		// if deviceData.GroundSpeed > 50 {
+		// 	deviceData.GroundSpeed = deviceData.GroundSpeed - 30
+		// }
+		deviceData.DeviceID = 1223209591
+		clientJobs <- deviceData
 
-	// 	deviceData.DeviceID = 1104584291
-	// 	clientJobs <- deviceData
-
-	// 	deviceData.DeviceID = 1242027050
-	// 	clientJobs <- deviceData
-
-	// }
+	}
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)

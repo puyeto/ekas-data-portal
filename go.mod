@@ -8,10 +8,9 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible // indirect
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/panjf2000/ants/v2 v2.4.3
-	github.com/panjf2000/gnet v1.4.2
+	github.com/panjf2000/gnet v1.4.2 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/sirupsen/logrus v1.6.0
-	github.com/smallnest/goframe v1.0.0
+	github.com/smallnest/goframe v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.3.4
 )
