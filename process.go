@@ -256,11 +256,11 @@ func processRequest(b []byte, byteLen int) {
 
 	clientJobs <- deviceData
 
-	if deviceData.DeviceID == 1627211111 {
+	if deviceData.DeviceID == 1623217655 {
 		// if deviceData.GroundSpeed > 50 {
 		// 	deviceData.GroundSpeed = deviceData.GroundSpeed - 30
 		// }
-		deviceData.DeviceID = 1623217655
+		deviceData.DeviceID = 1223209591
 		clientJobs <- deviceData
 
 	}
