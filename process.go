@@ -260,7 +260,7 @@ func processRequest(b []byte, byteLen int) {
 		// if deviceData.GroundSpeed > 50 {
 		// 	deviceData.GroundSpeed = deviceData.GroundSpeed - 30
 		// }
-		deviceData.DeviceID = 1223209591
+		deviceData.DeviceID = 1623217655
 		clientJobs <- deviceData
 
 	}
