@@ -318,6 +318,8 @@ func generateResponses(clientJobs chan models.DeviceData) {
 		worker := func(jobChan <-chan models.DeviceData) {
 			defer wg.Done()
 			for job := range jobChan {
+				updateVehicleStatus(job.DeviceID, "online", "Online", job.DateTime)
+
 				// SaveAllData(job)
 				if err := core.LogToMongoDB(job); err != nil {
 					core.Logger.Warnf("Mongo DB - logging error: %v", err)
