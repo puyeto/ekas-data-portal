@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -55,6 +56,8 @@ func HandleRequest(conn net.Conn) {
 			return
 		}
 
+		var deviceid uint32
+		var devicetime time.Time
 		if reqLen > 0 {
 			byteRead := bytes.NewReader(byteData)
 
@@ -65,9 +68,20 @@ func HandleRequest(conn net.Conn) {
 				mb := make([]byte, byteSize)
 				n1, _ := byteRead.Read(mb)
 
-				processRequest(mb, n1)
+				clientJobs := make(chan models.DeviceData)
+				go generateResponses(clientJobs)
+
+				ddata, err := processRequest(mb, n1)
+				if err != nil {
+					return
+				}
+
+				deviceid = ddata.DeviceID
+				devicetime = ddata.DateTime
+				clientJobs <- ddata
 			}
 
+			updateVehicleStatus(deviceid, "online", "Online", devicetime)
 		}
 		opsRate.Mark(1)
 	}
@@ -87,15 +101,13 @@ func readNextBytes(conn net.Conn, number int) (int, []byte) {
 	return reqLen, bytes
 }
 
-func processRequest(b []byte, byteLen int) {
-	clientJobs := make(chan models.DeviceData)
-	go generateResponses(clientJobs)
+func processRequest(b []byte, byteLen int) (models.DeviceData, error) {
 
 	var deviceData models.DeviceData
 
 	if byteLen != 70 {
 		core.Logger.Errorf("Invalid Byte Length: %v", byteLen)
-		return
+		return deviceData, errors.New("Invalid Byte Length:" + strconv.Itoa(byteLen))
 	}
 
 	byteReader := bytes.NewReader(b)
@@ -103,13 +115,15 @@ func processRequest(b []byte, byteLen int) {
 	scode := processSeeked(byteReader, 4, 0)
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
-		return
+		return deviceData, errors.New("Invalid System Code")
+
 	}
 
 	did := processSeeked(byteReader, 4, 5)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
 	if deviceData.DeviceID == 0 {
-		return
+		return deviceData, errors.New("Invalid Device ID")
+
 	}
 
 	// Transmission Reason – 1 byte
@@ -160,7 +174,7 @@ func processRequest(b []byte, byteLen int) {
 	gspeed := processSeeked(byteReader, 4, 56)
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
 	if deviceData.GroundSpeed > 160 {
-		return
+		return deviceData, errors.New("Invalid Ground Speed")
 	}
 
 	// Speed direction – 2 bytes
@@ -236,12 +250,12 @@ func processRequest(b []byte, byteLen int) {
 	}
 
 	if chks[0] != checksum[0] {
-		return
+		return deviceData, errors.New("Invalid Checksum")
 	}
 
 	if deviceData.GPSLockStatus == 0 {
 		updateVehicleStatus(deviceData.DeviceID, "offline", "GPS Offline", deviceData.DateTime)
-		return
+		return deviceData, errors.New("Invalid GPS Lock")
 	}
 
 	asyncFound := DoneAsyncFound(deviceData.DeviceID)
@@ -249,27 +263,28 @@ func processRequest(b []byte, byteLen int) {
 	if found {
 		// update device status
 		updateVehicleStatus(deviceData.DeviceID, "offline", "Expired", deviceData.DateTime)
-		return
+		return deviceData, errors.New("Invalid")
 	}
 
 	// updateVehicleStatus(deviceData.DeviceID, "online", "Online", deviceData.DateTime)
 
-	clientJobs <- deviceData
+	// clientJobs <- deviceData
 
-	if deviceData.DeviceID == 1705218622 {
-		// if deviceData.GroundSpeed > 50 {
-		// 	deviceData.GroundSpeed = deviceData.GroundSpeed - 30
-		// }
-		deviceData.DeviceID = 1616202169
-		clientJobs <- deviceData
+	// if deviceData.DeviceID == 1705218622 {
+	// 	// if deviceData.GroundSpeed > 50 {
+	// 	// 	deviceData.GroundSpeed = deviceData.GroundSpeed - 30
+	// 	// }
+	// 	deviceData.DeviceID = 1616202169
+	// 	clientJobs <- deviceData
 
-	}
+	// }
 
 	// send data to ntsa
 	// go sendToNTSA(deviceData)
 
 	// send to association
 	// go sendToAssociation(deviceData)
+	return deviceData, nil
 
 }
 
@@ -318,7 +333,7 @@ func generateResponses(clientJobs chan models.DeviceData) {
 		worker := func(jobChan <-chan models.DeviceData) {
 			defer wg.Done()
 			for job := range jobChan {
-				updateVehicleStatus(job.DeviceID, "online", "Online", job.DateTime)
+				// updateVehicleStatus(job.DeviceID, "online", "Online", job.DateTime)
 
 				// SaveAllData(job)
 				if err := core.LogToMongoDB(job); err != nil {
