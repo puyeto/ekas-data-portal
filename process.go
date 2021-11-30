@@ -285,7 +285,6 @@ func processRequest(b []byte, byteLen int) (models.DeviceData, error) {
 	// send to association
 	// go sendToAssociation(deviceData)
 	return deviceData, nil
-
 }
 
 func DoneAsyncFound(deviceID uint32) chan bool {
