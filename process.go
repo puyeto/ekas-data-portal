@@ -258,13 +258,13 @@ func processRequest(b []byte, byteLen int) (models.DeviceData, error) {
 		return deviceData, errors.New("Invalid GPS Lock")
 	}
 
-	asyncFound := DoneAsyncFound(deviceData.DeviceID)
-	found := <-asyncFound
-	if found {
-		// update device status
-		updateVehicleStatus(deviceData.DeviceID, "offline", "Expired", deviceData.DateTime)
-		return deviceData, errors.New("Invalid")
-	}
+	// asyncFound := DoneAsyncFound(deviceData.DeviceID)
+	// found := <-asyncFound
+	// if found {
+	// 	// update device status
+	// 	updateVehicleStatus(deviceData.DeviceID, "offline", "Expired", deviceData.DateTime)
+	// 	return deviceData, errors.New("Invalid")
+	// }
 
 	// updateVehicleStatus(deviceData.DeviceID, "online", "Online", deviceData.DateTime)
 
