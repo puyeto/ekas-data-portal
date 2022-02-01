@@ -324,7 +324,7 @@ func generateResponses(clientJobs chan models.DeviceData) {
 
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
-		LogToRedis(clientJob)
+		// LogToRedis(clientJob)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
