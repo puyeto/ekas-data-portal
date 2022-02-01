@@ -284,6 +284,7 @@ func processRequest(b []byte, byteLen int) (models.DeviceData, error) {
 
 	// send to association
 	// go sendToAssociation(deviceData)
+	fmt.Printf("data sent %d", deviceData.DeviceID)
 	return deviceData, nil
 }
 
