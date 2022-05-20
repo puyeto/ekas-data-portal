@@ -21,6 +21,11 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+        - ./storage/redis/data:/data
+    restart: always
+    environment:
+      - REDIS_REPLICATION_MODE=master
 volumes:
   logs:
 networks:

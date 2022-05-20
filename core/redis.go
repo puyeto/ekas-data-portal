@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/ekas-data-portal/models"
@@ -56,7 +55,6 @@ func GetValue(key string) (interface{}, error) {
 // SetValue ...
 func SetValue(key string, value interface{}) error {
 	serializedValue, _ := json.Marshal(value)
-	fmt.Println(serializedValue)
 	return redisClient.Set(ctx, key, string(serializedValue), 0).Err()
 }
 
