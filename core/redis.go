@@ -1,7 +1,6 @@
 package core
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"time"
 
@@ -19,13 +18,19 @@ func InitializeRedis() error {
 	// 	redisURL = "db-redis-cluster-do-user-4666162-0.db.ondigitalocean.com:25061"
 	// }
 
-	opt, _ := redis.ParseURL("rediss://:wdbsxehbizfl5kbu@db-redis-cluster-do-user-4666162-0.db.ondigitalocean.com:25061/1")
-	opt.PoolSize = 100
-	opt.MaxRetries = 2
-	opt.ReadTimeout = -1
-	opt.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+	// opt, _ := redis.ParseURL("rediss://:wdbsxehbizfl5kbu@db-redis-cluster-do-user-4666162-0.db.ondigitalocean.com:25061/1")
+	// opt.PoolSize = 100
+	// opt.MaxRetries = 2
+	// opt.ReadTimeout = -1
+	// opt.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
-	redisClient = redis.NewClient(opt)
+	// redisClient = redis.NewClient(opt)
+
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "159.89.134.228:6379",
+		Password: "",
+		DB:       3,
+	})
 
 	ping, err := redisClient.Ping().Result()
 	if err == nil && len(ping) > 0 {

@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
   ekas-data:
     image: omollo/ekas-data-portal-prod
@@ -12,6 +12,15 @@ services:
       - host
     volumes:
       - logs:/go/logs
+    depends_on:
+      - "redis"
+
+  redis:
+    image: "redis:alpine"
+    hostname: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
 volumes:
   logs:
 networks:

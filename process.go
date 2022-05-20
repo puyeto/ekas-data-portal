@@ -280,7 +280,9 @@ func processRequest(b []byte, byteLen int) (models.DeviceData, error) {
 	// }
 
 	// send data to ntsa
-	// go sendToNTSA(deviceData)
+	// if deviceData.DeviceID == 100000071 || deviceData.DeviceID == 1000061 {
+	// 	go sendToNTSA(deviceData)
+	// }
 
 	// send to association
 	// go sendToAssociation(deviceData)
@@ -325,7 +327,7 @@ func generateResponses(clientJobs chan models.DeviceData) {
 
 		// Wait for the next job to come off the queue.
 		clientJob := <-clientJobs
-		// LogToRedis(clientJob)
+		LogToRedis(clientJob)
 
 		// make a channel with a capacity of 100.
 		jobChan := make(chan models.DeviceData, queueLimit)
@@ -749,50 +751,48 @@ func sendToAssociation(deviceData models.DeviceData) {
 }
 
 func sendToNTSA(deviceData models.DeviceData) {
-	if deviceData.DeviceID == 100000071 || deviceData.DeviceID == 1000061 {
-		t := deviceData.DateTime
-		disconnect := "0"
-		failsafe := "0"
-		if deviceData.Disconnect {
-			disconnect = "1"
-		}
-		if deviceData.Failsafe {
-			failsafe = "1"
-		}
-
-		lat := FloatToString(float64(deviceData.Latitude) / 10000000)
-		long := FloatToString(float64(deviceData.Longitude) / 10000000)
-		latdirection := "N"
-		if deviceData.Latitude < 0 {
-			latdirection = "S"
-		}
-		longdirection := "E"
-		if deviceData.Longitude < 0 {
-			longdirection = "W"
-		}
-
-		datastr := t.Format("02/01/2006") + "," + t.Format("15:04:05") + "," + strconv.Itoa(int(deviceData.DeviceID)) + ",ekasfk2017,"
-		datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + lat + "," + latdirection + ","
-		datastr += long + "," + longdirection + "," + disconnect + "," + failsafe
-
-		url := "http://api.speedlimiter.co.ke/ekas"
-		payload := strings.NewReader(datastr)
-
-		req, _ := http.NewRequest("POST", url, payload)
-		req.Header.Add("content-type", "text/plain")
-		req.Header.Add("cache-control", "no-cache")
-
-		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		defer res.Body.Close()
-
-		body, _ := ioutil.ReadAll(res.Body)
-
-		fmt.Println("association 2", string(body))
+	t := deviceData.DateTime
+	disconnect := "0"
+	failsafe := "0"
+	if deviceData.Disconnect {
+		disconnect = "1"
 	}
+	if deviceData.Failsafe {
+		failsafe = "1"
+	}
+
+	lat := FloatToString(float64(deviceData.Latitude) / 10000000)
+	long := FloatToString(float64(deviceData.Longitude) / 10000000)
+	latdirection := "N"
+	if deviceData.Latitude < 0 {
+		latdirection = "S"
+	}
+	longdirection := "E"
+	if deviceData.Longitude < 0 {
+		longdirection = "W"
+	}
+
+	datastr := t.Format("02/01/2006") + "," + t.Format("15:04:05") + "," + strconv.Itoa(int(deviceData.DeviceID)) + ",ekasfk2017,"
+	datastr += "KCF 861X," + strconv.Itoa(int(deviceData.GroundSpeed)) + "," + lat + "," + latdirection + ","
+	datastr += long + "," + longdirection + "," + disconnect + "," + failsafe
+
+	url := "http://api.speedlimiter.co.ke/ekas"
+	payload := strings.NewReader(datastr)
+
+	req, _ := http.NewRequest("POST", url, payload)
+	req.Header.Add("content-type", "text/plain")
+	req.Header.Add("cache-control", "no-cache")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	body, _ := ioutil.ReadAll(res.Body)
+
+	fmt.Println("association 2", string(body))
 }
 
 // FloatToString ...
