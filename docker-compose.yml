@@ -22,11 +22,12 @@ services:
     ports:
       - "6379:6379"
     volumes:
-        - ./storage/redis/data:/data
+      - redis_data:/data
     restart: always
     environment:
       - REDIS_REPLICATION_MODE=master
 volumes:
   logs:
+  redis_data:
 networks:
   host:
