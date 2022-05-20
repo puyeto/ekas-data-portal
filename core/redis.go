@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/ekas-data-portal/models"
@@ -28,7 +29,7 @@ func InitializeRedis() error {
 
 	// redisClient = redis.NewClient(opt)
 
-	redisClient := redis.NewClient(&redis.Options{
+	redisClient = redis.NewClient(&redis.Options{
 		Addr:     "159.89.134.228:6379",
 		Password: "",
 		DB:       3,
@@ -40,6 +41,7 @@ func InitializeRedis() error {
 		return nil
 	}
 	Logger.Errorf("Redis Connection Failed %v", err)
+
 	return err
 }
 
@@ -52,10 +54,10 @@ func GetValue(key string) (interface{}, error) {
 }
 
 // SetValue ...
-func SetValue(key string, value interface{}) (bool, error) {
+func SetValue(key string, value interface{}) error {
 	serializedValue, _ := json.Marshal(value)
-	err := redisClient.Set(ctx, key, string(serializedValue), 0).Err()
-	return true, err
+	fmt.Println(serializedValue)
+	return redisClient.Set(ctx, key, string(serializedValue), 0).Err()
 }
 
 // GetLastSeenValue ...

@@ -679,16 +679,14 @@ func lastSeen(m models.DeviceData, key string) {
 		DeviceData: m,
 	}
 	// SET object
-	_, err := core.SetValue(key, data)
-	if err != nil {
+	if err := core.SetValue(key, data); err != nil {
 		fmt.Println(err)
 	}
 }
 
 func currentViolations(m models.DeviceData, key string) {
 	// SET object
-	_, err := core.SetValue(key, m)
-	if err != nil {
+	if err := core.SetValue(key, m); err != nil {
 		fmt.Println(err)
 	}
 }
