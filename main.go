@@ -78,12 +78,8 @@ func main() {
 		panic(err)
 	}
 
-	// var connections []net.Conn
-	// defer func() {
-	// 	for _, conn := range connections {
-	// 		conn.Close()
-	// 	}
-	// }()
+	defer l.Close()
+	rand.Seed(time.Now().Unix())
 
 	// fmt.Println("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
 	core.Logger.Infoln("Listening on " + CONNHOST + ":" + strconv.Itoa(CONNPORT))
@@ -100,17 +96,11 @@ func main() {
 			fmt.Printf("accept err: %v", err)
 			break
 		}
-		defer conn.Close()
-		// log.Println("Client ", conn.RemoteAddr(), " connected")
 
+		// log.Println("Client ", conn.RemoteAddr(), " connected")
 		// Handle connections in a new goroutine.
 		go HandleRequest(conn)
 
-		// connections = append(connections, conn)
-		// if len(connections)%10000 == 0 {
-		// 	fmt.Printf("total number of connections: %v", len(connections))
-		// 	core.Logger.Infoln("total number of connections: %v", len(connections))
-		// }
 	}
 
 }
@@ -121,19 +111,6 @@ func checkError(err error) {
 		return
 	}
 }
-
-// func setLimit() {
-// 	var rLimit syscall.Rlimit
-// 	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-// 		panic(err)
-// 	}
-// 	rLimit.Cur = rLimit.Max
-// 	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
-// 		panic(err)
-// 	}
-
-// 	fmt.Printf("set cur limit: %d", rLimit.Cur)
-// }
 
 func handler(rw http.ResponseWriter, r *http.Request) {
 	enableCors(&rw)

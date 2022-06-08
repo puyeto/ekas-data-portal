@@ -44,7 +44,6 @@ func HandleRequest(conn net.Conn) {
 				return
 			}
 			fmt.Println("Error reading:", err.Error(), reqLen)
-			conn.Close()
 			return
 		}
 
@@ -53,7 +52,7 @@ func HandleRequest(conn net.Conn) {
 		conn.Write([]byte(string(result)))
 
 		if reqLen == 0 {
-			return
+			continue
 		}
 
 		var deviceid uint32
@@ -73,7 +72,7 @@ func HandleRequest(conn net.Conn) {
 
 				ddata, err := processRequest(mb, n1)
 				if err != nil {
-					return
+					continue
 				}
 
 				deviceid = ddata.DeviceID
@@ -85,6 +84,7 @@ func HandleRequest(conn net.Conn) {
 		}
 		opsRate.Mark(1)
 	}
+	conn.Close()
 }
 
 func readNextBytes(conn net.Conn, number int) (int, []byte) {

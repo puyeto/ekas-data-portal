@@ -62,6 +62,7 @@ pipeline {
                     sh 'docker service scale ekas-data-portal-prod_ekas-data=0'
                     sh 'docker system prune -f'
                     sh 'docker service scale ekas-data-portal-prod_ekas-data=5'
+                    sh 'docker service scale ekas-data-portal-prod_redis=1'
                     deleteDir()
                 }
             }
