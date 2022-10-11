@@ -29,7 +29,7 @@ func InitializeRedis() error {
 	// redisClient = redis.NewClient(opt)
 
 	redisClient = redis.NewClient(&redis.Options{
-		Addr:     "159.89.134.228:6379",
+		Addr:     "144.76.140.105:6379",
 		Password: "",
 		DB:       3,
 	})

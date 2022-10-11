@@ -12,15 +12,6 @@ services:
       - host
     volumes:
       - logs:/go/logs
-    depends_on:
-      - "redis"
-
-  redis:
-    image: "redis:alpine"
-    hostname: redis
-    container_name: redis
-    ports:
-      - "6379:6379"
 volumes:
   logs:
 networks:
