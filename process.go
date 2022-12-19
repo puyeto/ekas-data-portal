@@ -84,7 +84,6 @@ func HandleRequest(conn net.Conn) {
 		}
 		opsRate.Mark(1)
 	}
-	conn.Close()
 }
 
 func readNextBytes(conn net.Conn, number int) (int, []byte) {

@@ -101,6 +101,11 @@ func main() {
 		// Handle connections in a new goroutine.
 		go HandleRequest(conn)
 
+		// Create a goroutine that closes a session after 15 seconds
+		go func() {
+			<-time.After(time.Duration(10) * time.Second)
+			defer conn.Close()
+		}()
 	}
 
 }
