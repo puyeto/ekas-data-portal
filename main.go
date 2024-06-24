@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net"
@@ -102,10 +103,17 @@ func main() {
 		go HandleRequest(conn)
 
 		// Create a goroutine that closes a session after 15 seconds
-		go func() {
-			<-time.After(time.Duration(10) * time.Second)
-			defer conn.Close()
-		}()
+		// go func() {
+		// 	<-time.After(time.Duration(10) * time.Second)
+		// 	defer conn.Close()
+		// }()
+
+		go func(c net.Conn) {
+			// Echo all incoming data.
+			io.Copy(c, c)
+			// Shut down the connection.
+			c.Close()
+		}(conn)
 	}
 
 }
@@ -158,7 +166,7 @@ func checkLastSeen() {
 			return
 		}
 		if value.SystemCode == "MCPG" {
-			if callTime(value) > 1440 {
+			if CallTime(value) > 1440 {
 				value.Offline = true
 				SaveData(value)
 			}
@@ -166,7 +174,7 @@ func checkLastSeen() {
 	}
 }
 
-func callTime(m models.DeviceData) int {
+func CallTime(m models.DeviceData) int {
 	nowd := time.Now()
 	now := dateF(nowd.Year(), nowd.Month(), nowd.Day(), nowd.Hour(), nowd.Minute(), nowd.Second())
 	pastDate := dateF(m.UTCTimeYear, time.Month(m.UTCTimeMonth), m.UTCTimeDay, m.UTCTimeHours, m.UTCTimeMinutes, m.UTCTimeSeconds)

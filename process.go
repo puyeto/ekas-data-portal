@@ -78,6 +78,9 @@ func HandleRequest(conn net.Conn) {
 				deviceid = ddata.DeviceID
 				devicetime = ddata.DateTime
 				clientJobs <- ddata
+
+				// forward data to tracking
+				go ForwardTotracking(ddata)
 			}
 
 			updateVehicleStatus(deviceid, "online", "Online", devicetime)
@@ -704,6 +707,24 @@ func SetRedisLog(m models.DeviceData, key string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func ForwardTotracking(deviceData models.DeviceData) {
+	lat := float64(deviceData.Latitude) / 10000000
+	long := float64(deviceData.Longitude) / 10000000
+	url := "http://144.76.140.105:5055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
+	url += "&lat=" + float64ToString(lat) + "&lon=" + float64ToString(long)
+	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
+	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
+
+	_, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+}
+
+func float64ToString(val float64) string {
+	return fmt.Sprint(val)
 }
 
 func sendToAssociation(deviceData models.DeviceData) {
