@@ -717,9 +717,11 @@ func ForwardTotracking(deviceData models.DeviceData) {
 	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
 	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
 
+	fmt.Println("Forwarded", url)
+
 	_, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("%s", err)
+		fmt.Printf("Forwarded Error: %s", err)
 	}
 }
 
