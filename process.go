@@ -662,7 +662,7 @@ func SaveAllData(m models.DeviceData) error {
 		SetRedisLogViolations(m, "violations")
 		SetRedisLog(m, "violations:"+device)
 
-		if m.Offline == true {
+		if m.Offline === true {
 			SetRedisLog(m, "offline:"+device)
 		}
 	}
@@ -712,9 +712,14 @@ func SetRedisLog(m models.DeviceData, key string) {
 func ForwardTotracking(deviceData models.DeviceData) {
 	lat := float64(deviceData.Latitude) / 10000000
 	long := float64(deviceData.Longitude) / 10000000
+
+	currentTime := deviceData.DateTime
+	dt := currentTime.Add(-time.Hour * 3)
+	timestamp := strconv.Itoa(int(dt.Unix()))
+
 	url := "http://144.76.140.105:5055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
 	url += "&lat=" + float64ToString(lat) + "&lon=" + float64ToString(long)
-	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
+	url += "&timestamp=" + timestamp + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
 	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
 
 	fmt.Println("Forwarded", url)
@@ -763,9 +768,7 @@ func sendToAssociation(deviceData models.DeviceData) {
 		}
 
 		defer resp.Body.Close()
-
 		body, _ := ioutil.ReadAll(resp.Body)
-
 		fmt.Println(string(body))
 	}
 }
