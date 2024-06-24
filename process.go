@@ -662,7 +662,7 @@ func SaveAllData(m models.DeviceData) error {
 		SetRedisLogViolations(m, "violations")
 		SetRedisLog(m, "violations:"+device)
 
-		if m.Offline === true {
+		if m.Offline == true {
 			SetRedisLog(m, "offline:"+device)
 		}
 	}
