@@ -1,8 +1,8 @@
-version: "3"
+version: "3.7"
 services:
   ekas-data:
     image: omollo/ekas-data-portal-prod
-    container_name: ekas-data-portal
+    restart: always
     deploy:
       replicas: 5
     ports:
